@@ -1,0 +1,9 @@
+.DS_Store
+build/
+out/
+bin/
+*.class
+**/.idea/workspace.xml **/.idea/tasks.xml
+.gradle
+.idea
+.vscode
