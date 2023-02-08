@@ -29,6 +29,7 @@ compose.desktop {
         nativeDistributions {
             packageVersion = "1.0.0"
             packageName = "Whiteboard"
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             macOS {
                 iconFile.set(iconsRoot.resolve("launcher_icons/macos.icns"))
             }
