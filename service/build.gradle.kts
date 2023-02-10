@@ -17,15 +17,15 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("org.hibernate.orm:hibernate-community-dialects:6.1.6.Final")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.xerial:sqlite-jdbc:3.36.0.3")
-    implementation("org.jetbrains.exposed", "exposed-core", "0.40.1")
-    implementation("org.jetbrains.exposed", "exposed-dao", "0.40.1")
-    implementation("org.jetbrains.exposed", "exposed-jdbc", "0.40.1")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("com.h2database:h2")
     implementation(project(":shared"))
 }
 
