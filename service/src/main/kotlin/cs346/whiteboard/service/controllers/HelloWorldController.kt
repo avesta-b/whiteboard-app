@@ -1,8 +1,9 @@
-package cs346.whiteboard.service
+package cs346.whiteboard.service.controllers
 
-import cs346.whiteboard.service.database.tables.UserTable
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.transactions.transaction
+
+import cs346.whiteboard.service.models.UserLogin
+import cs346.whiteboard.service.repositories.UserLoginRepository
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RestController
@@ -10,10 +11,11 @@ import org.springframework.web.bind.annotation.RestController
 // TODO: Remove this file, it is meant as a placeholder and example for future developers to build upon.
 // Once the first endpoint is setup, remove this file.
 @RestController
-class HelloWorldController {
+class HelloWorldController(private val userRepository: UserLoginRepository) {
 
     @GetMapping("/sample")
     fun samplePage() : String {
+        userRepository.save(UserLogin("Foo@gmail.com", "bar"))
         return "This is a sample page"
     }
 
@@ -21,12 +23,6 @@ class HelloWorldController {
     fun writeToDb(): String {
         var result = "EMPTY"
 
-        transaction {
-            UserTable.insert {
-                it[name] = "Yorkie"
-                it[age] = 20
-            } get UserTable.id
-        }
 
         return result
     }
