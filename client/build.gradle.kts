@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     kotlin("jvm")
+    kotlin("plugin.serialization")
     id("org.jetbrains.compose")
 }
 
@@ -18,6 +19,7 @@ repositories {
 
 dependencies {
     implementation(compose.desktop.currentOs)
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
     implementation(project(":shared"))
     testImplementation(kotlin("test"))
 }

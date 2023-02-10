@@ -1,30 +1,21 @@
 package cs346.whiteboard.client
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme
-import androidx.compose.desktop.ui.tooling.preview.Preview
-import androidx.compose.material.Button
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import cs346.whiteboard.client.views.RootView
 
 @Composable
-@Preview
 fun App() {
-    var text by remember { mutableStateOf("Hello, World!") }
-
     MaterialTheme {
-        Button(onClick = {
-            text = "Hello, Desktop!"
-        }) {
-            Text(text)
-        }
+        RootView(
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
 
@@ -33,8 +24,9 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "Whiteboard",
         state = rememberWindowState(
-            placement = WindowPlacement.Maximized,
-            position = WindowPosition(Alignment.Center)
+            placement = WindowPlacement.Floating,
+            position = WindowPosition(Alignment.Center),
+            size = DpSize(1500.dp, 1000.dp)
             ),
         ) {
         App()
