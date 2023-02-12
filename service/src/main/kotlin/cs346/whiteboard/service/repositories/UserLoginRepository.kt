@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 
 interface UserLoginRepository: CrudRepository<UserLogin, Long> {
-    fun findByEmail(email: String): UserLogin?
+    fun findByUsername(username: String): UserLogin?
 }
