@@ -1,35 +1,35 @@
 package cs346.whiteboard.client
 
+import androidx.compose.ui.unit.DpSize
+import androidx.compose.ui.unit.dp
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.awt.Dimension
 
-const val WINDOW_STATE_FILE = "windowState.json"
+const val WINDOW_KEY = "window"
 object WindowManager{
     @Serializable
     data class WindowSize(
-        val width: Int = 800,
-        val height: Int = 600
+        val width: Int,
+        val height: Int
     )
-    private var WindowSizeData : WindowSize?
+    private var windowSize : WindowSize
         get() {
-            LocalFileManager.readFromFile(WINDOW_STATE_FILE)?.let {
+            PreferencesManager.readFromPreferences(WINDOW_KEY)?.let {
                 return Json.decodeFromString(WindowSize.serializer(), it)
             }
-            return WindowSize(800, 600)
+            return WindowSize(1200, 800)
         }
-        set(WindowSizeData) {
-            LocalFileManager.writeToFileWithString(WINDOW_STATE_FILE, Json.encodeToString(WindowSizeData))
+        set(size) {
+            PreferencesManager.writeToPreferencesWithKey(WINDOW_KEY, Json.encodeToString(size))
         }
 
-    fun getSavedWindowSize():Dimension{
-        return Dimension(WindowSizeData!!.width, WindowSizeData!!.height)
+    fun getWindowSize(): DpSize {
+        return DpSize(windowSize.width.dp, windowSize.height.dp)
     }
-    fun saveWindowSize(){
-        LocalFileManager.writeToFileWithString(WINDOW_STATE_FILE, Json.encodeToString(WindowSizeData))
-    }
-    fun setWindowSize(width: Int, height: Int){
-        WindowSizeData = WindowSize(width, height)
+
+    fun setWindowSize(dimension: Dimension){
+        windowSize = WindowSize(dimension.width, dimension.height)
     }
 }
