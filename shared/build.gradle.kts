@@ -1,7 +1,8 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    kotlin("jvm") version "1.7.21"
+    kotlin("jvm")
+    kotlin("plugin.serialization")
 }
 
 group = "cs346.whiteboard"
@@ -12,6 +13,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
     testImplementation(kotlin("test"))
 }
 
