@@ -50,9 +50,11 @@ fun RootView(modifier: Modifier) {
                     }
                 }
                 RootUiState.SIGNING_IN -> {
-                    LargeSpinner().also {
-                        coroutineScope.launch {
-                            model.attemptSignIn()
+                    Box(modifier, Alignment.Center) {
+                        LargeSpinner().also {
+                            coroutineScope.launch {
+                                model.attemptSignIn()
+                            }
                         }
                     }
                 }
