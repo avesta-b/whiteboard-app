@@ -74,17 +74,20 @@ fun main() = application {
             Menu("Window", mnemonic = 'V'){
                 Item("Minimize",
                     onClick = {
-                        print(state.placement)
-                        state.isMinimized = true},
-                    enabled = !(state.isMinimized || state.placement == WindowPlacement.Fullscreen))
-                Item("Maximize",
+                        state.isMinimized = true
+                    },
+                    enabled = !state.isMinimized && state.placement != WindowPlacement.Fullscreen
+                )
+                Item("Fullscreen",
                     onClick = {
-                    state.placement = if (state.placement != WindowPlacement.Maximized) {
-                        WindowPlacement.Maximized
-                    } else {
-                        WindowPlacement.Floating
-                    }},
-                    enabled = !(state.isMinimized || state.placement == WindowPlacement.Fullscreen))
+                        state.placement = if (state.placement != WindowPlacement.Floating) {
+                            WindowPlacement.Floating
+                        } else {
+                            WindowPlacement.Fullscreen
+                        }
+                    },
+                    enabled = !(state.isMinimized)
+                )
             }
         }
         window.minimumSize = Dimension(800, 600) // set minimum size
