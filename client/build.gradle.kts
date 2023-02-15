@@ -18,7 +18,7 @@ repositories {
 dependencies {
     implementation(compose.desktop.currentOs)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0-RC")
-    implementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.2.0")
+    implementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.3.0")
     implementation("io.ktor:ktor-client-core:2.2.3")
     implementation("io.ktor:ktor-client-okhttp:2.2.3")
     implementation("org.slf4j:slf4j-simple:1.7.9")
