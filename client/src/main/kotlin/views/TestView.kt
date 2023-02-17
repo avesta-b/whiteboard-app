@@ -16,7 +16,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.components.PrimaryButton
-import cs346.whiteboard.client.components.TextfieldWithButton
+import cs346.whiteboard.client.components.TextFieldWithButton
 
 // TODO: replace TestView
 
@@ -43,7 +43,7 @@ fun TestView(modifier: Modifier, onSignOut: () -> Unit) {
                                 testUiState = TestUiState.DRAW_DEMO
                             }
 
-                            TextfieldWithButton(
+                            TextFieldWithButton(
                                 text=roomId,
                                 buttonText = "Connect to a room",
                                 modifier = Modifier.size(280.dp, 50.dp),

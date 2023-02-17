@@ -1,6 +1,7 @@
 package cs346.whiteboard.client.components
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.foundation.text.selection.TextSelectionColors
@@ -14,6 +15,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
@@ -58,12 +60,13 @@ fun AuthenticationTextField(text: MutableState<TextFieldValue>,
 }
 
 @Composable
-fun TextfieldWithButton(
+fun TextFieldWithButton(
     text: MutableState<TextFieldValue>,
     buttonText: String,
     modifier: Modifier,
     placeholder: String,
     onClick: () -> Unit) {
+    // TODO: separate this
     Column {
         Button(
             onClick = onClick,
@@ -79,18 +82,28 @@ fun TextfieldWithButton(
             PrimaryButtonText(buttonText)
         }
     }
-    TextField(
-        value = text.value,
-        onValueChange = { text.value = it },
-        placeholder = {
-            Column {
-                Text(
-                    text=placeholder
-                )
-            }
-          },
-        modifier = modifier,
-        enabled = true,
-        textStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
-    )
+    CompositionLocalProvider(LocalTextSelectionColors provides textSelectionColors) {
+        OutlinedTextField(
+            value = text.value,
+            onValueChange = { text.value = it },
+            modifier = Modifier.size(280.dp, 60.dp),
+            textStyle = Typography.subtitle1,
+            label = { TextFieldPlaceholderText(placeholder) },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrect = false),
+            singleLine = true,
+            shape = Shapes.small,
+            colors = TextFieldDefaults.outlinedTextFieldColors(
+                textColor = Colors.primary,
+                disabledTextColor = Colors.secondaryVariant,
+                cursorColor = Colors.primary,
+                focusedBorderColor = Colors.primary,
+                unfocusedBorderColor = Colors.secondaryVariant,
+                disabledBorderColor = Colors.secondaryVariant,
+                focusedLabelColor = Colors.primary,
+                unfocusedLabelColor = Colors.secondaryVariant,
+                disabledLabelColor = Colors.secondaryVariant),
+        )
+    }
 }
