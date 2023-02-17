@@ -2,9 +2,9 @@ package cs346.whiteboard.client
 
 import cs346.whiteboard.shared.jsonmodels.LoginCredentialsRequest
 import cs346.whiteboard.shared.jsonmodels.LoginCredentialsResponse
-import kotlinx.serialization.*
-import kotlinx.serialization.json.*
-import java.lang.Exception
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 const val CREDENTIALS_KEY = "credentials"
 
@@ -20,6 +20,10 @@ object UserManager {
     )
 
     private var jwt: String? = null
+
+    fun getUsername(): String? {
+        return storedCredentials?.username
+    }
 
     private var storedCredentials: Credentials?
         get() {

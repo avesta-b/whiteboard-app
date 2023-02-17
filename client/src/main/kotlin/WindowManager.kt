@@ -2,6 +2,7 @@ package cs346.whiteboard.client
 
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import cs346.whiteboard.shared.jsonmodels.CursorPosition
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -31,5 +32,9 @@ object WindowManager{
 
     fun setWindowSize(dimension: Dimension){
         windowSize = WindowSize(dimension.width, dimension.height)
+    }
+
+    fun isOutOfBounds(position: CursorPosition): Boolean {
+        return position.x < 0 || position.y > windowSize.width || position.y < 0 || position.y > windowSize.height
     }
 }

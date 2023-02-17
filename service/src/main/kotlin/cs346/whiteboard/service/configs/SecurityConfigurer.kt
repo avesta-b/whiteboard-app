@@ -1,7 +1,6 @@
 package cs346.whiteboard.service.configs
 
 
-import cs346.whiteboard.service.repositories.UserLoginRepository
 import cs346.whiteboard.service.services.UserLoginDetailsService
 import cs346.whiteboard.service.util.JWTFilter
 import org.springframework.beans.factory.annotation.Autowired
@@ -40,6 +39,8 @@ class SecurityConfigurer : WebSecurityConfigurerAdapter() {
             .authorizeHttpRequests()
             .antMatchers("/api/auth/**").permitAll()
             .antMatchers("/api/user/**").hasRole("USER")
+            // TODO:  Note fix this
+            .antMatchers("/ws/**").permitAll()
             .and()
             .userDetailsService(userLoginDetailsService)
             .exceptionHandling()

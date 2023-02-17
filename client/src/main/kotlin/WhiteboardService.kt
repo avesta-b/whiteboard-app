@@ -6,7 +6,7 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
-const val HOST = "localhost:8080"
+const val HOST = "143.244.154.232"
 object WhiteboardService {
     val client = HttpClient(OkHttp) {
         // Throws for non-2xx response codes
