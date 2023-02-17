@@ -96,7 +96,8 @@ internal class CursorViewModel(private var cursorPosition: CursorPosition,
     suspend fun updateCursor(newPosition: CursorPosition) {
         this.otherCursorPositions[userName] = newPosition
 
-        if (abs(newPosition.x - cursorPosition.x) < 10 ||
+        // TODO: Add a timer based update sensor too
+        if (abs(newPosition.x - cursorPosition.x) < 10 &&
             abs(newPosition.y - cursorPosition.y) < 10) {
             return
         }
