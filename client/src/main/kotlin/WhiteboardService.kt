@@ -6,7 +6,10 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
-const val HOST = "143.244.154.232"
+object BaseUrlProvider {
+    const val HOST = "167.172.2.112"
+}
+
 object WhiteboardService {
     val client = HttpClient(OkHttp) {
         // Throws for non-2xx response codes
@@ -24,7 +27,7 @@ object WhiteboardService {
             method = HttpMethod.Post
             url {
                 protocol = URLProtocol.HTTP
-                host = HOST
+                host = BaseUrlProvider.HOST
                 path(path)
             }
             headers {

@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import cs346.whiteboard.client.BaseUrlProvider
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.components.CursorUserNameText
 import cs346.whiteboard.shared.jsonmodels.CursorPosition
@@ -61,7 +62,7 @@ internal class CursorViewModel(private var cursorPosition: CursorPosition,
     // Im a bit stupid so idk what the keyword `by` does but it makes otherCursorPositions of type CursorPosition
     var otherCursorPositions = mutableStateMapOf<String, Animatable<Offset, AnimationVector2D>>()
 
-    private val baseUrl: String = "ws://143.244.154.232/ws"
+    private val baseUrl: String = "ws://" + BaseUrlProvider.HOST + "/ws"
     private val sendPath: String = "/app/whiteboard/${roomId}"
     private val subscribePath: String = "/topic/whiteboard/${roomId}"
 
