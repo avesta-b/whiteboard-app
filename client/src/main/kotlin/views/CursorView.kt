@@ -1,21 +1,29 @@
 package cs346.whiteboard.client.views
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.AnimationVector2D
+import androidx.compose.animation.core.VectorConverter
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.ExperimentalTextApi
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.UserManager
-import cs346.whiteboard.client.constants.Typography
+import cs346.whiteboard.client.components.CursorUserNameText
 import cs346.whiteboard.shared.jsonmodels.CursorPosition
 import cs346.whiteboard.shared.jsonmodels.CursorPositionUpdate
 import kotlinx.coroutines.CoroutineScope
@@ -30,6 +38,7 @@ import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
 import org.hildan.krossbow.stomp.use
 import org.hildan.krossbow.websocket.ktor.KtorWebSocketClient
 import kotlin.math.abs
+import kotlin.math.roundToInt
 
 fun getUsernameColor(inputString: String): Color {
     // Hash the input string to generate a unique number
@@ -50,7 +59,7 @@ internal class CursorViewModel(private var cursorPosition: CursorPosition,
                                private val roomId: String
 ) {
     // Im a bit stupid so idk what the keyword `by` does but it makes otherCursorPositions of type CursorPosition
-    var otherCursorPositions = mutableStateMapOf<String, CursorPosition>()
+    var otherCursorPositions = mutableStateMapOf<String, Animatable<Offset, AnimationVector2D>>()
 
     private val baseUrl: String = "ws://143.244.154.232/ws"
     private val sendPath: String = "/app/whiteboard/${roomId}"
@@ -86,7 +95,15 @@ internal class CursorViewModel(private var cursorPosition: CursorPosition,
 
                 messages.collect { msg ->
                     if (msg.userIdentifier != userName) {
-                        this.otherCursorPositions[msg.userIdentifier] = msg.userCursorPosition
+                        scope.launch {
+                            val newOffset = Offset(msg.userCursorPosition.x, msg.userCursorPosition.y)
+                            if (!otherCursorPositions.containsKey(msg.userIdentifier)) {
+                                otherCursorPositions[msg.userIdentifier] =
+                                    Animatable(newOffset, Offset.VectorConverter)
+                            } else {
+                                otherCursorPositions[msg.userIdentifier]?.animateTo(newOffset)
+                            }
+                        }
                     }
                 }
             }
@@ -94,19 +111,17 @@ internal class CursorViewModel(private var cursorPosition: CursorPosition,
     }
 
     suspend fun updateCursor(newPosition: CursorPosition) {
-        this.otherCursorPositions[userName] = newPosition
-
-        // TODO: Add a timer based update sensor too
-        if (abs(newPosition.x - cursorPosition.x) < 10 &&
-            abs(newPosition.y - cursorPosition.y) < 10) {
-            return
-        }
         cursorPosition = newPosition
 
         session?.withJsonConversions()?.let {
             it.convertAndSend(sendPath,
                 CursorPositionUpdate(userName, cursorPosition),
                 CursorPositionUpdate.serializer())
+        }
+        if (!this.otherCursorPositions.containsKey(userName)) {
+            this.otherCursorPositions[userName] = Animatable(Offset(newPosition.x, newPosition.y), Offset.VectorConverter)
+        } else {
+            this.otherCursorPositions[userName] = Animatable(Offset(newPosition.x, newPosition.y), Offset.VectorConverter)
         }
     }
 }
@@ -117,26 +132,27 @@ internal class CursorViewModel(private var cursorPosition: CursorPosition,
 fun CursorView(modifier: Modifier, roomId: String) {
     val coroutineScope = rememberCoroutineScope()
     var model = remember { CursorViewModel(UserManager.getUsername() ?: "A", coroutineScope, roomId) }
-    val textMeasure = rememberTextMeasurer()
     // Draw circles for each item in positions map
-    Canvas(
-        modifier = modifier
-            .pointerInput(Unit) {
-                coroutineScope {
-                    while (true) {
-                        val position = awaitPointerEventScope {
-                            val offset = awaitPointerEvent(PointerEventPass.Main).changes.first().position
-                            CursorPosition(offset.x, offset.y)
-                        }
-                        model.updateCursor(position)
-                    }
+    Box(modifier.pointerInput(Unit) {
+        coroutineScope {
+            while (true) {
+                val position = awaitPointerEventScope {
+                    val offset = awaitPointerEvent(PointerEventPass.Initial).changes.first().position
+                    CursorPosition(offset.x, offset.y)
+                }
+                launch {
+                    model.updateCursor(position)
                 }
             }
-    ) {
-        model.otherCursorPositions.forEach { (id, position) ->
-            drawCircle(color = getUsernameColor(id), radius = 20f, center = Offset(position.x, position.y))
-            val style = Typography.subtitle2.copy(getUsernameColor(id))
-            drawText(textMeasure, id, Offset(position.x + 15, position.y + 15), style, maxSize = IntSize(1000, 100))
+        }
+    }) {
+        model.otherCursorPositions.forEach { (id, offset) ->
+            Column(Modifier.size(300.dp).offset{offset.value.toIntOffset()}) {
+                Box(Modifier.size(15.dp).clip(CircleShape).background(getUsernameColor(id)))
+                CursorUserNameText(id, getUsernameColor(id))
+            }
         }
     }
 }
+
+private fun Offset.toIntOffset() = IntOffset(x.roundToInt(), y.roundToInt())

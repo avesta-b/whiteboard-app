@@ -2,6 +2,7 @@ package cs346.whiteboard.client.components
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import cs346.whiteboard.client.constants.Colors
@@ -16,45 +17,66 @@ fun TitleText(text: String) {
 }
 
 @Composable
+fun CursorUserNameText(username: String, color: Color) {
+    Text(
+        text = username,
+        color = color,
+        style = Typography.subtitle2
+    )
+}
+
+@Composable
 fun SmallTitleText(text: String) {
-    Text(text = text,
+    Text(
+        text = text,
         color = Colors.primary,
-        style = Typography.h2)
+        style = Typography.h2
+    )
 }
 
 @Composable
 fun TextFieldPlaceholderText(text: String) {
-    Text(text = text,
-        style = Typography.subtitle1)
+    Text(
+        text = text,
+        style = Typography.subtitle1
+    )
 }
 
 @Composable
 fun PrimaryButtonText(text: String) {
-    Text(text = text,
+    Text(
+        text = text,
         color = Colors.background,
-        style = Typography.subtitle2)
+        style = Typography.subtitle2
+    )
 }
 
 @Composable
 fun SecondarySubtitleText(text: String) {
-    Text(text = text,
+    Text(
+        text = text,
         color = Colors.secondary,
-        style = Typography.subtitle2)
+        style = Typography.subtitle2
+    )
 }
 
 @Composable
 fun PrimarySubtitleText(text: String) {
-    Text(text = text,
+    Text(
+        text = text,
         color = Colors.primary,
-        style = Typography.subtitle2)
+        style = Typography.subtitle2
+    )
 }
 
 @Composable
 fun UnderlinedText(text: String) {
-    Text(text = text,
+    Text(
+        text = text,
         color = Colors.primary,
         style = Typography.subtitle2,
-        textDecoration = TextDecoration.Underline)
+        textDecoration = TextDecoration.Underline
+    )
 }
 
 @Composable
