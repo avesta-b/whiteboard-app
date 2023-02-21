@@ -21,7 +21,7 @@ class WhiteboardController {
         if (currentTool == WhiteboardToolbarOptions.PEN) {
             componentList.lastOrNull()?.let {
                 if (it !is Path) return
-                it.points.add(nextPoint)
+                it.insertPoint(nextPoint)
             }
         }
     }
