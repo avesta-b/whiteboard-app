@@ -25,7 +25,7 @@ fun WhiteboardView(modifier: Modifier) {
         )
         WhiteboardToolbar(
             whiteboardController = whiteboardController,
-            modifier = Modifier.size(250.dp, 85.dp).offset(0.dp, (-32).dp).background(Colors.background)
+            modifier = Modifier.size(500.dp, 85.dp).offset(0.dp, (-32).dp).background(Colors.background)
         )
     }
 }

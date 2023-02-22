@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -19,6 +18,15 @@ import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 
 enum class WhiteboardToolbarOptions {
+    ZOOM_IN {
+        override fun icon() = Icons.Outlined.ZoomIn
+    },
+    ZOOM_OUT {
+        override fun icon() = Icons.Outlined.ZoomOut
+    },
+    PAN {
+        override fun icon() = Icons.Outlined.PanTool
+    },
     PEN {
         override fun icon() = Icons.Outlined.Draw
     },
@@ -43,7 +51,17 @@ fun WhiteboardToolbar(whiteboardController: WhiteboardController, modifier: Modi
         Spacer(modifier.weight(1.0f))
         enumValues<WhiteboardToolbarOptions>().forEach {
             IconButton(onClick = {
-                whiteboardController.setCurrentTool(it)
+                when(it) {
+                    WhiteboardToolbarOptions.ZOOM_IN -> {
+                        whiteboardController.zoomIn()
+                    }
+                    WhiteboardToolbarOptions.ZOOM_OUT -> {
+                        whiteboardController.zoomOut()
+                    }
+                    else -> {
+                        whiteboardController.currentTool = it
+                    }
+                }
             }) {
                 Icon(it.icon(), it.name)
             }

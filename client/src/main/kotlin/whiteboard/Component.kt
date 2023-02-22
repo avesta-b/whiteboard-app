@@ -1,19 +1,18 @@
 package cs346.whiteboard.client.whiteboard
 
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.drawscope.DrawScope
 
 interface Component {
 
-    var coordinate: Offset
+    var coordinate: MutableState<Offset>
 
-    var size: Size
-    fun drawCanvasComponent(drawScope: DrawScope)
+    var size: MutableState<Size>
 
     @Composable
-    fun drawComposableComponent(boxScope: BoxScope)
+    fun drawComposableComponent(modifier: Modifier, controller: WhiteboardController)
 
 }
