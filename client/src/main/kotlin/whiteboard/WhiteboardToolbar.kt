@@ -24,6 +24,9 @@ enum class WhiteboardToolbarOptions {
     ZOOM_OUT {
         override fun icon() = Icons.Outlined.ZoomOut
     },
+    SELECT {
+        override fun icon() = Icons.Outlined.NearMe
+    },
     PAN {
         override fun icon() = Icons.Outlined.PanTool
     },

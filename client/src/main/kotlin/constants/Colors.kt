@@ -18,3 +18,9 @@ val Colors = Colors(
     onError = Color.White,
     isLight = false
 )
+
+val Colors.backgroundDotColor: Color
+    get() = Color(0xFFE6E6E6)
+
+val Colors.queryBoxColor: Color
+    get() = Colors.secondaryVariant.copy(alpha = 0.2f)

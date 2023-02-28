@@ -3,12 +3,10 @@ package cs346.whiteboard.client.whiteboard
 import androidx.compose.foundation.gestures.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.toSize
-import cs346.whiteboard.client.helpers.toDp
 
 @Composable
 fun Whiteboard(
@@ -24,6 +22,9 @@ fun Whiteboard(
                 },
                 onDrag = { change, dragAmount ->
                     whiteboardController.handleOnDragGesture(change, dragAmount)
+                },
+                onDragEnd = {
+                    whiteboardController.handleOnDragGestureEnd()
                 }
             )
         }
@@ -40,16 +41,22 @@ fun Whiteboard(
         }
 
     ) {
-        whiteboardController.componentList.forEach {
-            val componentViewCoordinate = whiteboardController.whiteboardToViewCoordinate(it.coordinate.value)
-            it.drawComposableComponent(
-                Modifier
-                    .wrapContentSize(Alignment.TopStart, true)
-                    .offset(componentViewCoordinate.x.toDp(), componentViewCoordinate.y.toDp())
-                    .size((it.size.value.width * whiteboardController.whiteboardZoom).toDp(),
-                        (it.size.value.height * whiteboardController.whiteboardZoom).toDp()),
-                whiteboardController
-            )
+        // Background
+        Background(modifier, whiteboardController)
+
+        // Components
+        whiteboardController.components.forEach { (_, component) ->
+            component.drawComposableComponent(whiteboardController)
+        }
+
+        // Selection box
+        whiteboardController.selectionBoxController.selectionBoxData?.let {
+            SelectionBox(whiteboardController, it)
+        }
+
+        // Query box
+        whiteboardController.queryBoxController.queryBoxData?.let {
+            QueryBox(whiteboardController, it)
         }
     }
 }

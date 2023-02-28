@@ -36,7 +36,6 @@ fun TestView(modifier: Modifier, onSignOut: () -> Unit) {
                     Box(modifier, Alignment.Center) {
                         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                             PrimaryButton(Modifier.size(280.dp, 50.dp), "Sign out", true) {
-                                UserManager.signOut()
                                 onSignOut()
                             }
                             PrimaryButton(Modifier.size(280.dp, 50.dp), "Draw", true) {
