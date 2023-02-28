@@ -15,15 +15,15 @@ import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
 
-class TextBox(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>) : Component {
+class TextBox(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>, override var depth: Float) : Component() {
 
     val text = mutableStateOf(TextFieldValue(""))
 
     @Composable
-    override fun drawComposableComponent(modifier: Modifier, controller: WhiteboardController) {
+    override fun drawComposableComponent(controller: WhiteboardController) {
         ComposableTextField(
             text = text,
-            modifier = modifier
+            modifier = getModifier(controller)
         )
     }
 

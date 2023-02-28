@@ -15,17 +15,18 @@ import cs346.whiteboard.client.constants.Shapes
 enum class ShapeTypes {
     SQUARE, CIRCLE
 }
-class Shape(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>, val type: ShapeTypes) : Component {
+class Shape(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>, override var depth: Float, val type: ShapeTypes) :
+    Component() {
     @Composable
-    override fun drawComposableComponent(modifier: Modifier, controller: WhiteboardController) {
+    override fun drawComposableComponent(controller: WhiteboardController) {
         when(type) {
             ShapeTypes.SQUARE -> {
-                Box(modifier
+                Box(getModifier(controller)
                     .border(4.dp * controller.whiteboardZoom, Colors.primary, Shapes.medium)
                     )
             }
             ShapeTypes.CIRCLE -> {
-                Box(modifier
+                Box(getModifier(controller)
                     .border(4.dp * controller.whiteboardZoom, Colors.primary, CircleShape)
                 )
             }

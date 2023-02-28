@@ -4,21 +4,19 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
-import cs346.whiteboard.client.helpers.distanceBetween
 
-class Path(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>) : Component {
+class Path(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>, override var depth: Float) : Component() {
 
     private var points = mutableStateListOf<Offset>()
 
     @Composable
-    override fun drawComposableComponent(modifier: Modifier, controller: WhiteboardController) {
-        Canvas(modifier) {
+    override fun drawComposableComponent(controller: WhiteboardController) {
+        Canvas(getModifier(controller)) {
             drawPath(
                 createPathFromPoints(points, controller),
                 color = Color.Black,
@@ -33,6 +31,47 @@ class Path(override var coordinate: MutableState<Offset>, override var size: Mut
         }
     }
 
+    override fun isResizeable(): Boolean {
+        // A dot is not resizable
+        return !(points.size == 2 && points[0] == points[1])
+    }
+
+    override fun move(amount: Offset) {
+        super.move(amount)
+        for (i in 0 until points.size) {
+            points[i] = points[i].plus(amount)
+        }
+    }
+
+    override fun smallestPossibleSize(): Size {
+        return Size(1f, 1f)
+    }
+
+    override fun resize(resizeMultiplier: Float, resizeNodeAnchor: ResizeNode, anchorPoint: Offset) {
+        super.resize(resizeMultiplier, resizeNodeAnchor, anchorPoint)
+        for (i in 0 until points.size) {
+            points[i] =
+                when (resizeNodeAnchor) {
+                    ResizeNode.TOP_LEFT -> Offset(
+                        anchorPoint.x + (points[i].x - anchorPoint.x) * resizeMultiplier,
+                        anchorPoint.y + (points[i].y - anchorPoint.y) * resizeMultiplier
+                    )
+                    ResizeNode.TOP_RIGHT -> Offset(
+                        anchorPoint.x - (anchorPoint.x - points[i].x) * resizeMultiplier,
+                        anchorPoint.y + (points[i].y - anchorPoint.y) * resizeMultiplier
+                    )
+                    ResizeNode.BOTTOM_LEFT -> Offset(
+                        anchorPoint.x + (points[i].x - anchorPoint.x) * resizeMultiplier,
+                        anchorPoint.y - (anchorPoint.y - points[i].y) * resizeMultiplier
+                    )
+                    ResizeNode.BOTTOM_RIGHT -> Offset(
+                        anchorPoint.x - (anchorPoint.x - points[i].x) * resizeMultiplier,
+                        anchorPoint.y - (anchorPoint.y - points[i].y) * resizeMultiplier
+                    )
+                }
+        }
+    }
+
     fun insertPoint(point: Offset) {
         // NOTE(avesta): Rate limiting the number of points that can be added on the theory that adding less points
         // that are close together will help us smoothen our existing points.
@@ -40,12 +79,12 @@ class Path(override var coordinate: MutableState<Offset>, override var size: Mut
         // TODO: Let's ask users to rate these against each other. We will do 1 control (the old algo)
         // Another one will be a bezier curve with this rate limit, another one will be a bezier curve with no
         // rate limit. The final one will once again be this bezier curve with the rate limit.
+        // TODO: revisit path drawing
         val lastPoint = points.lastOrNull()
         if (lastPoint == null) {
             points.add(point)
             return
         }
-        if (distanceBetween(lastPoint, point) < 1.5) return;
         points.add(point)
 
         // TODO: There's got to be a better way to do this... works in the meantime -M
@@ -73,30 +112,9 @@ class Path(override var coordinate: MutableState<Offset>, override var size: Mut
         val firstPoint = controller.whiteboardToViewCoordinate(points.first()).minus(controller.whiteboardToViewCoordinate(coordinate.value))
         path.moveTo(firstPoint.x, firstPoint.y)
 
-        // Loop through each set of 3 points, creating a Bezier curve for each segment
-        for (i in 1 until points.size-1 step 1) {
-            val curPoint = controller.whiteboardToViewCoordinate(points[i])
-            .minus(controller.whiteboardToViewCoordinate(coordinate.value))
-            if (i + 1 < points.size) {
-                // Calculate the control points
-                val controlPoint1 = controller.whiteboardToViewCoordinate(Offset(
-                    (points[i].x + points[i-1].x) / 2,
-                    (points[i].y + points[i-1].y) / 2))
-                    .minus(controller.whiteboardToViewCoordinate(coordinate.value))
-                val controlPoint2 = controller.whiteboardToViewCoordinate(Offset(
-                    (points[i].x + points[i+1].x) / 2,
-                    (points[i].y + points[i+1].y) / 2))
-                    .minus(controller.whiteboardToViewCoordinate(coordinate.value))
-                // Draw the curve segment
-                path.cubicTo(
-                    controlPoint1.x, controlPoint1.y,
-                    controlPoint2.x, controlPoint2.y,
-                    curPoint.x, curPoint.y
-                )
-            } else {
-                // Draw a line segment to the final point if there are an odd number of points
-                path.lineTo(curPoint.x, curPoint.y)
-            }
+        for (i in 1 until points.size) {
+            val curPoint = controller.whiteboardToViewCoordinate(points[i]).minus(controller.whiteboardToViewCoordinate(coordinate.value))
+            path.lineTo(curPoint.x, curPoint.y)
         }
         return path
     }
