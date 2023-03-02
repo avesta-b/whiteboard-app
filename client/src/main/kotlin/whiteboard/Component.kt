@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +22,7 @@ import java.util.*
 abstract class Component {
 
     val uuid: String = UUID.randomUUID().toString()
-    var isSelected: Boolean = false
+    var isFocused: MutableState<Boolean> = mutableStateOf(false)
 
     abstract var depth: Float
 

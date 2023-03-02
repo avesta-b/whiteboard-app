@@ -175,7 +175,7 @@ class SelectionBoxController {
             null,
             component.isResizeable()
         )
-        component.isSelected = true
+        component.isFocused.value = true
     }
 
     fun selectedComponents(components: List<Component>, minCoordinate: Offset, maxCoordinate: Offset) {
@@ -188,9 +188,17 @@ class SelectionBoxController {
             null,
             isResizable
         )
+        if (components.size == 1) {
+            components.first().isFocused.value = true
+        }
     }
 
     fun clearSelectionBox() {
+        selectionBoxData?.let {
+            if (it.selectedComponents.size == 1) {
+                it.selectedComponents.first().isFocused.value = false
+            }
+        }
         selectionBoxData = null
     }
 }

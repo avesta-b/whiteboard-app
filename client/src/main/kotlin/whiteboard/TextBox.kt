@@ -6,8 +6,13 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.input.pointer.PointerIcon
+import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import cs346.whiteboard.client.components.textSelectionColors
@@ -34,6 +39,7 @@ class TextBox(override var coordinate: MutableState<Offset>, override var size: 
             OutlinedTextField(
                 value = text.value,
                 onValueChange = { text.value = it },
+                enabled = isFocused.value,
                 modifier = modifier,
                 textStyle = Typography.subtitle1,
                 keyboardOptions = KeyboardOptions(

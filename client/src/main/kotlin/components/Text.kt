@@ -1,11 +1,18 @@
 package cs346.whiteboard.client.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
 
 @Composable
@@ -17,12 +24,15 @@ fun TitleText(text: String) {
 }
 
 @Composable
-fun CursorUserNameText(username: String, color: Color) {
-    Text(
-        text = username,
-        color = color,
-        style = Typography.subtitle2
-    )
+fun CursorUserNameText(username: String, color: Color, modifier: Modifier) {
+    Box(modifier.clip(Shapes.small).background(color)) {
+        Text(
+            text = username,
+            modifier = Modifier.padding(5.dp),
+            color = Color.White,
+            style = Typography.subtitle2
+        )
+    }
 }
 
 @Composable

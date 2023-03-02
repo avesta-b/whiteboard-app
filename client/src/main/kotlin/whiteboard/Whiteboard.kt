@@ -8,6 +8,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.toSize
 
+object WhiteboardLayerZIndices {
+    const val background: Float = 0f
+    const val selectionBox: Float = 1f
+    const val queryBox: Float = 2f
+    const val cursors: Float = 3f
+}
+
+
 @Composable
 fun Whiteboard(
     whiteboardController: WhiteboardController,
@@ -42,7 +50,10 @@ fun Whiteboard(
 
     ) {
         // Background
-        Background(modifier, whiteboardController)
+        Background(whiteboardController)
+
+        // Cursors
+        Cursors(whiteboardController)
 
         // Components
         whiteboardController.components.forEach { (_, component) ->

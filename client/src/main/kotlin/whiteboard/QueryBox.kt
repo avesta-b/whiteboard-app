@@ -23,6 +23,6 @@ fun QueryBox(controller: WhiteboardController, data: QueryBoxData) {
             .offset(coordinate.x.toDp(), coordinate.y.toDp())
             .size(size.width.toDp(),size.height.toDp())
             .background(Colors.queryBoxColor)
-            .zIndex(2f)
+            .zIndex(WhiteboardLayerZIndices.queryBox)
     )
 }

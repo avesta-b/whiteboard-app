@@ -21,7 +21,11 @@ import cs346.whiteboard.client.components.TextFieldWithButton
 // TODO: replace TestView
 
 enum class TestUiState {
-    CURSOR_DEMO, DRAW_DEMO, MENU
+    DRAW, MENU
+}
+
+private fun getWhiteboardButtonText(roomId: String): String {
+    return if (roomId.isEmpty()) "Draw alone" else "Draw with friends"
 }
 
 @Composable
@@ -38,40 +42,25 @@ fun TestView(modifier: Modifier, onSignOut: () -> Unit) {
                             PrimaryButton(Modifier.size(280.dp, 50.dp), "Sign out", true) {
                                 onSignOut()
                             }
-                            PrimaryButton(Modifier.size(280.dp, 50.dp), "Draw", true) {
-                                testUiState = TestUiState.DRAW_DEMO
-                            }
-
                             TextFieldWithButton(
-                                text=roomId,
-                                buttonText = "Connect to a room",
+                                text = roomId,
+                                buttonText = getWhiteboardButtonText(roomId.value.text),
                                 modifier = Modifier.size(280.dp, 50.dp),
-                                onClick = { testUiState = TestUiState.CURSOR_DEMO },
+                                enabled = true,
+                                onClick = { testUiState = TestUiState.DRAW },
                                 placeholder = "Enter a room ID to connect to"
                             )
                         }
                     }
                 }
-                TestUiState.DRAW_DEMO -> {
+                TestUiState.DRAW -> {
                     Column(modifier = modifier, horizontalAlignment = Alignment.Start){
                         IconButton(onClick = {
                             testUiState = TestUiState.MENU
                         }) {
                             Icon(Icons.Filled.ArrowBack, "back")
                         }
-                        WhiteboardView(modifier)
-                    }
-                }
-                TestUiState.CURSOR_DEMO -> {
-                    Column(modifier = modifier, horizontalAlignment = Alignment.Start){
-                        IconButton(onClick = {
-                            testUiState = TestUiState.MENU
-                            roomId.value = TextFieldValue("")
-                        }) {
-                            Icon(Icons.Filled.ArrowBack, "back")
-                        }
-                        // Cursor demo view here
-                        CursorView(modifier, roomId.value.text)
+                        WhiteboardView(modifier, roomId.value.text)
                     }
                 }
             }
