@@ -4,10 +4,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerInputChange
+import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.overlap
-import kotlin.math.absoluteValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
-class WhiteboardController {
+class WhiteboardController(private val roomId: String, private val coroutineScope: CoroutineScope) {
 
     internal val components = mutableStateMapOf<String, Component>()
     internal var currentTool by mutableStateOf(WhiteboardToolbarOptions.SELECT)
@@ -16,10 +20,23 @@ class WhiteboardController {
     internal var whiteboardSize by mutableStateOf(Size.Zero)
     internal var queryBoxController by mutableStateOf(QueryBoxController())
     internal var selectionBoxController by mutableStateOf(SelectionBoxController())
+    internal var cursorsController by mutableStateOf(CursorsController(
+        UserManager.getUsername() ?: "default_user",
+        coroutineScope,
+        roomId
+    ))
     private var lastComponentId = ""
     private var currentDepth = 0f
     private var isDraggingSelectionBox = false
     private var isResizingSelectionBox = false
+
+    init {
+        snapshotFlow { currentTool }
+            .onEach {
+                cursorsController.currentCursor = it.cursorType()
+            }
+            .launchIn(coroutineScope)
+    }
 
     fun viewToWhiteboardCoordinate(point: Offset): Offset {
         val zoomOrigin = Offset(whiteboardSize.width / 2, whiteboardSize.height / 2)
@@ -84,6 +101,10 @@ class WhiteboardController {
                 components[path.uuid] = path
                 lastComponentId = path.uuid
             }
+            WhiteboardToolbarOptions.PAN -> {
+                cursorsController.currentCursor = CursorType.GRAB
+                selectionBoxController.clearSelectionBox()
+            }
             else -> {
                 selectionBoxController.clearSelectionBox()
                 return
@@ -127,6 +148,9 @@ class WhiteboardController {
                     selectionBoxController.selectedComponents(componentsInQueryBox, minCoordinate, maxCoordinate)
                 }
                 queryBoxController.clearQueryBox()
+            }
+            WhiteboardToolbarOptions.PAN -> {
+                cursorsController.currentCursor = CursorType.HAND
             }
             else -> { return }
         }

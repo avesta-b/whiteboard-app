@@ -1,19 +1,26 @@
 package cs346.whiteboard.client.whiteboard
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.backgroundDotColor
 import java.lang.Float.min
 
 @Composable
-fun Background(modifier: Modifier, controller: WhiteboardController) {
+fun Background(controller: WhiteboardController) {
     val center = remember { controller.viewToWhiteboardCoordinate(Offset(controller.whiteboardSize.width / 2, controller.whiteboardSize.height / 2)).plus(controller.whiteboardOffset) }
-    Canvas(modifier) {
+    Canvas(Modifier
+        .fillMaxSize()
+        .background(Colors.background)
+        .zIndex(WhiteboardLayerZIndices.background)
+    ) {
         val minPoint = controller.viewToWhiteboardCoordinate(Offset(0f, 0f))
         val maxPoint = controller.viewToWhiteboardCoordinate(Offset(size.width, size.height))
         val radius = 3f * controller.whiteboardZoom

@@ -65,13 +65,14 @@ fun TextFieldWithButton(
     buttonText: String,
     modifier: Modifier,
     placeholder: String,
+    enabled: Boolean,
     onClick: () -> Unit) {
     // TODO: separate this
     Column {
         Button(
             onClick = onClick,
             modifier = modifier,
-            enabled = text.value.text.isNotEmpty(),
+            enabled = enabled,
             shape = Shapes.small,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = Colors.primary,

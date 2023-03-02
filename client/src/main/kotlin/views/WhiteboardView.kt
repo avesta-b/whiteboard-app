@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -15,13 +16,14 @@ import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.WhiteboardToolbar
 
 @Composable
-fun WhiteboardView(modifier: Modifier) {
-    val whiteboardController = remember { WhiteboardController() }
+fun WhiteboardView(modifier: Modifier, roomId: String) {
+    val coroutineScope = rememberCoroutineScope()
+    val whiteboardController = remember { WhiteboardController(roomId, coroutineScope) }
 
     Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
         Whiteboard(
             whiteboardController = whiteboardController,
-            modifier = modifier
+            modifier = modifier,
         )
         WhiteboardToolbar(
             whiteboardController = whiteboardController,
