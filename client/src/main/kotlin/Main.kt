@@ -71,6 +71,20 @@ fun main() = application {
                 Item("Copy", onClick = {}, shortcut = KeyShortcut(Key.C, ctrl = !isMacOS(), meta = isMacOS()))
                 Item("Paste", onClick = {}, shortcut = KeyShortcut(Key.V, ctrl = !isMacOS(), meta = isMacOS()))
             }
+            Menu("Tools", mnemonic = 'T') {
+                Item("Zoom in", onClick = {})
+                Item("Zoom out", onClick = {})
+                Separator()
+                Item("Select", onClick = {})
+                Item("Pan", onClick = {})
+                Separator()
+                Item("Pen", onClick = {})
+                Item("Square", onClick = {})
+                Item("Circle", onClick = {})
+                Item("Text", onClick = {})
+                Separator()
+                Item("Eraser", onClick = {})
+            }
             Menu("Window", mnemonic = 'V'){
                 Item("Minimize",
                     onClick = {
