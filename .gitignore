@@ -10,3 +10,6 @@ bin/
 # Ignore Gradle build output directory
 build
 .whiteboard/
+# Ignore .db in all directories and subdirectories and those subdirectories
+# themselves
+*.db
