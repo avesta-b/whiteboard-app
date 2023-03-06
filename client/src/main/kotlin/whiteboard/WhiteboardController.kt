@@ -105,6 +105,10 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 cursorsController.currentCursor = CursorType.GRAB
                 selectionBoxController.clearSelectionBox()
             }
+            WhiteboardToolbarOptions.ERASE -> {
+                selectionBoxController.clearSelectionBox()
+                components.remove(getComponentAtPoint(whiteboardPoint)?.uuid)
+            }
             else -> {
                 selectionBoxController.clearSelectionBox()
                 return
@@ -132,6 +136,9 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     if (it !is Path) return
                     it.insertPoint(whiteboardPoint)
                 }
+            }
+            WhiteboardToolbarOptions.ERASE -> {
+                components.remove(getComponentAtPoint(whiteboardPoint)?.uuid)
             }
             else -> { return }
         }
@@ -189,6 +196,9 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 components[textBox.uuid] = textBox
                 selectionBoxController.selectedSingleComponent(textBox)
                 currentTool = WhiteboardToolbarOptions.SELECT
+            }
+            WhiteboardToolbarOptions.ERASE -> {
+                components.remove(getComponentAtPoint(whiteboardPoint)?.uuid)
             }
             else -> {
                 return

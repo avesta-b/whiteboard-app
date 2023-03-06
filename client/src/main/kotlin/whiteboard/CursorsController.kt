@@ -50,6 +50,10 @@ enum class CursorType {
     },
     TEXTFIELD {
         override fun fileName(): String = "textfield.png"
+    },
+    ERASER {
+        override fun fileName(): String = "eraser.png"
+        override fun point(): Point = Point(0, 18)
     };
 
     abstract fun fileName(): String

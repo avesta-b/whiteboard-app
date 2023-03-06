@@ -49,6 +49,10 @@ enum class WhiteboardToolbarOptions {
     TEXT {
         override fun icon() = Icons.Outlined.TextFields
         override fun cursorType() = CursorType.TEXTFIELD
+    },
+    ERASE {
+        override fun icon() = Icons.Outlined.Delete // TODO: Use a more relevant icon... may require custom ImageVector
+        override fun cursorType() = CursorType.ERASER
     };
 
     abstract fun icon(): ImageVector
