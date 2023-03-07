@@ -13,7 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import java.util.*
 
 @SpringBootTest
-class JWTUtilTest {
+class SerializedJWTUtilTest {
     @Autowired
     private lateinit var jwtUtil: JWTUtil
 

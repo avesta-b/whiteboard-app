@@ -6,8 +6,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerInputChange
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.overlap
+import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -20,11 +20,16 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     internal var whiteboardSize by mutableStateOf(Size.Zero)
     internal var queryBoxController by mutableStateOf(QueryBoxController())
     internal var selectionBoxController by mutableStateOf(SelectionBoxController())
-    internal var cursorsController by mutableStateOf(CursorsController(
-        UserManager.getUsername() ?: "default_user",
-        coroutineScope,
-        roomId
-    ))
+
+    private val webSocketEventHandler = WebSocketEventHandler(
+        username = UserManager.getUsername() ?: "default_user",
+        roomId = roomId,
+        coroutineScope = coroutineScope
+    )
+
+    internal var cursorsController by mutableStateOf(webSocketEventHandler.cursorsController)
+    internal var userLobbyController by mutableStateOf(webSocketEventHandler.userLobbyController)
+
     private var lastComponentId = ""
     private var currentDepth = 0f
     private var isDraggingSelectionBox = false

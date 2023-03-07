@@ -7,7 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 
 object BaseUrlProvider {
-    const val HOST = "167.172.2.112"
+    const val HOST = "lobster-app-laueo.ondigitalocean.app"
 }
 
 object WhiteboardService {
@@ -26,7 +26,7 @@ object WhiteboardService {
         val response = client.request() {
             method = HttpMethod.Post
             url {
-                protocol = URLProtocol.HTTP
+                protocol = URLProtocol.HTTPS
                 host = BaseUrlProvider.HOST
                 path(path)
             }

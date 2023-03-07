@@ -7,6 +7,6 @@ data class LoginCredentialsRequest(val username: String, val password: String) {
     constructor() : this("", "")
 }
 @Serializable
-data class LoginCredentialsResponse(val jwtToken: String) {
+data class SerializedJWT(val jwtToken: String) {
     constructor() : this("")
 }
