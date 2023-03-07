@@ -4,7 +4,7 @@ import cs346.whiteboard.service.models.UserLogin
 import cs346.whiteboard.service.repositories.UserLoginRepository
 import cs346.whiteboard.service.util.JWTUtil
 import cs346.whiteboard.shared.jsonmodels.LoginCredentialsRequest
-import cs346.whiteboard.shared.jsonmodels.LoginCredentialsResponse
+import cs346.whiteboard.shared.jsonmodels.SerializedJWT
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
-import org.springframework.web.client.HttpClientErrorException.BadRequest
 import org.springframework.web.server.ResponseStatusException
 
 
@@ -38,7 +37,7 @@ class AuthServiceController {
     // https://stackoverflow.com/questions/26587082/http-status-code-for-username-already-exists-when-registering-new-account
     // We return ERROR CODE 409 (CONFLICT) in the case a user already exists
     @PostMapping("/register")
-    fun registerHandler(@RequestBody registrationRequestBody: LoginCredentialsRequest): LoginCredentialsResponse {
+    fun registerHandler(@RequestBody registrationRequestBody: LoginCredentialsRequest): SerializedJWT {
         if (registrationRequestBody.username.isEmpty() || registrationRequestBody.password.isEmpty()) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot use empty username or password")
         }
@@ -53,11 +52,11 @@ class AuthServiceController {
         )
         userLoginRepository.save(userInfo)
         val token = jwtUtil.generateToken(userInfo.username)
-        return LoginCredentialsResponse(jwtToken = token)
+        return SerializedJWT(jwtToken = token)
     }
 
     @PostMapping("/login")
-    fun loginHandler(@RequestBody loginRequestBody: LoginCredentialsRequest): LoginCredentialsResponse {
+    fun loginHandler(@RequestBody loginRequestBody: LoginCredentialsRequest): SerializedJWT {
         if (loginRequestBody.username.isEmpty() || loginRequestBody.password.isEmpty()) {
             throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Missing credentials")
         }
@@ -79,7 +78,7 @@ class AuthServiceController {
         }
 
         val token = jwtUtil.generateToken(loginRequestBody.username)
-        return LoginCredentialsResponse(jwtToken = token)
+        return SerializedJWT(jwtToken = token)
     }
 
 }

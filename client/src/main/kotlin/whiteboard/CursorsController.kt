@@ -8,24 +8,13 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
-import cs346.whiteboard.client.BaseUrlProvider
 import cs346.whiteboard.client.helpers.getResource
-import cs346.whiteboard.shared.jsonmodels.CursorPosition
-import cs346.whiteboard.shared.jsonmodels.CursorPositionUpdate
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.launch
-import org.hildan.krossbow.stomp.StompClient
-import org.hildan.krossbow.stomp.StompSession
-import org.hildan.krossbow.stomp.conversions.kxserialization.convertAndSend
-import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConversions
-import org.hildan.krossbow.stomp.conversions.kxserialization.subscribe
-import org.hildan.krossbow.stomp.use
-import org.hildan.krossbow.websocket.ktor.KtorWebSocketClient
+import cs346.whiteboard.client.websocket.WebSocketEventHandler
+import cs346.whiteboard.shared.jsonmodels.Position
 import java.awt.Cursor
 import java.awt.Point
 import java.awt.Toolkit
-import java.io.File
+import java.lang.ref.WeakReference
 import javax.imageio.ImageIO
 
 enum class CursorType {
@@ -64,63 +53,42 @@ enum class CursorType {
 
 class CursorsController(
     private val username: String,
-    private val coroutineScope: CoroutineScope,
-    private val roomId: String
-    ) {
-    var ownCursorPosition: Offset = Offset.Zero
+    private val handler: WeakReference<WebSocketEventHandler>
+) {
+
+    private var ownCursorPosition: Offset = Offset.Zero
     val friendCursorPositions = mutableStateMapOf<String, Animatable<Offset, AnimationVector2D>>()
 
-    private val baseUrl: String = "ws://" + BaseUrlProvider.HOST + "/ws"
-    private val sendPath: String = "/app/whiteboard/${roomId}"
-    private val subscribePath: String = "/topic/whiteboard/${roomId}"
-
-    private var session: StompSession? = null
+    private val sendSuffix: String = ".updateCursor"
 
     var currentCursor by mutableStateOf(CursorType.POINTER)
 
-    init {
-        coroutineScope.launch {
-            connect()
+    suspend fun handleCursorMessage(newOffset: Offset, userIdentifier: String) {
+        // If the message was about the user's own cursor, we ignore
+        if (userIdentifier == username) return
+
+        if (!friendCursorPositions.containsKey(userIdentifier)) {
+            friendCursorPositions[userIdentifier] =
+                Animatable(newOffset, Offset.VectorConverter)
+        } else {
+            friendCursorPositions[userIdentifier]?.animateTo(newOffset)
         }
     }
 
-    private suspend fun connect() {
-        if (roomId.isEmpty()) return
-
-        session = StompClient(KtorWebSocketClient()).connect(baseUrl)
-
-        session?.withJsonConversions()?.let {
-            it.convertAndSend(sendPath,
-                CursorPositionUpdate(username, CursorPosition(ownCursorPosition.x, ownCursorPosition.y)),
-                CursorPositionUpdate.serializer())
-
-            it.use { s->
-                val messages: Flow<CursorPositionUpdate> = s.subscribe(subscribePath,
-                    CursorPositionUpdate.serializer())
-
-                messages.collect { msg ->
-                    if (msg.userIdentifier != username) {
-                        coroutineScope.launch {
-                            val newOffset = Offset(msg.userCursorPosition.x, msg.userCursorPosition.y)
-                            if (!friendCursorPositions.containsKey(msg.userIdentifier)) {
-                                friendCursorPositions[msg.userIdentifier] =
-                                    Animatable(newOffset, Offset.VectorConverter)
-                            } else {
-                                friendCursorPositions[msg.userIdentifier]?.animateTo(newOffset)
-                            }
-                        }
-                    }
-                }
-            }
+    fun handleUsersUpdate(usersUpdate: Set<String>) {
+        friendCursorPositions.keys.removeAll { it !in usersUpdate }
+        usersUpdate.forEach { username ->
+            if (username == this.username || friendCursorPositions.containsKey(username)) return@forEach
+                friendCursorPositions[username] = Animatable(Offset(0f, 0f), Offset.VectorConverter)
         }
     }
 
-    suspend fun updateCursor(newCoordinate: Offset) {
+
+    fun updateCursor(newCoordinate: Offset) {
         ownCursorPosition = newCoordinate
-        session?.withJsonConversions()?.let {
-            it.convertAndSend(sendPath,
-                CursorPositionUpdate(username, CursorPosition(ownCursorPosition.x, ownCursorPosition.y)),
-                CursorPositionUpdate.serializer())
+        handler.get()?.let {
+            val body = Position(ownCursorPosition.x, ownCursorPosition.y)
+            it.send(sendSuffix, body = body, serializationStrategy = Position.serializer())
         }
     }
 

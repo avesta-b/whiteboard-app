@@ -6,4 +6,4 @@ docker build -t spring-boot-app .
 
 echo "Built the docker container successfully. Proceeding to run the container..."
 
-docker run -p 80:8080 spring-boot-app
+docker run -p 80:80 spring-boot-app

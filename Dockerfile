@@ -4,7 +4,7 @@ WORKDIR /home/gradle/src
 RUN ./gradlew service:buildNeeded
 
 FROM openjdk:17-jdk-slim
-EXPOSE 8080
+EXPOSE 80
 RUN mkdir /app
-COPY --from=builder /home/gradle/src/service/build/libs/*.jar /app/spring-boot-application.jar
+COPY --from=builder /home/gradle/src/service/build/libs/service-1.0.jar /app/spring-boot-application.jar
 ENTRYPOINT ["java","-jar","/app/spring-boot-application.jar"]
