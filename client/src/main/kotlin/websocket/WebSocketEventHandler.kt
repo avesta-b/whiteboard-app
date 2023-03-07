@@ -12,14 +12,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationStrategy
+import okhttp3.OkHttpClient
 import org.hildan.krossbow.stomp.StompClient
 import org.hildan.krossbow.stomp.StompSession
 import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConversions
 import org.hildan.krossbow.stomp.headers.StompSendHeaders
 import org.hildan.krossbow.stomp.headers.StompSubscribeHeaders
 import org.hildan.krossbow.stomp.use
-import org.hildan.krossbow.websocket.ktor.KtorWebSocketClient
+import org.hildan.krossbow.websocket.okhttp.OkHttpWebSocketClient
 import java.lang.ref.WeakReference
+import java.util.concurrent.TimeUnit
 
 /// Routes events to appropriate controllers
 /// Provides simple API for controllers to send events to
@@ -28,7 +30,7 @@ class WebSocketEventHandler(private val username: String,
                             private val coroutineScope: CoroutineScope,
                             private val roomId: String) {
 
-    private val baseUrl: String = "ws://" + BaseUrlProvider.HOST + "/ws"
+    private val baseUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
     private val subscribePath: String = "/topic/whiteboard/${roomId}"
     private var session: StompSession? = null
 
@@ -52,7 +54,16 @@ class WebSocketEventHandler(private val username: String,
             customHeaders = headers
         )
 
-        session = StompClient(KtorWebSocketClient()).connect(baseUrl)
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(15, TimeUnit.SECONDS)
+            .pingInterval(10L, TimeUnit.SECONDS)
+            .build()
+
+
+        val wsClient = OkHttpWebSocketClient(okHttpClient)
+        session = StompClient(wsClient).connect(baseUrl)
 
         // UserLobbyController is responsible for adding ourselves to a room
         userLobbyController.addSelfToLobby()
