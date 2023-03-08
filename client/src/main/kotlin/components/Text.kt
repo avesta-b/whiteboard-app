@@ -7,6 +7,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -24,6 +25,18 @@ fun TitleText(text: String) {
 }
 
 @Composable
+fun TooltipText(text: String, modifier: Modifier = Modifier) {
+    Box(modifier.clip(Shapes.small).background(Colors.primary)) {
+        Text(
+            text = text,
+            modifier = Modifier.padding(5.dp),
+            color = Color.White,
+            style = Typography.subtitle2
+        )
+    }
+}
+
+@Composable
 fun CursorUserNameText(username: String, color: Color, modifier: Modifier) {
     Box(modifier.clip(Shapes.small).background(color)) {
         Text(
@@ -33,6 +46,23 @@ fun CursorUserNameText(username: String, color: Color, modifier: Modifier) {
             style = Typography.subtitle2
         )
     }
+}
+
+@Composable
+fun UserIconText(character: String, color: Color) {
+    Text(
+        modifier = Modifier
+            .padding(16.dp)
+            .drawBehind {
+                drawCircle(
+                    color = color,
+                    radius = this.size.maxDimension
+                )
+            },
+        text = character,
+        color = Colors.background,
+        style = Typography.subtitle2
+    )
 }
 
 @Composable
@@ -71,11 +101,12 @@ fun SecondarySubtitleText(text: String) {
 }
 
 @Composable
-fun PrimarySubtitleText(text: String) {
+fun PrimarySubtitleText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
         color = Colors.primary,
-        style = Typography.subtitle2
+        style = Typography.subtitle2,
+        modifier = modifier
     )
 }
 

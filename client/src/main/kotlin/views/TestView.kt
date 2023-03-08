@@ -54,14 +54,9 @@ fun TestView(modifier: Modifier, onSignOut: () -> Unit) {
                     }
                 }
                 TestUiState.DRAW -> {
-                    Column(modifier = modifier, horizontalAlignment = Alignment.Start){
-                        IconButton(onClick = {
-                            testUiState = TestUiState.MENU
-                        }) {
-                            Icon(Icons.Filled.ArrowBack, "back")
-                        }
-                        WhiteboardView(modifier, roomId.value.text)
-                    }
+                    WhiteboardView(modifier, roomId.value.text, onExit = {
+                        testUiState = TestUiState.MENU
+                    })
                 }
             }
         }
