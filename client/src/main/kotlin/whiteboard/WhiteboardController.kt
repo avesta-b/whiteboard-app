@@ -11,7 +11,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-class WhiteboardController(private val roomId: String, private val coroutineScope: CoroutineScope) {
+class WhiteboardController(private val roomId: String, private val coroutineScope: CoroutineScope, private val onExit: () -> Unit) {
 
     internal val components = mutableStateMapOf<String, Component>()
     internal var currentTool by mutableStateOf(WhiteboardToolbarOptions.SELECT)
@@ -43,6 +43,29 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             .launchIn(coroutineScope)
     }
 
+    fun exitWhiteboard() {
+        onExit()
+    }
+
+    fun getWhiteboardTitle(): String {
+        if (roomId.isNotEmpty()) return roomId
+        return "Whiteboard"
+    }
+
+    fun teleportToUser(user: String) {
+        cursorsController.friendCursorPositions[user]?.let {
+            val userPosition = it.value
+            val center = Offset(whiteboardSize.width / 2, whiteboardSize.height / 2)
+            val newOffset = center.minus(userPosition)
+            whiteboardZoom = 1f
+            whiteboardOffset = newOffset
+        }
+    }
+
+    // TODO: move components logic into its own controller
+
+
+    // MARK:
     fun viewToWhiteboardCoordinate(point: Offset): Offset {
         val zoomOrigin = Offset(whiteboardSize.width / 2, whiteboardSize.height / 2)
         return Offset(

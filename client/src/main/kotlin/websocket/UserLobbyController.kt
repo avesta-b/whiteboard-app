@@ -9,9 +9,6 @@ class UserLobbyController(
     private val username: String,
     private val handler: WeakReference<WebSocketEventHandler>
 ) {
-
-    // Using a mutableStateMap because set doesnt exist. Also using a char because it's the smallest size primitive
-    // I think
     var usersInLobby = mutableStateListOf<String>()
         private set
     private val sendSuffix: String = ".addUser"

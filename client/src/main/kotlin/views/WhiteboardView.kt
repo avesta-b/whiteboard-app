@@ -16,18 +16,11 @@ import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.WhiteboardToolbar
 
 @Composable
-fun WhiteboardView(modifier: Modifier, roomId: String) {
+fun WhiteboardView(modifier: Modifier, roomId: String, onExit: () -> Unit) {
     val coroutineScope = rememberCoroutineScope()
-    val whiteboardController = remember { WhiteboardController(roomId, coroutineScope) }
-
-    Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
-        Whiteboard(
-            whiteboardController = whiteboardController,
-            modifier = modifier,
-        )
-        WhiteboardToolbar(
-            whiteboardController = whiteboardController,
-            modifier = Modifier.size(500.dp, 85.dp).offset(0.dp, (-32).dp).background(Colors.background)
-        )
-    }
+    val whiteboardController = remember { WhiteboardController(roomId, coroutineScope, onExit) }
+    Whiteboard(
+        whiteboardController = whiteboardController,
+        modifier = modifier,
+    )
 }
