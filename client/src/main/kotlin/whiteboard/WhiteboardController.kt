@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerInputChange
 import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import kotlinx.coroutines.CoroutineScope
@@ -35,7 +36,10 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     private var isDraggingSelectionBox = false
     private var isResizingSelectionBox = false
 
+    internal val clipboard = Clipboard
+
     init {
+        CommandFactory.whiteboardController = this
         snapshotFlow { currentTool }
             .onEach {
                 cursorsController.currentCursor = it.cursorType()
@@ -98,6 +102,33 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         }
     }
 
+    fun cutSelected() {
+        copySelected()
+        deleteSelected()
+    }
+
+    fun copySelected() {
+        selectionBoxController.selectionBoxData?.let {
+            clipboard.copy(it.selectedComponents)
+        }
+    }
+
+    fun pasteFromClipboard() {
+        val selectionData = clipboard.paste()
+        selectionData.forEach {
+            it.depth = preIncrementCurrentDepth()
+            components[it.uuid] = it
+        }
+        selectionBoxController.selectedComponents(selectionData)
+    }
+
+    fun deleteSelected() {
+        selectionBoxController.selectionBoxData?.selectedComponents?.forEach {
+            components.remove(it.uuid)
+        }
+        selectionBoxController.clearSelectionBox()
+    }
+
     private fun preIncrementCurrentDepth(): Float {
         currentDepth += Float.MIN_VALUE
         return currentDepth
@@ -131,7 +162,6 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             }
             WhiteboardToolbarOptions.PAN -> {
                 cursorsController.currentCursor = CursorType.GRAB
-                selectionBoxController.clearSelectionBox()
             }
             WhiteboardToolbarOptions.ERASE -> {
                 selectionBoxController.clearSelectionBox()

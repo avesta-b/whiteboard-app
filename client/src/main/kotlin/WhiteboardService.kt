@@ -23,7 +23,7 @@ object WhiteboardService {
     }
 
     suspend fun postRequest(path: String, body: String): String {
-        val response = client.request() {
+        val response = client.request {
             method = HttpMethod.Post
             url {
                 protocol = URLProtocol.HTTPS
