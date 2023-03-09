@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.ui.Modifier
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
@@ -31,5 +31,13 @@ class Shape(override var coordinate: MutableState<Offset>, override var size: Mu
                 )
             }
         }
+    }
+
+    override fun clone(): Component {
+        return Shape(
+            mutableStateOf(Offset(coordinate.value.x, coordinate.value.y)),
+            mutableStateOf(size.value),
+            depth, type
+        )
     }
 }

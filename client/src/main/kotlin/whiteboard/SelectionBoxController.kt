@@ -27,7 +27,7 @@ enum class ResizeNode {
 
 data class SelectionBoxData(
     val selectedComponents: List<Component>,
-    val coordinate: Offset,
+    var coordinate: Offset,
     val size: Size,
     val resizeNodeAnchor: ResizeNode?,
     val isResizable: Boolean,
@@ -191,6 +191,20 @@ class SelectionBoxController {
         if (components.size == 1) {
             components.first().isFocused.value = true
         }
+    }
+
+    fun selectedComponents(components: List<Component>) {
+        var minCoordinate = Offset(
+            components.minOf { it.coordinate.value.x },
+            components.minOf { it.coordinate.value.y }
+        )
+
+        var maxCoordinate = Offset(
+            components.maxOf { it.coordinate.value.x + it.size.value.width },
+            components.maxOf { it.coordinate.value.y + it.size.value.height }
+        )
+
+        selectedComponents(components, minCoordinate, maxCoordinate)
     }
 
     fun clearSelectionBox() {

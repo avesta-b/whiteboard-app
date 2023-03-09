@@ -1,20 +1,24 @@
 package cs346.whiteboard.client.whiteboard
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.toSize
-import cs346.whiteboard.client.constants.Colors
-import java.security.KeyStore.Entry.Attribute
+import cs346.whiteboard.client.commands.onKeyEventHandler
+import cs346.whiteboard.client.commands.onScrollEventHandler
 
 object WhiteboardLayerZIndices {
     const val background: Float = 0f
@@ -25,13 +29,13 @@ object WhiteboardLayerZIndices {
     const val topBar: Float = 4f
 }
 
-
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun Whiteboard(
     whiteboardController: WhiteboardController,
     modifier: Modifier
 ) {
-    Box(modifier = modifier) {
+    Box(modifier = modifier.onPointerEvent(PointerEventType.Scroll) { onScrollEventHandler(it) }) {
         Box(modifier = modifier
             // handle drag gestures
             .pointerInput(Unit) {
@@ -58,7 +62,6 @@ fun Whiteboard(
             .onGloballyPositioned {
                 whiteboardController.whiteboardSize = it.size.toSize()
             }
-
         ) {
             // Background
             Background(whiteboardController)

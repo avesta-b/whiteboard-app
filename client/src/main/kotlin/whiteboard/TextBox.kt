@@ -6,13 +6,8 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.input.pointer.PointerIcon
-import androidx.compose.ui.input.pointer.pointerHoverIcon
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import cs346.whiteboard.client.components.textSelectionColors
@@ -22,7 +17,7 @@ import cs346.whiteboard.client.constants.Typography
 
 class TextBox(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>, override var depth: Float) : Component() {
 
-    val text = mutableStateOf(TextFieldValue(""))
+    var text = mutableStateOf(TextFieldValue(""))
 
     @Composable
     override fun drawComposableComponent(controller: WhiteboardController) {
@@ -59,5 +54,15 @@ class TextBox(override var coordinate: MutableState<Offset>, override var size: 
                     disabledLabelColor = Colors.secondaryVariant),
             )
         }
+    }
+
+    override fun clone(): Component {
+        val component = TextBox(
+            mutableStateOf(Offset(coordinate.value.x, coordinate.value.y)),
+            mutableStateOf(size.value),
+            depth
+        )
+        component.text = mutableStateOf(text.value)
+        return component
     }
 }

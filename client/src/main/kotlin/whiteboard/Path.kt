@@ -4,13 +4,18 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 
-class Path(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>, override var depth: Float) : Component() {
+class Path(
+    override var coordinate: MutableState<Offset>,
+    override var size: MutableState<Size>,
+    override var depth: Float
+) : Component() {
 
     private var points = mutableStateListOf<Offset>()
 
@@ -29,6 +34,20 @@ class Path(override var coordinate: MutableState<Offset>, override var size: Mut
                 )
             )
         }
+    }
+
+    override fun clone(): Component {
+        val component = Path(
+            mutableStateOf(Offset(coordinate.value.x, coordinate.value.y)),
+            mutableStateOf(size.value),
+            depth
+        )
+
+        points.forEach {
+            component.points.add(it)
+        }
+
+        return component
     }
 
     override fun isResizeable(): Boolean {
@@ -56,14 +75,17 @@ class Path(override var coordinate: MutableState<Offset>, override var size: Mut
                         anchorPoint.x + (points[i].x - anchorPoint.x) * resizeMultiplier,
                         anchorPoint.y + (points[i].y - anchorPoint.y) * resizeMultiplier
                     )
+
                     ResizeNode.TOP_RIGHT -> Offset(
                         anchorPoint.x - (anchorPoint.x - points[i].x) * resizeMultiplier,
                         anchorPoint.y + (points[i].y - anchorPoint.y) * resizeMultiplier
                     )
+
                     ResizeNode.BOTTOM_LEFT -> Offset(
                         anchorPoint.x + (points[i].x - anchorPoint.x) * resizeMultiplier,
                         anchorPoint.y - (anchorPoint.y - points[i].y) * resizeMultiplier
                     )
+
                     ResizeNode.BOTTOM_RIGHT -> Offset(
                         anchorPoint.x - (anchorPoint.x - points[i].x) * resizeMultiplier,
                         anchorPoint.y - (anchorPoint.y - points[i].y) * resizeMultiplier
@@ -109,11 +131,13 @@ class Path(override var coordinate: MutableState<Offset>, override var size: Mut
         if (points.isEmpty()) return Path()
         // Start at the first point
         val path = Path()
-        val firstPoint = controller.whiteboardToViewCoordinate(points.first()).minus(controller.whiteboardToViewCoordinate(coordinate.value))
+        val firstPoint = controller.whiteboardToViewCoordinate(points.first())
+            .minus(controller.whiteboardToViewCoordinate(coordinate.value))
         path.moveTo(firstPoint.x, firstPoint.y)
 
         for (i in 1 until points.size) {
-            val curPoint = controller.whiteboardToViewCoordinate(points[i]).minus(controller.whiteboardToViewCoordinate(coordinate.value))
+            val curPoint = controller.whiteboardToViewCoordinate(points[i])
+                .minus(controller.whiteboardToViewCoordinate(coordinate.value))
             path.lineTo(curPoint.x, curPoint.y)
         }
         return path
