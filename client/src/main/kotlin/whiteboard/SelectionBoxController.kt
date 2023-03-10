@@ -144,6 +144,7 @@ class SelectionBoxController {
                     )
                 }
             selectionBoxData = data.copy(coordinate = newCoordinate, size = newSize)
+            //
         }
     }
 

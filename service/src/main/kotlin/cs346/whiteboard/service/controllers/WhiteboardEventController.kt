@@ -2,6 +2,7 @@ package cs346.whiteboard.service.controllers
 
 import com.auth0.jwt.JWT
 import cs346.whiteboard.service.services.UserRoomManager
+import cs346.whiteboard.service.services.WhiteboardStateManager
 import cs346.whiteboard.shared.jsonmodels.*
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.messaging.handler.annotation.DestinationVariable
@@ -11,7 +12,10 @@ import org.springframework.messaging.simp.SimpMessageHeaderAccessor
 import org.springframework.stereotype.Controller
 
 @Controller
-class WhiteboardEventController(@Autowired private val roomManager: UserRoomManager) {
+class WhiteboardEventController(
+    @Autowired private val roomManager: UserRoomManager,
+    @Autowired private val stateManager: WhiteboardStateManager
+) {
 
     @MessageMapping("/whiteboard.updateCursor/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
@@ -41,7 +45,7 @@ class WhiteboardEventController(@Autowired private val roomManager: UserRoomMana
         @DestinationVariable roomId: String,
         userJwt: SerializedJWT,
         headerAccessor: SimpMessageHeaderAccessor
-    ) : WebSocketEvent {
+    ): WebSocketEvent {
         headerAccessor.sessionAttributes?.set("userJwt", userJwt.jwtToken)
         headerAccessor.sessionAttributes?.set("roomId", roomId)
 
@@ -54,4 +58,40 @@ class WhiteboardEventController(@Autowired private val roomManager: UserRoomMana
         return roomManager.makeRoomEvent(roomId)
     }
 
+    @MessageMapping("/whiteboard.getFullState/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun getFullState(
+        @DestinationVariable roomId: String
+    ): WebSocketEvent {
+        return WebSocketEvent(
+            WebSocketEventType.GET_FULL_STATE,
+            getFullState = stateManager.getWhiteboard(roomId) ?: WhiteboardState()
+        )
+    }
+
+    @MessageMapping("/whiteboard.addComponent/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun addComponent(
+        @DestinationVariable roomId: String,
+        componentState: ComponentState
+    ) : WebSocketEvent {
+        stateManager.addComponent(roomId, componentState)
+        return WebSocketEvent(
+            WebSocketEventType.ADD_COMPONENT,
+            addComponent = componentState
+        )
+    }
+
+    @MessageMapping("/whiteboard.deleteComponent/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun deleteComponent(
+        @DestinationVariable roomId: String,
+        deleteComponent: DeleteComponent
+    ) : WebSocketEvent {
+        stateManager.deleteComponent(roomId, deleteComponent)
+        return WebSocketEvent(
+            WebSocketEventType.DELETE_COMPONENT,
+            deleteComponent = deleteComponent
+        )
+    }
 }

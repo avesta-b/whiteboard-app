@@ -54,7 +54,9 @@ fun SelectionBox(controller: WhiteboardController, data: SelectionBoxData) {
                     .requiredSize(resizeNodeSize.width.toDp(), resizeNodeSize.height.toDp())
                     .border(borderWidth, Colors.secondaryVariant, CircleShape)
                     .background(Colors.background, CircleShape)
-                    .pointerHoverIcon(PointerIcon(cursor))
+                    // TODO: this is interfering with cursor updates
+                    // figure out another way to have the hover work
+                    //.pointerHoverIcon(PointerIcon(cursor))
                 )
             }
         }
