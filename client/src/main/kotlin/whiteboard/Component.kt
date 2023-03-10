@@ -12,11 +12,16 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.helpers.toDp
+import cs346.whiteboard.client.helpers.toOffset
+import cs346.whiteboard.client.helpers.toSize
+import cs346.whiteboard.shared.jsonmodels.ComponentState
+import cs346.whiteboard.shared.jsonmodels.ComponentType
+import cs346.whiteboard.shared.jsonmodels.Position
 import java.util.*
 
-abstract class Component {
 
-    internal var uuid: String = UUID.randomUUID().toString()
+abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
+
     var isFocused: MutableState<Boolean> = mutableStateOf(false)
 
     abstract var depth: Float
@@ -24,6 +29,26 @@ abstract class Component {
     abstract var coordinate: MutableState<Offset>
 
     abstract var size: MutableState<Size>
+
+    abstract fun getComponentType(): ComponentType
+
+    open fun toComponentState(): ComponentState {
+        return ComponentState(
+            uuid=uuid,
+            depth=depth,
+            componentType = getComponentType(),
+            size = cs346.whiteboard.shared.jsonmodels.Size(size.value.width, size.value.height),
+            position = Position(coordinate.value.x, coordinate.value.y)
+        )
+    }
+
+    open fun setState(newState: ComponentState) {
+        if (depth != newState.depth) { depth = newState.depth }
+        if (coordinate.value != newState.position.toOffset()) {
+            coordinate.value = newState.position.toOffset()
+        }
+        if (size.value != newState.size.toSize()) { size.value = newState.size.toSize() }
+    }
 
     @Composable
     fun getModifier(controller: WhiteboardController): Modifier {

@@ -11,20 +11,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.pointer.PointerEventType
-import androidx.compose.ui.input.pointer.onPointerEvent
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.toSize
 import cs346.whiteboard.client.commands.onKeyEventHandler
 import cs346.whiteboard.client.commands.onScrollEventHandler
+import androidx.compose.ui.unit.toSize
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 
 object WhiteboardLayerZIndices {
     const val background: Float = 0f
-    const val selectionBox: Float = 1f
-    const val queryBox: Float = 2f
-    const val cursors: Float = 3f
+    const val cursors: Float = 1f
+    const val selectionBox: Float = 2f
+    const val queryBox: Float = 3f
     const val toolbar: Float = 4f
     const val topBar: Float = 4f
 }
@@ -62,6 +63,19 @@ fun Whiteboard(
             .onGloballyPositioned {
                 whiteboardController.whiteboardSize = it.size.toSize()
             }
+            .pointerInput(Unit) {
+                coroutineScope {
+                    while (true) {
+                        val position = awaitPointerEventScope {
+                            awaitPointerEvent(PointerEventPass.Initial).changes.first().position
+                        }
+                        launch {
+                            whiteboardController.cursorsController.updateCursor(whiteboardController.viewToWhiteboardCoordinate(position))
+                        }
+                    }
+                }
+            }
+            .pointerHoverIcon(PointerIcon(whiteboardController.cursorsController.getCurrentCursor()))
         ) {
             // Background
             Background(whiteboardController)

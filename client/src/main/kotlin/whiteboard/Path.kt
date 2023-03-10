@@ -10,14 +10,34 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import cs346.whiteboard.client.helpers.toOffset
+import cs346.whiteboard.shared.jsonmodels.ComponentState
+import cs346.whiteboard.shared.jsonmodels.ComponentType
+import cs346.whiteboard.shared.jsonmodels.Position
+import java.util.*
 
 class Path(
     override var coordinate: MutableState<Offset>,
     override var size: MutableState<Size>,
-    override var depth: Float
-) : Component() {
+    override var depth: Float,
+    uuid: String = UUID.randomUUID().toString()
+) : Component(uuid) {
 
     private var points = mutableStateListOf<Offset>()
+
+    override fun getComponentType(): ComponentType = ComponentType.PATH
+
+    override fun toComponentState(): ComponentState {
+        var res = super.toComponentState()
+        res.path = points.map { Position(it.x, it.y) }
+        return res
+    }
+
+    override fun setState(newState: ComponentState) {
+        super.setState(newState)
+        points.clear()
+        newState.path?.map { it.toOffset() }?.forEach { points.add(it) }
+    }
 
     @Composable
     override fun drawComposableComponent(controller: WhiteboardController) {
@@ -52,7 +72,7 @@ class Path(
 
     override fun isResizeable(): Boolean {
         // A dot is not resizable
-        return !(points.size == 2 && points[0] == points[1])
+        return !(points.size == 1 || points.size == 2 && points[0] == points[1])
     }
 
     override fun move(amount: Offset) {

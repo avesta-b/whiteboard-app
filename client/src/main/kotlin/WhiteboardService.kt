@@ -8,6 +8,7 @@ import io.ktor.http.*
 
 object BaseUrlProvider {
     const val HOST = "lobster-app-laueo.ondigitalocean.app"
+//const val HOST = "localhost"
 }
 
 object WhiteboardService {

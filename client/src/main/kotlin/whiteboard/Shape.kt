@@ -11,12 +11,28 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
+import cs346.whiteboard.shared.jsonmodels.ComponentType
+import java.util.*
 
 enum class ShapeTypes {
     SQUARE, CIRCLE
 }
-class Shape(override var coordinate: MutableState<Offset>, override var size: MutableState<Size>, override var depth: Float, val type: ShapeTypes) :
-    Component() {
+class Shape(
+    override var coordinate: MutableState<Offset>,
+    override var size: MutableState<Size>,
+    override var depth: Float,
+    val type: ShapeTypes,
+    uuid: String = UUID.randomUUID().toString()
+) :
+    Component(uuid) {
+
+    override fun getComponentType(): ComponentType {
+        return when(type) {
+            ShapeTypes.SQUARE -> ComponentType.SQUARE
+            ShapeTypes.CIRCLE -> ComponentType.CIRCLE
+        }
+    }
+
     @Composable
     override fun drawComposableComponent(controller: WhiteboardController) {
         when(type) {

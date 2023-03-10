@@ -3,9 +3,9 @@ package cs346.whiteboard.service.services
 import cs346.whiteboard.shared.jsonmodels.RoomUpdate
 import cs346.whiteboard.shared.jsonmodels.WebSocketEvent
 import cs346.whiteboard.shared.jsonmodels.WebSocketEventType
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class UserRoomManager {
     private var rooms: MutableMap<String, MutableSet<String>> = mutableMapOf()
 
@@ -25,7 +25,7 @@ class UserRoomManager {
     fun makeRoomEvent(roomId: String): WebSocketEvent {
 
         return WebSocketEvent(
-            eventType = WebSocketEventType.ROOM_UPDATE,
+            eventType = WebSocketEventType.UPDATE_ROOM,
             roomUpdate = RoomUpdate(getUsersInRoom(roomId))
         )
     }
