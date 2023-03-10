@@ -1,50 +1,59 @@
 package cs346.whiteboard.client.whiteboard
 
-import androidx.compose.foundation.layout.BoxScope
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.unit.dp
+import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.Shapes
+import cs346.whiteboard.shared.jsonmodels.ComponentType
+import java.util.*
 
 enum class ShapeTypes {
     SQUARE, CIRCLE
 }
-class Shape(override var coordinate: Offset, override var size: Size, val type: ShapeTypes) : Component {
-    override fun drawCanvasComponent(drawScope: DrawScope) {
+class Shape(
+    override var coordinate: MutableState<Offset>,
+    override var size: MutableState<Size>,
+    override var depth: Float,
+    val type: ShapeTypes,
+    uuid: String = UUID.randomUUID().toString()
+) :
+    Component(uuid) {
+
+    override fun getComponentType(): ComponentType {
+        return when(type) {
+            ShapeTypes.SQUARE -> ComponentType.SQUARE
+            ShapeTypes.CIRCLE -> ComponentType.CIRCLE
+        }
+    }
+
+    @Composable
+    override fun drawComposableComponent(controller: WhiteboardController) {
         when(type) {
             ShapeTypes.SQUARE -> {
-                drawScope.drawRect(
-                    color = Color.Black,
-                    topLeft = coordinate,
-                    size = size,
-                    style = Stroke(
-                        width = 3f,
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round
+                Box(getModifier(controller)
+                    .border(4.dp * controller.whiteboardZoom, Colors.primary, Shapes.medium)
                     )
-                )
             }
             ShapeTypes.CIRCLE -> {
-                drawScope.drawCircle(
-                    color = Color.Black,
-                    radius = size.height / 2,
-                    center = Offset(coordinate.x + size.height / 2, coordinate.y + size.height / 2),
-                    style = Stroke(
-                        width = 3f,
-                        cap = StrokeCap.Round,
-                        join = StrokeJoin.Round
-                    )
+                Box(getModifier(controller)
+                    .border(4.dp * controller.whiteboardZoom, Colors.primary, CircleShape)
                 )
             }
         }
     }
 
-    @Composable
-    override fun drawComposableComponent(boxScope: BoxScope) {
-
+    override fun clone(): Component {
+        return Shape(
+            mutableStateOf(Offset(coordinate.value.x, coordinate.value.y)),
+            mutableStateOf(size.value),
+            depth, type
+        )
     }
 }

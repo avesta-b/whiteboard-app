@@ -25,6 +25,7 @@ internal class RootViewModel {
     }
 
     fun onSignOut() {
+        UserManager.signOut()
         state = RootUiState.NOT_SIGNED_IN
     }
 

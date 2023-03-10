@@ -1,10 +1,10 @@
 FROM gradle:7.3-jdk17 as builder
-WORKDIR /app
-COPY . .
-RUN ./gradlew build --stacktrace
+COPY --chown=gradle:gradle . /home/gradle/src
+WORKDIR /home/gradle/src
+RUN ./gradlew service:buildNeeded
 
-FROM openjdk
-WORKDIR /app
+FROM openjdk:17-jdk-slim
 EXPOSE 80
-COPY --from=builder /app/service/libs/service-0.0.1.jar .
-CMD java -jar service-0.0.1.jar
+RUN mkdir /app
+COPY --from=builder /home/gradle/src/service/build/libs/service-1.0.jar /app/spring-boot-application.jar
+ENTRYPOINT ["java","-jar","/app/spring-boot-application.jar"]

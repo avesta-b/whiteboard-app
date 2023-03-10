@@ -12,5 +12,5 @@ data class UserLogin(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long? = null
 ) {
-    constructor() : this(".", ".", -1) {}
+    constructor() : this(".", ".", -1)
 }

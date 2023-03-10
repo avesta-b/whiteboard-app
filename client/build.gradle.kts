@@ -9,6 +9,12 @@ plugins {
 group = "cs346.whiteboard"
 version = "1.0-SNAPSHOT"
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 repositories {
     google()
     mavenCentral()
@@ -21,9 +27,9 @@ dependencies {
     implementation("org.jetbrains.compose.material:material-icons-extended-desktop:1.3.0")
     implementation("io.ktor:ktor-client-core:2.2.3")
     implementation("io.ktor:ktor-client-okhttp:2.2.3")
-    implementation("org.hildan.krossbow:krossbow-stomp-core:5.0.0")
-    implementation("org.hildan.krossbow:krossbow-websocket-ktor:5.0.0")
-    implementation("org.hildan.krossbow:krossbow-stomp-kxserialization-json:5.0.0")
+    implementation("org.hildan.krossbow:krossbow-stomp-core:5.1.0")
+    implementation("org.hildan.krossbow:krossbow-websocket-okhttp:5.1.0")
+    implementation("org.hildan.krossbow:krossbow-stomp-kxserialization-json:5.1.0")
     implementation("org.slf4j:slf4j-simple:1.7.9")
     implementation(project(":shared"))
     testImplementation("io.mockk:mockk:1.13.4")
@@ -35,7 +41,7 @@ compose.desktop {
         mainClass = "cs346.whiteboard.client.MainKt"
         val iconsRoot = project.file("src/main/resources")
         nativeDistributions {
-            packageVersion = "1.0.0"
+            packageVersion = "1.1.0"
             packageName = "Whiteboard"
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             macOS {

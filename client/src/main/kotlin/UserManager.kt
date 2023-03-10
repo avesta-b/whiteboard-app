@@ -1,7 +1,7 @@
 package cs346.whiteboard.client
 
 import cs346.whiteboard.shared.jsonmodels.LoginCredentialsRequest
-import cs346.whiteboard.shared.jsonmodels.LoginCredentialsResponse
+import cs346.whiteboard.shared.jsonmodels.SerializedJWT
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -19,7 +19,8 @@ object UserManager {
         val password: String
     )
 
-    private var jwt: String? = null
+    var jwt: String? = null
+        private set
 
     fun getUsername(): String? {
         return storedCredentials?.username
@@ -68,7 +69,7 @@ object UserManager {
         return try {
             val requestBody = Json.encodeToString(LoginCredentialsRequest(username, password))
             val responseBody = WhiteboardService.postRequest(path = "api/auth/login", body = requestBody)
-            val credentialsResponse = Json.decodeFromString(LoginCredentialsResponse.serializer(), responseBody)
+            val credentialsResponse = Json.decodeFromString(SerializedJWT.serializer(), responseBody)
             storedCredentials = Credentials(username, password)
             jwt = credentialsResponse.jwtToken
             true
@@ -85,7 +86,7 @@ object UserManager {
             return try {
                 val requestBody = Json.encodeToString(LoginCredentialsRequest(it.username, it.password))
                 val responseBody = WhiteboardService.postRequest(path = "api/auth/login", body = requestBody)
-                val credentialsResponse = Json.decodeFromString(LoginCredentialsResponse.serializer(), responseBody)
+                val credentialsResponse = Json.decodeFromString(SerializedJWT.serializer(), responseBody)
                 jwt = credentialsResponse.jwtToken
                 true
             } catch (_: Exception) {

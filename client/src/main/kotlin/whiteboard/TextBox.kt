@@ -1,58 +1,91 @@
 package cs346.whiteboard.client.whiteboard
 
-import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.components.textSelectionColors
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
-import kotlin.math.roundToInt
+import cs346.whiteboard.client.websocket.WebSocketEventHandler
+import cs346.whiteboard.shared.jsonmodels.ComponentState
+import cs346.whiteboard.shared.jsonmodels.ComponentType
+import java.lang.ref.WeakReference
+import java.util.*
 
-class TextBox(override var coordinate: Offset, override var size: Size) : Component {
+class TextBox(
+    override var coordinate: MutableState<Offset>,
+    override var size: MutableState<Size>,
+    override var depth: Float,
+    initialWord: String = "",
+    uuid: String = UUID.randomUUID().toString(),
+    private val webSocketEventHandler: WeakReference<WebSocketEventHandler>
+) : Component(uuid) {
 
-    val text = mutableStateOf(TextFieldValue(""))
-    override fun drawCanvasComponent(drawScope: DrawScope) {
+    val text = mutableStateOf(TextFieldValue(initialWord))
 
+    override fun getComponentType(): ComponentType = ComponentType.TEXT_BOX
+    override fun setState(newState: ComponentState) {
+        super.setState(newState)
+        val newText: String = newState.text ?: return
+        text.value = TextFieldValue(newText)
+    }
+
+    override fun toComponentState(): ComponentState {
+        var res = super.toComponentState()
+        res.text = text.value.text
+        return res
     }
 
     @Composable
-    override fun drawComposableComponent(boxScope: BoxScope) {
-        boxScope.also {
-            ComposableTextField(
-                text = text,
-                modifier = Modifier
-                    .size(120.dp, 100.dp)
-                    .offset(coordinate.x.div(2).roundToInt().dp, coordinate.y.div(2).roundToInt().dp)
-                // TODO: fix this later. i have no idea why this is correct :)
-            )
-        }
+    override fun drawComposableComponent(controller: WhiteboardController) {
+        ComposableTextField(
+            text = text,
+            modifier = getModifier(controller)
+                .onFocusChanged {
+                    if (!it.isFocused) {
+                        webSocketEventHandler.get()?.let { ws ->
+                            ws.componentEventController.add(this)
+                        }
+                    }
+                }
+        )
     }
 
     @Composable
-    private fun ComposableTextField(text: MutableState<TextFieldValue>,
-                                    modifier: Modifier) {
+    private fun ComposableTextField(
+        text: MutableState<TextFieldValue>,
+        modifier: Modifier
+    ) {
         CompositionLocalProvider(LocalTextSelectionColors provides textSelectionColors) {
             OutlinedTextField(
                 value = text.value,
-                onValueChange = { text.value = it },
+                onValueChange = {
+                    text.value = it
+                    //  TODO: Figure out how to update TextBox component as the text changes
+//                                webSocketEventHandler.get()?.let { ws ->
+//                                    ws.componentEventController.add(this)
+//                                }
+                },
+
+                enabled = isFocused.value,
                 modifier = modifier,
                 textStyle = Typography.subtitle1,
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.None,
-                    autoCorrect = false),
+                    autoCorrect = false
+                ),
                 singleLine = false,
                 shape = Shapes.small,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -64,8 +97,19 @@ class TextBox(override var coordinate: Offset, override var size: Size) : Compon
                     disabledBorderColor = Colors.secondaryVariant,
                     focusedLabelColor = Colors.primary,
                     unfocusedLabelColor = Colors.secondaryVariant,
-                    disabledLabelColor = Colors.secondaryVariant),
+                    disabledLabelColor = Colors.secondaryVariant
+                ),
             )
         }
+    }
+
+    override fun clone(): Component {
+        return TextBox(
+            mutableStateOf(Offset(coordinate.value.x, coordinate.value.y)),
+            mutableStateOf(size.value),
+            depth = depth,
+            initialWord = text.value.text,
+            webSocketEventHandler = webSocketEventHandler
+        )
     }
 }
