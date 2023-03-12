@@ -12,7 +12,7 @@ fun onKeyEventHandler(event: KeyEvent): Boolean {
         // Panning
         (event.key == Key.Spacebar && event.type == KeyEventType.KeyDown) -> {
             if (!Toolkit.isToolHeld) {
-                Toolkit.toolHolder = CommandFactory.whiteboardController?.currentTool!!
+                Toolkit.toolHolder = CommandFactory.whiteboardController?.currentTool ?: return false
                 CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PAN).execute()
                 Toolkit.isToolHeld = true
             }
