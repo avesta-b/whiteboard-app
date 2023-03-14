@@ -7,8 +7,12 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 
 object BaseUrlProvider {
-    const val HOST = "lobster-app-laueo.ondigitalocean.app"
-//const val HOST = "localhost"
+    const val REMOTEHOST = "lobster-app-laueo.ondigitalocean.app"
+    const val LOCALHOST = "localhost:80"
+    var HOST = REMOTEHOST
+    fun toggleLocalHost(){
+        HOST = if(HOST == REMOTEHOST) LOCALHOST else REMOTEHOST
+    }
 }
 
 object WhiteboardService {
@@ -27,7 +31,7 @@ object WhiteboardService {
         val response = client.request {
             method = HttpMethod.Post
             url {
-                protocol = URLProtocol.HTTPS
+                protocol = if(MenuBarState.isLocal) URLProtocol.HTTP else URLProtocol.HTTPS
                 host = BaseUrlProvider.HOST
                 path(path)
             }

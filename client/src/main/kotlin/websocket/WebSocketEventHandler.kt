@@ -1,13 +1,18 @@
 package cs346.whiteboard.client.websocket
 
+import androidx.compose.runtime.snapshotFlow
 import cs346.whiteboard.client.BaseUrlProvider
+import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.toOffset
+import cs346.whiteboard.client.views.RootUiState
 import cs346.whiteboard.client.whiteboard.CursorsController
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.shared.jsonmodels.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationStrategy
 import okhttp3.OkHttpClient
@@ -30,7 +35,9 @@ class WebSocketEventHandler(private val username: String,
                             private val roomId: String,
                             private val whiteboardController: WhiteboardController) {
 
-    private val baseUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
+    private var baseUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
+    private val localbaseUrl: String = "ws://" + BaseUrlProvider.HOST + "/ws"
+    private val remoteUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
     private val subscribePath: String = "/topic/whiteboard/${roomId}"
     private var session: StompSession? = null
     private var stompClient: StompClient? = null
@@ -46,8 +53,13 @@ class WebSocketEventHandler(private val username: String,
         coroutineScope.launch {
             connect()
         }
+        snapshotFlow { MenuBarState.isLocal }
+            .onEach {
+                if(MenuBarState.isLocal) baseUrl = localbaseUrl
+                else baseUrl = remoteUrl
+            }
+            .launchIn(coroutineScope)
     }
-
     private suspend fun connect() {
         if (roomId.isEmpty()) return
 
