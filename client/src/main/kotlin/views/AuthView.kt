@@ -16,7 +16,6 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.UserManager
-import cs346.whiteboard.client.WindowManager
 import cs346.whiteboard.client.components.*
 import kotlinx.coroutines.launch
 
