@@ -24,7 +24,7 @@ internal class RootViewModel(private val coroutineScope: CoroutineScope) {
         snapshotFlow { MenuBarState.isLocal }
             .onEach {
                 // property value changed
-                state = RootUiState.NOT_SIGNED_IN
+                onSignOut()
             }
             .launchIn(coroutineScope)
     }
