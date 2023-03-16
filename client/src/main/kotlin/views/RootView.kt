@@ -9,6 +9,7 @@ import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.components.LargeSpinner
 import cs346.whiteboard.client.MenuBarState
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -22,6 +23,7 @@ internal class RootViewModel(private val coroutineScope: CoroutineScope) {
 
     init {
         snapshotFlow { MenuBarState.isLocal }
+            .drop(1)
             .onEach {
                 // property value changed
                 onSignOut()
