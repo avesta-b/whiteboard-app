@@ -1,6 +1,7 @@
 package cs346.whiteboard.shared.jsonmodels
 
 import kotlinx.serialization.Serializable
+import java.util.*
 
 @Serializable
 data class Position(val x: Float = 0f, val y: Float = 0f)
@@ -12,6 +13,7 @@ enum class WebSocketEventType(val value: String) {
     ADD_COMPONENT("COMPONENT_UPDATE"),
     DELETE_COMPONENT("DELETE_COMPONENT"),
     GET_FULL_STATE("GET_FULL_STATE"),
+    SEND_MESSAGE("SEND_MESSAGE"),
 }
 
 @Serializable
@@ -55,8 +57,22 @@ data class WebSocketEvent(
     val roomUpdate: RoomUpdate? = null,
     val addComponent: ComponentState? = null,
     val deleteComponent: DeleteComponent? = null,
-    val getFullState: WhiteboardState? = null
+    val getFullState: WhiteboardState? = null,
+    val chatMessage: ChatMessage? = null
 )
 
 @Serializable
 data class DeleteComponent(val uuid: String = "")
+
+@Serializable
+data class ChatMessage(
+    val sender: String = "",
+    val content: String = "",
+    val uuid: String = UUID.randomUUID().toString()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ChatMessage) return false
+        return uuid == other.uuid
+    }
+}

@@ -146,6 +146,8 @@ class WebSocketEventHandler(private val username: String,
                 val state: WhiteboardState = event.getFullState ?: return
                 whiteboardController.setState(state)
             }
+
+            WebSocketEventType.SEND_MESSAGE -> {}
         }
 
     }
