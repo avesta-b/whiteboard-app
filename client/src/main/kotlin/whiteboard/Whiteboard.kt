@@ -1,6 +1,5 @@
 package cs346.whiteboard.client.whiteboard
 
-import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -8,16 +7,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.unit.toSize
-import cs346.whiteboard.client.commands.onKeyEventHandler
-import cs346.whiteboard.client.commands.onScrollEventHandler
-import androidx.compose.ui.unit.toSize
+import cs346.whiteboard.client.commands.WhiteboardEventHandler
+import cs346.whiteboard.client.whiteboard.edit.QueryBox
+import cs346.whiteboard.client.whiteboard.edit.SelectionBox
+import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbar
+import cs346.whiteboard.client.whiteboard.interaction.WhiteboardTopBar
+import cs346.whiteboard.client.whiteboard.overlay.Background
+import cs346.whiteboard.client.whiteboard.overlay.Cursors
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -36,7 +35,7 @@ fun Whiteboard(
     whiteboardController: WhiteboardController,
     modifier: Modifier
 ) {
-    Box(modifier = modifier.onPointerEvent(PointerEventType.Scroll) { onScrollEventHandler(it) }) {
+    Box(modifier = modifier.onPointerEvent(PointerEventType.Scroll) { WhiteboardEventHandler.onScrollEventHandler(it) }) {
         Box(modifier = modifier
             // handle drag gestures
             .pointerInput(Unit) {
@@ -71,6 +70,7 @@ fun Whiteboard(
                         }
                         launch {
                             whiteboardController.cursorsController.updateCursor(whiteboardController.viewToWhiteboardCoordinate(position))
+                            whiteboardController.handlePointerPosition(position)
                         }
                     }
                 }
@@ -98,6 +98,8 @@ fun Whiteboard(
                 QueryBox(whiteboardController, it)
             }
         }
+
+
         // Toolbar
         WhiteboardToolbar(whiteboardController, Modifier.align(Alignment.BottomCenter))
 

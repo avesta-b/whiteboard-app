@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.components
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import cs346.whiteboard.client.helpers.toOffset
+import cs346.whiteboard.client.whiteboard.edit.ResizeNode
+import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.ComponentType
 import cs346.whiteboard.shared.jsonmodels.Position

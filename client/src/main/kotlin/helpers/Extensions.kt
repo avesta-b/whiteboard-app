@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
-import cs346.whiteboard.client.whiteboard.*
+import cs346.whiteboard.client.whiteboard.components.*
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.ComponentType
 import cs346.whiteboard.shared.jsonmodels.Position

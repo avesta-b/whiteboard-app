@@ -9,6 +9,12 @@ import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.helpers.toComponent
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
+import cs346.whiteboard.client.whiteboard.components.*
+import cs346.whiteboard.client.whiteboard.edit.Clipboard
+import cs346.whiteboard.client.whiteboard.edit.QueryBoxController
+import cs346.whiteboard.client.whiteboard.edit.SelectionBoxController
+import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
+import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.DeleteComponent
 import cs346.whiteboard.shared.jsonmodels.WhiteboardState
@@ -142,20 +148,38 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         return currentDepth
     }
 
+    fun handlePointerPosition(point: Offset) {
+        val whiteboardPoint = viewToWhiteboardCoordinate(point)
+        when (currentTool) {
+            WhiteboardToolbarOptions.SELECT -> {
+                selectionBoxController.pointInResizeNode(whiteboardPoint, false)?.let {
+                    if (!isResizingSelectionBox) {
+                        cursorsController.currentCursor = it.getResizeCursorType()
+                    }
+                } ?: run {
+                    if (!isResizingSelectionBox) {
+                        cursorsController.currentCursor = CursorType.POINTER
+                    }
+                }
+            }
+            else -> return
+        }
+    }
+
     fun handleOnDragGestureStart(startPoint: Offset) {
         val whiteboardPoint = viewToWhiteboardCoordinate(startPoint)
         when (currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
-                if (selectionBoxController.isPointInResizeNode(whiteboardPoint)) {
+                if (selectionBoxController.pointInResizeNode(whiteboardPoint, true) != null) {
                     isResizingSelectionBox = true
                 } else if (selectionBoxController.isPointInSelectionBox(whiteboardPoint)) {
                     isDraggingSelectionBox = true
                 } else {
+                    selectionBoxController.clearSelectionBox()
                     getComponentAtPoint(whiteboardPoint)?.let {
                         selectionBoxController.selectedSingleComponent(it)
                         isDraggingSelectionBox = true
                     } ?: run {
-                        selectionBoxController.clearSelectionBox()
                         queryBoxController.startQueryBox(whiteboardPoint)
                     }
                 }
@@ -165,7 +189,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 val whiteboardStartPoint = viewToWhiteboardCoordinate(startPoint)
                 val path = Path(
                     mutableStateOf(whiteboardStartPoint),
-                    mutableStateOf(Size.Zero),
+                    mutableStateOf(Size(1f, 1f)),
                     preIncrementCurrentDepth()
                 )
                 path.insertPoint(whiteboardStartPoint)

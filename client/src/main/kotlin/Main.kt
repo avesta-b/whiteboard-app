@@ -6,7 +6,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.window.*
-import cs346.whiteboard.client.commands.onKeyEventHandler
+import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.views.RootView
 import java.awt.Dimension
@@ -37,7 +37,7 @@ fun main() = application {
         onCloseRequest = ::exitApplication,
         title = "Whiteboard",
         state = state,
-        onKeyEvent = ::onKeyEventHandler
+        onKeyEvent = WhiteboardEventHandler::onKeyEventHandler
     ){
         createMenuBar(state, this)
         window.minimumSize = Dimension(800, 600) // set minimum size

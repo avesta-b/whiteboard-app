@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.edit
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,6 +12,8 @@ import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.queryBoxColor
 import cs346.whiteboard.client.helpers.toDp
+import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
 
 @Composable
 fun QueryBox(controller: WhiteboardController, data: QueryBoxData) {

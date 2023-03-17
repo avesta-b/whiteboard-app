@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -11,6 +11,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
+import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.shared.jsonmodels.ComponentType
 import java.util.*
 

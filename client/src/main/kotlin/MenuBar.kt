@@ -9,8 +9,8 @@ import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.window.*
 import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.commands.CommandTypes
-import cs346.whiteboard.client.components.*
-import cs346.whiteboard.client.whiteboard.WhiteboardToolbarOptions
+import cs346.whiteboard.client.ui.*
+import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import java.awt.event.*
 
 object MenuBarState{
@@ -21,19 +21,6 @@ object MenuBarState{
 @OptIn(ExperimentalComposeUiApi::class)
 fun createMenuBar(state: WindowState, frameScope: FrameWindowScope){
     frameScope.MenuBar {
-        Menu("File", mnemonic = 'F') {
-            Item("New", onClick = {}, shortcut = KeyShortcut(Key.N, ctrl = !isMacOS(), meta = isMacOS()))
-            Item("Open", onClick = {}, shortcut = KeyShortcut(Key.O, ctrl = !isMacOS(), meta = isMacOS()))
-            Item("Save", onClick = {}, shortcut = KeyShortcut(Key.S, ctrl = !isMacOS(), meta = isMacOS()))
-            Item("Save As", onClick = {}, shortcut = KeyShortcut(Key.S, shift = true, ctrl = !isMacOS(), meta = isMacOS()))
-        }
-        Menu("Edit", mnemonic = 'E') {
-            Item("Delete", onClick = { CommandFactory.create(CommandTypes.DELETE).execute() }, shortcut = KeyShortcut(Key.Backspace))
-            Separator()
-            Item("Cut", onClick = { CommandFactory.create(CommandTypes.CUT).execute() }, shortcut = KeyShortcut(Key.X, ctrl = !isMacOS(), meta = isMacOS()))
-            Item("Copy", onClick = { CommandFactory.create(CommandTypes.COPY).execute() }, shortcut = KeyShortcut(Key.C, ctrl = !isMacOS(), meta = isMacOS()))
-            Item("Paste", onClick = { CommandFactory.create(CommandTypes.PASTE).execute() }, shortcut = KeyShortcut(Key.V, ctrl = !isMacOS(), meta = isMacOS()))
-        }
         Menu("Tools", mnemonic = 'T') {
             Item("Select", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SELECT).execute() }, shortcut = KeyShortcut(Key.V))
             Item("Pan", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PAN).execute() }, shortcut = KeyShortcut(Key.D))
@@ -44,6 +31,13 @@ fun createMenuBar(state: WindowState, frameScope: FrameWindowScope){
             Item("Text", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.TEXT).execute() }, shortcut = KeyShortcut(Key.T))
             Separator()
             Item("Eraser", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.ERASE).execute() }, shortcut = KeyShortcut(Key.X))
+        }
+        Menu("Edit", mnemonic = 'E') {
+            Item("Delete", onClick = { CommandFactory.create(CommandTypes.DELETE).execute() }, shortcut = KeyShortcut(Key.Backspace))
+            Separator()
+            Item("Cut", onClick = { CommandFactory.create(CommandTypes.CUT).execute() }, shortcut = KeyShortcut(Key.X, ctrl = !isMacOS(), meta = isMacOS()))
+            Item("Copy", onClick = { CommandFactory.create(CommandTypes.COPY).execute() }, shortcut = KeyShortcut(Key.C, ctrl = !isMacOS(), meta = isMacOS()))
+            Item("Paste", onClick = { CommandFactory.create(CommandTypes.PASTE).execute() }, shortcut = KeyShortcut(Key.V, ctrl = !isMacOS(), meta = isMacOS()))
         }
         Menu("View", mnemonic = 'V') {
             Item("Zoom in", onClick = { CommandFactory.create(CommandTypes.ZOOMIN).execute() }, shortcut = KeyShortcut(Key.Plus, ctrl = !isMacOS(), meta = isMacOS()))

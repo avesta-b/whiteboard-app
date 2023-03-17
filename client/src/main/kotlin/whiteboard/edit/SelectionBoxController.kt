@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.edit
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,6 +8,8 @@ import androidx.compose.ui.geometry.Size
 import cs346.whiteboard.client.helpers.Quadruple
 import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.helpers.toList
+import cs346.whiteboard.client.whiteboard.overlay.CursorType
+import cs346.whiteboard.client.whiteboard.components.Component
 import kotlin.math.absoluteValue
 
 enum class ResizeNode {
@@ -21,6 +23,15 @@ enum class ResizeNode {
             TOP_RIGHT -> BOTTOM_LEFT
             BOTTOM_LEFT -> TOP_RIGHT
             BOTTOM_RIGHT -> TOP_LEFT
+        }
+    }
+
+    fun getResizeCursorType(): CursorType {
+        return when(this) {
+            TOP_LEFT -> CursorType.RESIZE_LEFT
+            TOP_RIGHT -> CursorType.RESIZE_RIGHT
+            BOTTOM_LEFT -> CursorType.RESIZE_RIGHT
+            BOTTOM_RIGHT -> CursorType.RESIZE_LEFT
         }
     }
 }
@@ -53,9 +64,9 @@ class SelectionBoxController {
     }
 
     // Side effect: sets the anchor resize node if a resize node was selected
-    fun isPointInResizeNode(point: Offset): Boolean {
+    fun pointInResizeNode(point: Offset, shouldSetAnchorNode: Boolean): ResizeNode? {
         selectionBoxData?.let {
-            if (!it.isResizable) return false
+            if (!it.isResizable) return null
             getSelectionBoxResizeNodeCoordinates(it).toList().forEachIndexed { i, nodeCoordinate ->
                 // Add hit padding to make it easier to select resize node
                 if (overlap(
@@ -64,12 +75,14 @@ class SelectionBoxController {
                         nodeCoordinate,
                         it.resizeNodeSize)
                 ) {
-                    selectionBoxData = it.copy(resizeNodeAnchor = ResizeNode.values()[i].getOppositeNode())
-                    return true
+                    if (shouldSetAnchorNode) {
+                        selectionBoxData = it.copy(resizeNodeAnchor = ResizeNode.values()[i].getOppositeNode())
+                    }
+                    return ResizeNode.values()[i]
                 }
             }
         }
-        return false
+        return null
     }
 
     fun resizeSelectedComponents(newPosition: Offset, scale: Float) {

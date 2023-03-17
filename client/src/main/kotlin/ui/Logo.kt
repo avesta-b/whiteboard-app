@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.components
+package cs346.whiteboard.client.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.geometry.Size

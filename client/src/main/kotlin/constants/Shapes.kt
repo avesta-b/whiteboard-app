@@ -9,3 +9,7 @@ val Shapes = Shapes(
     medium = RoundedCornerShape(12.dp),
     large = RoundedCornerShape(18.dp)
 )
+
+fun Shapes.small(scale: Float): RoundedCornerShape {
+    return RoundedCornerShape((6 * scale).dp)
+}

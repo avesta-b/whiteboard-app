@@ -1,6 +1,7 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.edit
 
 import androidx.compose.ui.geometry.Offset
+import cs346.whiteboard.client.whiteboard.components.Component
 
 object Clipboard {
     private var selectionData = mutableListOf<Component>()

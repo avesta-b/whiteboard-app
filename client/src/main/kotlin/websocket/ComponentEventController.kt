@@ -1,6 +1,6 @@
 package cs346.whiteboard.client.websocket
 
-import cs346.whiteboard.client.whiteboard.Component
+import cs346.whiteboard.client.whiteboard.components.Component
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.DeleteComponent
 import java.lang.ref.WeakReference
@@ -20,11 +20,11 @@ class ComponentEventController(
     }
 
     fun delete(component: String?) {
-        val component: String = component ?: return
+        val componentId: String = component ?: return
         handler.get()?.let {
             it.send<DeleteComponent>(
                 sendSuffix=".deleteComponent",
-                body = DeleteComponent(component),
+                body = DeleteComponent(componentId),
                 serializationStrategy = DeleteComponent.serializer()
             )
         }
