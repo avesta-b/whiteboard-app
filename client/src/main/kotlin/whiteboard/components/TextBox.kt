@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.components
 
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
@@ -14,11 +14,13 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
-import cs346.whiteboard.client.components.textSelectionColors
+import cs346.whiteboard.client.commands.WhiteboardEventHandler
+import cs346.whiteboard.client.ui.textSelectionColors
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
+import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.ComponentType
 import java.lang.ref.WeakReference
@@ -54,7 +56,10 @@ class TextBox(
             text = text,
             modifier = getModifier(controller)
                 .onFocusChanged {
-                    if (!it.isFocused) {
+                    if (it.isFocused) {
+                        WhiteboardEventHandler.isEditingText = true
+                    } else {
+                        WhiteboardEventHandler.isEditingText = false
                         webSocketEventHandler.get()?.let { ws ->
                             ws.componentEventController.add(this)
                         }

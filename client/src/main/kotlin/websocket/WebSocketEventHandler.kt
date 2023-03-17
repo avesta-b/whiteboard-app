@@ -5,8 +5,7 @@ import cs346.whiteboard.client.BaseUrlProvider
 import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.toOffset
-import cs346.whiteboard.client.views.RootUiState
-import cs346.whiteboard.client.whiteboard.CursorsController
+import cs346.whiteboard.client.whiteboard.overlay.CursorsController
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.shared.jsonmodels.*
 import kotlinx.coroutines.CoroutineScope

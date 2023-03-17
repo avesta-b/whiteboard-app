@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.overlay
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.AnimationVector2D
@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
+import cs346.whiteboard.client.helpers.CustomIcon
 import cs346.whiteboard.client.helpers.getResource
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import cs346.whiteboard.shared.jsonmodels.Position
@@ -19,36 +20,44 @@ import javax.imageio.ImageIO
 
 enum class CursorType {
     POINTER {
-        override fun fileName(): String = ""
+        override fun icon(): CustomIcon = CustomIcon.POINTER
     },
     HAND {
-        override fun fileName(): String = "hand.png"
+        override fun icon(): CustomIcon = CustomIcon.HAND
     },
     GRAB {
-        override fun fileName(): String = "grab.png"
+        override fun icon(): CustomIcon = CustomIcon.GRAB
+    },
+    RESIZE_LEFT {
+        override fun icon(): CustomIcon = CustomIcon.RESIZE_LEFT
+    },
+    RESIZE_RIGHT {
+        override fun icon(): CustomIcon = CustomIcon.RESIZE_RIGHT
     },
     BRUSH {
-        override fun fileName(): String = "brush.png"
+        override fun icon(): CustomIcon = CustomIcon.BRUSH
         override fun point(): Point = Point(0, 18)
     },
     HIGHLIGHTER {
-        override fun fileName(): String = "highlighter.png"
+        override fun icon(): CustomIcon = CustomIcon.HIGHLIGHTER
     },
     SHAPE {
-        override fun fileName(): String = "shape.png"
+        override fun icon(): CustomIcon = CustomIcon.SHAPE
     },
     TEXTFIELD {
-        override fun fileName(): String = "textfield.png"
+        override fun icon(): CustomIcon = CustomIcon.TEXTFIELD
     },
     ERASER {
-        override fun fileName(): String = "eraser.png"
+        override fun icon(): CustomIcon = CustomIcon.ERASER
         override fun point(): Point = Point(0, 18)
     };
 
-    abstract fun fileName(): String
+    abstract fun icon(): CustomIcon
     open fun point(): Point {
         return Point(12, 12)
     }
+
+
 }
 
 class CursorsController(
@@ -93,8 +102,6 @@ class CursorsController(
     }
 
     fun getCurrentCursor(): Cursor {
-        if (currentCursor == CursorType.POINTER) return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)
-        val cursorImage = ImageIO.read(getResource("/cursors/${currentCursor.fileName()}"))
-        return Toolkit.getDefaultToolkit().createCustomCursor(cursorImage, currentCursor.point(), "cursor")
+        return Toolkit.getDefaultToolkit().createCustomCursor(currentCursor.icon().image(), currentCursor.point(), "cursor")
     }
 }

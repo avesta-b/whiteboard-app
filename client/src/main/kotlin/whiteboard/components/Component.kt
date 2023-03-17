@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.components
 
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -14,6 +14,8 @@ import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.helpers.toDp
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.helpers.toSize
+import cs346.whiteboard.client.whiteboard.edit.ResizeNode
+import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.ComponentType
 import cs346.whiteboard.shared.jsonmodels.Position

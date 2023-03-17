@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.overlay
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -11,6 +11,8 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.backgroundDotColor
+import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
 import java.lang.Float.min
 
 @Composable

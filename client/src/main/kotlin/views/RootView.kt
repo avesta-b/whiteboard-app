@@ -6,7 +6,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import cs346.whiteboard.client.UserManager
-import cs346.whiteboard.client.components.LargeSpinner
+import cs346.whiteboard.client.ui.LargeSpinner
 import cs346.whiteboard.client.MenuBarState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.drop

@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.components
+package cs346.whiteboard.client.ui
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*

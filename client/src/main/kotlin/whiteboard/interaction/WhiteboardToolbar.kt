@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.interaction
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,47 +18,52 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
+import cs346.whiteboard.client.helpers.CustomIcon
+import cs346.whiteboard.client.ui.CustomIconButton
+import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
+import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import java.awt.Cursor
 
 enum class WhiteboardToolbarOptions {
     ZOOM_IN {
-        override fun icon() = Icons.Outlined.ZoomIn
+        override fun icon() = CustomIcon.PLUS
         override fun cursorType() = CursorType.POINTER
     },
     ZOOM_OUT {
-        override fun icon() = Icons.Outlined.ZoomOut
+        override fun icon() = CustomIcon.MINUS
         override fun cursorType() = CursorType.POINTER
     },
     SELECT {
-        override fun icon() = Icons.Outlined.NearMe
+        override fun icon() = CustomIcon.POINTER
         override fun cursorType() = CursorType.POINTER
     },
     PAN {
-        override fun icon() = Icons.Outlined.PanTool
+        override fun icon() = CustomIcon.HAND
         override fun cursorType() = CursorType.HAND
     },
     PEN {
-        override fun icon() = Icons.Outlined.Draw
+        override fun icon() = CustomIcon.BRUSH
         override fun cursorType() = CursorType.BRUSH
     },
     SQUARE {
-        override fun icon() = Icons.Outlined.Square
+        override fun icon() = CustomIcon.SHAPE
         override fun cursorType() = CursorType.SHAPE
     },
     CIRCLE {
-        override fun icon() = Icons.Outlined.Circle
+        override fun icon() = CustomIcon.SHAPE
         override fun cursorType() = CursorType.SHAPE
     },
     TEXT {
-        override fun icon() = Icons.Outlined.TextFields
+        override fun icon() = CustomIcon.TEXTFIELD
         override fun cursorType() = CursorType.TEXTFIELD
     },
     ERASE {
-        override fun icon() = Icons.Outlined.Delete // TODO: Use a more relevant icon... may require custom ImageVector
+        override fun icon() = CustomIcon.ERASER
         override fun cursorType() = CursorType.ERASER
     };
 
-    abstract fun icon(): ImageVector
+    abstract fun icon(): CustomIcon
     abstract fun cursorType(): CursorType
 }
 @Composable
@@ -73,21 +78,23 @@ fun WhiteboardToolbar(whiteboardController: WhiteboardController, modifier: Modi
         verticalAlignment = Alignment.CenterVertically) {
         Spacer(Modifier.weight(1.0f))
         enumValues<WhiteboardToolbarOptions>().forEach {
-            IconButton(onClick = {
-                when(it) {
-                    WhiteboardToolbarOptions.ZOOM_IN -> {
-                        whiteboardController.zoomIn()
-                    }
-                    WhiteboardToolbarOptions.ZOOM_OUT -> {
-                        whiteboardController.zoomOut()
-                    }
-                    else -> {
-                        whiteboardController.currentTool = it
+            CustomIconButton(
+                Modifier.size(48.dp),
+                it.icon(),
+                onClick = {
+                    when(it) {
+                        WhiteboardToolbarOptions.ZOOM_IN -> {
+                            whiteboardController.zoomIn()
+                        }
+                        WhiteboardToolbarOptions.ZOOM_OUT -> {
+                            whiteboardController.zoomOut()
+                        }
+                        else -> {
+                            whiteboardController.currentTool = it
+                        }
                     }
                 }
-            }) {
-                Icon(it.icon(), it.name)
-            }
+            )
         }
         Spacer(Modifier.weight(1.0f))
     }

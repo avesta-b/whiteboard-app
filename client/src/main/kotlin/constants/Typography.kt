@@ -56,3 +56,11 @@ val Typography = Typography(
         fontSize = 14.sp
     )
 )
+
+fun Typography.subtitle2(scale: Float): TextStyle {
+    return TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Medium,
+        fontSize = (14 * scale).sp
+    )
+}

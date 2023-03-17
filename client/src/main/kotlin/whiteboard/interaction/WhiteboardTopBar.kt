@@ -1,4 +1,4 @@
-package cs346.whiteboard.client.whiteboard
+package cs346.whiteboard.client.whiteboard.interaction
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -16,12 +16,14 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.components.PrimarySubtitleText
-import cs346.whiteboard.client.components.TooltipText
-import cs346.whiteboard.client.components.UserIconText
+import cs346.whiteboard.client.ui.PrimarySubtitleText
+import cs346.whiteboard.client.ui.TooltipText
+import cs346.whiteboard.client.ui.UserIconText
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.helpers.bottomBorder
 import cs346.whiteboard.client.helpers.getUserColor
+import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
 import java.awt.Cursor
 
 @OptIn(ExperimentalFoundationApi::class)
