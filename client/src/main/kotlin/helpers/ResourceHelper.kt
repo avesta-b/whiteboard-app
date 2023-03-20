@@ -28,8 +28,20 @@ enum class CustomIcon {
     HIGHLIGHTER {
         override fun fileName(): String = "highlighter.png"
     },
-    SHAPE {
-        override fun fileName(): String = "shape.png"
+    PAINT {
+        override fun fileName(): String = "paint.png"
+    },
+    SQUARE {
+        override fun fileName(): String = "square.png"
+    },
+    RECTANGLE {
+        override fun fileName(): String = "rectangle.png"
+    },
+    TRIANGLE {
+        override fun fileName(): String = "triangle.png"
+    },
+    CIRCLE {
+        override fun fileName(): String = "circle.png"
     },
     TEXTFIELD {
         override fun fileName(): String = "textfield.png"
@@ -42,6 +54,9 @@ enum class CustomIcon {
     },
     PLUS {
         override fun fileName(): String = "plus.png"
+    },
+    BACK {
+        override fun fileName(): String = "back.png"
     };
 
     abstract fun fileName(): String

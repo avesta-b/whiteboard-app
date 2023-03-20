@@ -32,7 +32,7 @@ fun SelectionBox(controller: WhiteboardController, data: SelectionBoxData) {
             .border(2.dp * controller.whiteboardZoom, Colors.secondaryVariant)
         )
         if (data.isResizable) {
-            controller.selectionBoxController.getSelectionBoxResizeNodeCoordinates(data).toList().forEachIndexed { index, offset ->
+            controller.selectionBoxController.getSelectionBoxResizeNodeCoordinates(data).toList().forEach { offset ->
                 val resizeNodeCoordinate = controller.whiteboardToViewCoordinate(offset)
                 Box(Modifier
                     .offset((resizeNodeCoordinate.x - coordinate.x).toDp(), (resizeNodeCoordinate.y - coordinate.y).toDp())

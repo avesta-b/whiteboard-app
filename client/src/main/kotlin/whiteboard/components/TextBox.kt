@@ -1,5 +1,6 @@
 package cs346.whiteboard.client.whiteboard.components
 
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
 import androidx.compose.material.OutlinedTextField
@@ -12,6 +13,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
@@ -19,17 +22,26 @@ import cs346.whiteboard.client.ui.textSelectionColors
 import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
+import cs346.whiteboard.client.helpers.toColor
+import cs346.whiteboard.client.helpers.toTextStyle
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import cs346.whiteboard.client.whiteboard.WhiteboardController
-import cs346.whiteboard.shared.jsonmodels.ComponentState
-import cs346.whiteboard.shared.jsonmodels.ComponentType
+import cs346.whiteboard.shared.jsonmodels.*
+import java.awt.Rectangle
 import java.lang.ref.WeakReference
 import java.util.*
 
+val defaultTextBoxSize = Size(500f, 250f)
+val defaultFont = TextFont.DEFAULT
+val defaultFontSize = TextSize.SMALL
+
 class TextBox(
     override var coordinate: MutableState<Offset>,
-    override var size: MutableState<Size>,
+    override var size: MutableState<Size> = mutableStateOf(defaultTextBoxSize),
+    override var color: MutableState<ComponentColor> = mutableStateOf(defaultComponentColor),
     override var depth: Float,
+    var font: MutableState<TextFont> = mutableStateOf(defaultFont),
+    var fontSize: MutableState<TextSize> = mutableStateOf(defaultFontSize),
     initialWord: String = "",
     uuid: String = UUID.randomUUID().toString(),
     private val webSocketEventHandler: WeakReference<WebSocketEventHandler>
@@ -47,13 +59,28 @@ class TextBox(
     override fun toComponentState(): ComponentState {
         var res = super.toComponentState()
         res.text = text.value.text
+        res.textFont = font.value
+        res.textSize = fontSize.value
         return res
+    }
+
+    override fun smallestPossibleSize(): Size {
+        return Size(250f, 100f)
+    }
+
+    private fun getFontSize(scale: Float): Float {
+        return scale * when(fontSize.value) {
+            TextSize.SMALL -> 16f
+            TextSize.MEDIUM -> 32f
+            TextSize.LARGE -> 64f
+        }
     }
 
     @Composable
     override fun drawComposableComponent(controller: WhiteboardController) {
         ComposableTextField(
             text = text,
+            scale = controller.whiteboardZoom,
             modifier = getModifier(controller)
                 .onFocusChanged {
                     if (it.isFocused) {
@@ -71,10 +98,11 @@ class TextBox(
     @Composable
     private fun ComposableTextField(
         text: MutableState<TextFieldValue>,
+        scale: Float,
         modifier: Modifier
     ) {
         CompositionLocalProvider(LocalTextSelectionColors provides textSelectionColors) {
-            OutlinedTextField(
+            BasicTextField(
                 value = text.value,
                 onValueChange = {
                     text.value = it
@@ -86,24 +114,12 @@ class TextBox(
 
                 enabled = isFocused.value,
                 modifier = modifier,
-                textStyle = Typography.subtitle1,
+                textStyle = font.value.toTextStyle(getFontSize(scale)),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.None,
                     autoCorrect = false
                 ),
-                singleLine = false,
-                shape = Shapes.small,
-                colors = TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = Colors.primary,
-                    disabledTextColor = Colors.secondaryVariant,
-                    cursorColor = Colors.primary,
-                    focusedBorderColor = Colors.primary,
-                    unfocusedBorderColor = Colors.secondaryVariant,
-                    disabledBorderColor = Colors.secondaryVariant,
-                    focusedLabelColor = Colors.primary,
-                    unfocusedLabelColor = Colors.secondaryVariant,
-                    disabledLabelColor = Colors.secondaryVariant
-                ),
+                singleLine = false
             )
         }
     }
@@ -112,7 +128,10 @@ class TextBox(
         return TextBox(
             mutableStateOf(Offset(coordinate.value.x, coordinate.value.y)),
             mutableStateOf(size.value),
+            mutableStateOf(color.value),
             depth = depth,
+            font = mutableStateOf(font.value),
+            fontSize = mutableStateOf(fontSize.value),
             initialWord = text.value.text,
             webSocketEventHandler = webSocketEventHandler
         )

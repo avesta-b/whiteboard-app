@@ -29,19 +29,62 @@ data class Size(val width: Float = 0f, val height: Float = 0f)
 enum class ComponentType(val value: String) {
     TEXT_BOX("TEXT_BOX"),
     PATH("PATH"),
-    SQUARE("SQUARE"),
-    CIRCLE("CIRCLE")
+    SHAPE("SHAPE")
+}
+
+@Serializable
+enum class ComponentColor {
+    BLACK, RED, ORANGE, YELLOW, GREEN, BLUE, PURPLE, WHITE
+}
+
+@Serializable
+enum class PathType {
+    BRUSH, HIGHLIGHTER, PAINT
+}
+
+enum class PathThickness {
+    THIN, THICK, EXTRA_THICK
+}
+
+@Serializable
+enum class ShapeType {
+    SQUARE, RECTANGLE, TRIANGLE, CIRCLE
+}
+
+@Serializable
+enum class ShapeFill {
+    FILL, OUTLINE
+}
+
+@Serializable
+enum class TextFont {
+    DEFAULT, COMIC, MONO
+}
+
+enum class TextSize {
+    SMALL, MEDIUM, LARGE
 }
 
 @Serializable
 data class ComponentState(
+    // Shared
     var uuid: String = "",
-    var componentType: ComponentType = ComponentType.SQUARE,
+    var componentType: ComponentType = ComponentType.SHAPE,
     var size: Size = Size(),
     var position: Position = Position(),
     var depth: Float = 0f,
-    var path: List<Position>? = null, // exists for path component
-    var text: String? = null // exists for text box
+    var color: ComponentColor = ComponentColor.BLACK,
+    // Path component
+    var path: List<Position>? = null,
+    var pathType: PathType? = null,
+    var pathThickness: PathThickness? = null,
+    // Shape component
+    var shapeType: ShapeType? = null,
+    var shapeFill: ShapeFill? = null,
+    // Textbox component
+    var text: String? = null,
+    var textFont: TextFont? = null,
+    var textSize: TextSize? = null
 )
 
 @Serializable

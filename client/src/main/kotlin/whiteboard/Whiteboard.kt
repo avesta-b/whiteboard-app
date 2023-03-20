@@ -15,6 +15,7 @@ import cs346.whiteboard.client.whiteboard.edit.QueryBox
 import cs346.whiteboard.client.whiteboard.edit.SelectionBox
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbar
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardTopBar
+import cs346.whiteboard.client.whiteboard.interaction.WhiteboardZoomControl
 import cs346.whiteboard.client.whiteboard.overlay.Background
 import cs346.whiteboard.client.whiteboard.overlay.Cursors
 import kotlinx.coroutines.coroutineScope
@@ -25,6 +26,7 @@ object WhiteboardLayerZIndices {
     const val cursors: Float = 1f
     const val selectionBox: Float = 2f
     const val queryBox: Float = 3f
+    const val zoomControl: Float = 4f
     const val toolbar: Float = 4f
     const val topBar: Float = 4f
 }
@@ -99,9 +101,11 @@ fun Whiteboard(
             }
         }
 
-
         // Toolbar
         WhiteboardToolbar(whiteboardController, Modifier.align(Alignment.BottomCenter))
+
+        // Zoom control
+        WhiteboardZoomControl(whiteboardController, Modifier.align(Alignment.BottomStart))
 
         // Top bar
         WhiteboardTopBar(whiteboardController, Modifier.align(Alignment.TopCenter))

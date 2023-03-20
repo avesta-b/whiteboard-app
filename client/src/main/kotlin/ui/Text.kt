@@ -128,6 +128,15 @@ fun SecondaryBodyText(text: String) {
 }
 
 @Composable
+fun SmallBodyText(text: String) {
+    Text(
+        text = text,
+        color = Colors.secondary,
+        style = Typography.bodySmall
+    )
+}
+
+@Composable
 fun ErrorText(text: String) {
     Text(
         text = text,

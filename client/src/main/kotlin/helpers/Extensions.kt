@@ -8,14 +8,16 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
+import cs346.whiteboard.client.constants.Typography
+import cs346.whiteboard.client.constants.textBoxComic
+import cs346.whiteboard.client.constants.textBoxDefault
+import cs346.whiteboard.client.constants.textBoxMono
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import cs346.whiteboard.client.whiteboard.components.*
-import cs346.whiteboard.shared.jsonmodels.ComponentState
-import cs346.whiteboard.shared.jsonmodels.ComponentType
-import cs346.whiteboard.shared.jsonmodels.Position
-import cs346.whiteboard.shared.jsonmodels.Size
+import cs346.whiteboard.shared.jsonmodels.*
 import java.lang.ref.WeakReference
 import kotlin.math.roundToInt
 
@@ -51,6 +53,27 @@ fun Modifier.bottomBorder(strokeWidth: Dp, color: Color) = composed(
     }
 )
 
+fun ComponentColor.toColor(): Color {
+    return when(this) {
+        ComponentColor.BLACK -> Color.Black
+        ComponentColor.RED -> Color.Red
+        ComponentColor.ORANGE -> Color(255, 165, 0)
+        ComponentColor.YELLOW -> Color.Yellow
+        ComponentColor.GREEN -> Color.Green
+        ComponentColor.BLUE -> Color.Blue
+        ComponentColor.PURPLE -> Color(160, 32, 240)
+        ComponentColor.WHITE -> Color.White
+    }
+}
+
+fun TextFont.toTextStyle(size: Float): TextStyle {
+    return when(this) {
+        TextFont.DEFAULT -> Typography.textBoxDefault(size)
+        TextFont.COMIC -> Typography.textBoxComic(size)
+        TextFont.MONO -> Typography.textBoxMono(size)
+    }
+}
+
 fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
     when(componentType) {
         ComponentType.TEXT_BOX -> {
@@ -58,34 +81,37 @@ fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
                 uuid = uuid,
                 coordinate = mutableStateOf(position.toOffset()),
                 size = mutableStateOf(size.toSize()),
+                color = mutableStateOf(color),
                 depth = depth,
+                font = mutableStateOf(textFont ?: TextFont.DEFAULT),
+                fontSize = mutableStateOf(textSize ?: TextSize.SMALL),
                 initialWord = text ?: "",
                 webSocketEventHandler = WeakReference(eventHandler)
             )
         }
-
         ComponentType.PATH -> {
             val path = Path(
                 coordinate = mutableStateOf(position.toOffset()),
                 size = mutableStateOf(size.toSize()),
+                color = mutableStateOf(color),
                 depth = depth,
-                uuid = uuid
+                uuid = uuid,
+                type = mutableStateOf(pathType ?: PathType.BRUSH),
+                thickness = mutableStateOf(pathThickness ?: PathThickness.THIN)
             )
             this.path?.forEach { path.insertPoint(it.toOffset()) }
             return path
         }
-
-        else -> { // Square and Circle case
-            val type: ShapeTypes = if (componentType == ComponentType.SQUARE) { ShapeTypes.SQUARE }
-            else { ShapeTypes.CIRCLE }
+        ComponentType.SHAPE -> {
             return Shape(
                 uuid = uuid,
                 coordinate = mutableStateOf(position.toOffset()),
                 size = mutableStateOf(size.toSize()),
+                color = mutableStateOf(color),
                 depth = depth,
-                type = type
+                type = mutableStateOf(shapeType ?: ShapeType.SQUARE),
+                fill = mutableStateOf(shapeFill ?: ShapeFill.OUTLINE)
             )
         }
-
     }
 }
