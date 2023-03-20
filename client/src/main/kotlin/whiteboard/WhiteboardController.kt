@@ -17,6 +17,7 @@ import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.DeleteComponent
+import cs346.whiteboard.shared.jsonmodels.ShapeType
 import cs346.whiteboard.shared.jsonmodels.WhiteboardState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -184,13 +185,14 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     }
                 }
             }
-            WhiteboardToolbarOptions.PEN -> {
+            WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
                 selectionBoxController.clearSelectionBox()
                 val whiteboardStartPoint = viewToWhiteboardCoordinate(startPoint)
                 val path = Path(
-                    mutableStateOf(whiteboardStartPoint),
-                    mutableStateOf(Size(1f, 1f)),
-                    preIncrementCurrentDepth()
+                    coordinate = mutableStateOf(whiteboardStartPoint),
+                    size = mutableStateOf(Size(1f, 1f)),
+                    depth = preIncrementCurrentDepth(),
+                    type = mutableStateOf(currentTool.getPathType())
                 )
                 path.insertPoint(whiteboardStartPoint)
                 components[path.uuid] = path
@@ -234,7 +236,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             WhiteboardToolbarOptions.PAN -> {
                 whiteboardOffset = whiteboardOffset.plus(dragAmount.div(whiteboardZoom))
             }
-            WhiteboardToolbarOptions.PEN -> {
+            WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
                 components[lastComponentId]?.let {
                     if (it !is Path) return
                     it.insertPoint(whiteboardPoint)
@@ -271,7 +273,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             WhiteboardToolbarOptions.PAN -> {
                 cursorsController.currentCursor = CursorType.HAND
             }
-            WhiteboardToolbarOptions.PEN -> {
+            WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
                 components[lastComponentId]?.let {
                     webSocketEventHandler.componentEventController.add(it)
                 }
@@ -290,46 +292,36 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     selectionBoxController.selectedSingleComponent(it)
                 }
             }
-            WhiteboardToolbarOptions.PEN -> {
+            WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
                 val path = Path(
-                    mutableStateOf(whiteboardPoint),
-                    mutableStateOf(Size(1f, 1f)),
-                    preIncrementCurrentDepth()
+                    coordinate = mutableStateOf(whiteboardPoint),
+                    size = mutableStateOf(Size(1f, 1f)),
+                    depth = preIncrementCurrentDepth(),
+                    type = mutableStateOf(currentTool.getPathType())
                 )
                 path.insertPoint(whiteboardPoint)
                 path.insertPoint(whiteboardPoint)
                 components[path.uuid] = path
                 webSocketEventHandler.componentEventController.add(path)
             }
-            WhiteboardToolbarOptions.SQUARE -> {
-                val square = Shape(
-                    mutableStateOf(whiteboardPoint),
-                    mutableStateOf(Size(250f, 250f)),
-                    preIncrementCurrentDepth(),
-                    ShapeTypes.SQUARE
-                )
-                components[square.uuid] = square
-                selectionBoxController.selectedSingleComponent(square)
-                currentTool = WhiteboardToolbarOptions.SELECT
-                webSocketEventHandler.componentEventController.add(square)
-            }
+            WhiteboardToolbarOptions.SQUARE,
+            WhiteboardToolbarOptions.RECTANGLE,
+            WhiteboardToolbarOptions.TRIANGLE,
             WhiteboardToolbarOptions.CIRCLE -> {
-                val circle = Shape(
-                    mutableStateOf(whiteboardPoint),
-                    mutableStateOf(Size(250f, 250f)),
-                    preIncrementCurrentDepth(),
-                    ShapeTypes.CIRCLE
+                val shape = Shape(
+                    coordinate = mutableStateOf(whiteboardPoint),
+                    depth = preIncrementCurrentDepth(),
+                    type = mutableStateOf(currentTool.getShapeType())
                 )
-                components[circle.uuid] = circle
-                selectionBoxController.selectedSingleComponent(circle)
+                components[shape.uuid] = shape
+                selectionBoxController.selectedSingleComponent(shape)
                 currentTool = WhiteboardToolbarOptions.SELECT
-                webSocketEventHandler.componentEventController.add(circle)
+                webSocketEventHandler.componentEventController.add(shape)
             }
             WhiteboardToolbarOptions.TEXT -> {
                 val textBox = TextBox(
-                    mutableStateOf(whiteboardPoint),
-                    mutableStateOf(Size(350f, 250f)),
-                    preIncrementCurrentDepth(),
+                    coordinate = mutableStateOf(whiteboardPoint),
+                    depth = preIncrementCurrentDepth(),
                     initialWord = "",
                     webSocketEventHandler= WeakReference(webSocketEventHandler)
                 )

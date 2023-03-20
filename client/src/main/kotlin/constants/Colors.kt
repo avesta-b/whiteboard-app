@@ -24,3 +24,6 @@ val Colors.backgroundDotColor: Color
 
 val Colors.queryBoxColor: Color
     get() = Colors.secondaryVariant.copy(alpha = 0.2f)
+
+val Colors.highlightedIconButtonColor: Color
+    get() = Colors.secondaryVariant.copy(alpha = 0.4f)

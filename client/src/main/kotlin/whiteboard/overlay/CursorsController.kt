@@ -40,9 +40,23 @@ enum class CursorType {
     },
     HIGHLIGHTER {
         override fun icon(): CustomIcon = CustomIcon.HIGHLIGHTER
+        override fun point(): Point = Point(0, 18)
     },
-    SHAPE {
-        override fun icon(): CustomIcon = CustomIcon.SHAPE
+    PAINT {
+        override fun icon(): CustomIcon = CustomIcon.PAINT
+        override fun point(): Point = Point(0, 18)
+    },
+    SQUARE {
+        override fun icon(): CustomIcon = CustomIcon.SQUARE
+    },
+    RECTANGLE {
+        override fun icon(): CustomIcon = CustomIcon.RECTANGLE
+    },
+    TRIANGLE {
+        override fun icon(): CustomIcon = CustomIcon.TRIANGLE
+    },
+    CIRCLE {
+        override fun icon(): CustomIcon = CustomIcon.CIRCLE
     },
     TEXTFIELD {
         override fun icon(): CustomIcon = CustomIcon.TEXTFIELD
@@ -56,7 +70,6 @@ enum class CursorType {
     open fun point(): Point {
         return Point(12, 12)
     }
-
 
 }
 
@@ -102,6 +115,7 @@ class CursorsController(
     }
 
     fun getCurrentCursor(): Cursor {
+        if (currentCursor == CursorType.POINTER) return Cursor.getDefaultCursor()
         return Toolkit.getDefaultToolkit().createCustomCursor(currentCursor.icon().image(), currentCursor.point(), "cursor")
     }
 }

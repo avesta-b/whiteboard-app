@@ -42,7 +42,7 @@ data class SelectionBoxData(
     val size: Size,
     val resizeNodeAnchor: ResizeNode?,
     val isResizable: Boolean,
-    val resizeNodeSize: Size = Size(20f, 20f)
+    val resizeNodeSize: Size = Size(30f, 30f)
 )
 class SelectionBoxController {
     var selectionBoxData by mutableStateOf<SelectionBoxData?>(null)

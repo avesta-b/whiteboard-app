@@ -16,11 +16,13 @@ import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.helpers.toSize
 import cs346.whiteboard.client.whiteboard.edit.ResizeNode
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.ComponentType
 import cs346.whiteboard.shared.jsonmodels.Position
 import java.util.*
 
+val defaultComponentColor = ComponentColor.BLACK
 
 abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
 
@@ -31,6 +33,8 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
     abstract var coordinate: MutableState<Offset>
 
     abstract var size: MutableState<Size>
+
+    abstract var color: MutableState<ComponentColor>
 
     abstract fun getComponentType(): ComponentType
 
@@ -53,7 +57,7 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
     }
 
     @Composable
-    fun getModifier(controller: WhiteboardController): Modifier {
+    open fun getModifier(controller: WhiteboardController): Modifier {
         val componentViewCoordinate = controller.whiteboardToViewCoordinate(coordinate.value)
         return Modifier
             .wrapContentSize(Alignment.TopStart, true)

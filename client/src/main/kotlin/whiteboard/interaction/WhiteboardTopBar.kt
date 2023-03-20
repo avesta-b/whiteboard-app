@@ -20,8 +20,11 @@ import cs346.whiteboard.client.ui.PrimarySubtitleText
 import cs346.whiteboard.client.ui.TooltipText
 import cs346.whiteboard.client.ui.UserIconText
 import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.Shapes
+import cs346.whiteboard.client.helpers.CustomIcon
 import cs346.whiteboard.client.helpers.bottomBorder
 import cs346.whiteboard.client.helpers.getUserColor
+import cs346.whiteboard.client.ui.CustomIconButton
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
 import java.awt.Cursor
@@ -37,11 +40,13 @@ fun WhiteboardTopBar(whiteboardController: WhiteboardController, modifier: Modif
         .zIndex(WhiteboardLayerZIndices.topBar)
         .pointerHoverIcon(PointerIcon(Cursor.getDefaultCursor()))) {
         Row(modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = {
-                whiteboardController.exitWhiteboard()
-            }) {
-                Icon(Icons.Filled.ArrowBack, "back")
-            }
+            CustomIconButton(
+                icon = CustomIcon.BACK,
+                shape = Shapes.large,
+                onClick = {
+                    whiteboardController.exitWhiteboard()
+                }
+            )
             Spacer(Modifier.weight(1f))
             LazyRow {
                 items(whiteboardController.userLobbyController.usersInLobby, key = { it }) {

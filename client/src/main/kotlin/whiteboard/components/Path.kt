@@ -9,19 +9,24 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import cs346.whiteboard.client.helpers.toColor
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.whiteboard.edit.ResizeNode
 import cs346.whiteboard.client.whiteboard.WhiteboardController
-import cs346.whiteboard.shared.jsonmodels.ComponentState
-import cs346.whiteboard.shared.jsonmodels.ComponentType
-import cs346.whiteboard.shared.jsonmodels.Position
+import cs346.whiteboard.shared.jsonmodels.*
 import java.util.*
+
+val defaultPathThickness = PathThickness.THIN
 
 class Path(
     override var coordinate: MutableState<Offset>,
     override var size: MutableState<Size>,
+    override var color: MutableState<ComponentColor> = mutableStateOf(defaultComponentColor),
     override var depth: Float,
+    var type: MutableState<PathType>,
+    var thickness: MutableState<PathThickness> = mutableStateOf(defaultPathThickness),
     uuid: String = UUID.randomUUID().toString()
 ) : Component(uuid) {
 
@@ -32,6 +37,8 @@ class Path(
     override fun toComponentState(): ComponentState {
         var res = super.toComponentState()
         res.path = points.map { Position(it.x, it.y) }
+        res.pathType = type.value
+        res.pathThickness = thickness.value
         return res
     }
 
@@ -41,20 +48,76 @@ class Path(
         newState.path?.map { it.toOffset() }?.forEach { points.add(it) }
     }
 
+    private fun drawPath(scope: DrawScope, controller: WhiteboardController) {
+        when (type.value) {
+            PathType.BRUSH -> {
+                scope.drawPath(
+                    createPathFromPoints(points, controller),
+                    color = color.value.toColor(),
+                    alpha = 1f,
+                    style = Stroke(
+                        width = getStrokeWidth(controller.whiteboardZoom),
+                        cap = StrokeCap.Round,
+                        join = StrokeJoin.Round,
+                        pathEffect = PathEffect.cornerPathEffect(getStrokeWidth(controller.whiteboardZoom))
+                    )
+                )
+            }
+            PathType.HIGHLIGHTER -> {
+                scope.drawPath(
+                    createPathFromPoints(points, controller),
+                    color = color.value.toColor(),
+                    alpha = 0.4f,
+                    style = Stroke(
+                        width = getStrokeWidth(controller.whiteboardZoom),
+                        cap = StrokeCap.Square,
+                        join = StrokeJoin.Miter,
+                        pathEffect = PathEffect.cornerPathEffect(getStrokeWidth(controller.whiteboardZoom))
+                    )
+                )
+            }
+            PathType.PAINT -> {
+                scope.drawPath(
+                    createPathFromPoints(points, controller),
+                    brush = Brush.horizontalGradient(
+                        0.0f to color.value.toColor(),
+                        0.25f to Color.Red,
+                        0.5f to Color.Green,
+                        0.75f to Color.Blue,
+                        1.0f to color.value.toColor(),
+                    ),
+                    alpha = 1f,
+                    style = Stroke(
+                        width = getStrokeWidth(controller.whiteboardZoom),
+                        cap = StrokeCap.Square,
+                        join = StrokeJoin.Round,
+                        pathEffect = PathEffect.cornerPathEffect(getStrokeWidth(controller.whiteboardZoom))
+                    )
+                )
+            }
+        }
+    }
+
+    private fun getStrokeWidth(scale: Float): Float {
+        return scale * getStrokeMultiplier() * when (thickness.value) {
+            PathThickness.THIN -> 10f
+            PathThickness.THICK -> 20f
+            PathThickness.EXTRA_THICK -> 30f
+        }
+    }
+
+    private fun getStrokeMultiplier(): Float {
+        return when(type.value) {
+            PathType.BRUSH -> 1f
+            PathType.HIGHLIGHTER -> 2f
+            PathType.PAINT -> 2.5f
+        }
+    }
+
     @Composable
     override fun drawComposableComponent(controller: WhiteboardController) {
         Canvas(getModifier(controller)) {
-            drawPath(
-                createPathFromPoints(points, controller),
-                color = Color.Black,
-                alpha = 1f,
-                style = Stroke(
-                    width = 10f * controller.whiteboardZoom,
-                    cap = StrokeCap.Round,
-                    join = StrokeJoin.Round,
-                    pathEffect = PathEffect.cornerPathEffect(10f * controller.whiteboardZoom)
-                )
-            )
+            drawPath(this, controller)
         }
     }
 
@@ -62,7 +125,10 @@ class Path(
         val component = Path(
             mutableStateOf(Offset(coordinate.value.x, coordinate.value.y)),
             mutableStateOf(size.value),
-            depth
+            mutableStateOf(color.value),
+            depth,
+            mutableStateOf(type.value),
+            mutableStateOf(thickness.value)
         )
 
         points.forEach {
