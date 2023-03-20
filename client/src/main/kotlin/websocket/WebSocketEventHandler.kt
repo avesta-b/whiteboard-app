@@ -34,9 +34,10 @@ class WebSocketEventHandler(private val username: String,
                             private val roomId: String,
                             private val whiteboardController: WhiteboardController) {
 
-    private var baseUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
+
     private val localbaseUrl: String = "ws://" + BaseUrlProvider.HOST + "/ws"
     private val remoteUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
+    private var baseUrl: String = if(MenuBarState.isLocal) localbaseUrl else remoteUrl
     private val subscribePath: String = "/topic/whiteboard/${roomId}"
     private var session: StompSession? = null
     private var stompClient: StompClient? = null
