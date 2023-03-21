@@ -9,14 +9,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
 import cs346.whiteboard.client.helpers.CustomIcon
-import cs346.whiteboard.client.helpers.getResource
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import cs346.whiteboard.shared.jsonmodels.Position
 import java.awt.Cursor
 import java.awt.Point
 import java.awt.Toolkit
 import java.lang.ref.WeakReference
-import javax.imageio.ImageIO
 
 enum class CursorType {
     POINTER {
@@ -78,7 +76,7 @@ class CursorsController(
     private val handler: WeakReference<WebSocketEventHandler>
 ) {
 
-    private var ownCursorPosition: Offset = Offset.Zero
+    internal var ownCursorPosition: Offset = Offset.Zero
     val friendCursorPositions = mutableStateMapOf<String, Animatable<Offset, AnimationVector2D>>()
 
     private val sendSuffix: String = ".updateCursor"

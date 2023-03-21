@@ -46,8 +46,8 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     private var lastComponentId = ""
     private var currentDepth = 0f
-    private var isDraggingSelectionBox = false
-    private var isResizingSelectionBox = false
+    internal var isDraggingSelectionBox = false
+    internal var isResizingSelectionBox = false
 
     internal val clipboard = Clipboard
 
