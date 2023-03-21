@@ -33,6 +33,11 @@ dependencies {
     implementation("org.slf4j:slf4j-simple:1.7.9")
     implementation(project(":shared"))
     testImplementation("io.mockk:mockk:1.13.4")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.8.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.8.2")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     testImplementation(kotlin("test"))
 }
 
