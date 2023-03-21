@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -99,11 +100,11 @@ fun SecondarySubtitleText(text: String) {
 }
 
 @Composable
-fun PrimarySubtitleText(text: String, modifier: Modifier = Modifier) {
+fun PrimarySubtitleText(text: String, style: TextStyle = Typography.subtitle2, modifier: Modifier = Modifier) {
     Text(
         text = text,
         color = Colors.primary,
-        style = Typography.subtitle2,
+        style = style,
         modifier = modifier
     )
 }

@@ -40,7 +40,7 @@ fun main() = application {
         onKeyEvent = WhiteboardEventHandler::onKeyEventHandler
     ){
         createMenuBar(state, this)
-        window.minimumSize = Dimension(800, 600) // set minimum size
+        window.minimumSize = Dimension(1000, 800) // set minimum size
         //add handler for window size persistence
         window.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(componentEvent: ComponentEvent?) {

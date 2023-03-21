@@ -53,6 +53,29 @@ fun Modifier.bottomBorder(strokeWidth: Dp, color: Color) = composed(
     }
 )
 
+fun PathType.toIcon(): CustomIcon {
+    return when(this) {
+        PathType.BRUSH -> CustomIcon.BRUSH
+        PathType.HIGHLIGHTER -> CustomIcon.HIGHLIGHTER
+        PathType.PAINT -> CustomIcon.PAINT
+    }
+}
+
+fun PathThickness.toFloat(): Float {
+    return when(this) {
+        PathThickness.THIN -> 10f
+        PathThickness.THICK -> 20f
+        PathThickness.EXTRA_THICK -> 30f
+    }
+}
+
+fun ShapeFill.description(): String {
+    return when(this) {
+        ShapeFill.FILL -> "Solid"
+        ShapeFill.OUTLINE -> "Outline"
+    }
+}
+
 fun ComponentColor.toColor(): Color {
     return when(this) {
         ComponentColor.BLACK -> Color.Black
@@ -71,6 +94,22 @@ fun TextFont.toTextStyle(size: Float): TextStyle {
         TextFont.DEFAULT -> Typography.textBoxDefault(size)
         TextFont.COMIC -> Typography.textBoxComic(size)
         TextFont.MONO -> Typography.textBoxMono(size)
+    }
+}
+
+fun TextSize.description(): String {
+    return when(this) {
+        TextSize.SMALL -> "Small"
+        TextSize.MEDIUM -> "Medium"
+        TextSize.LARGE -> "Large"
+    }
+}
+
+fun TextSize.toFloat(): Float {
+    return when(this) {
+        TextSize.SMALL -> 16f
+        TextSize.MEDIUM -> 32f
+        TextSize.LARGE -> 64f
     }
 }
 

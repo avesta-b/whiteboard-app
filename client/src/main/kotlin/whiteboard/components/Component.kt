@@ -16,6 +16,7 @@ import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.helpers.toSize
 import cs346.whiteboard.client.whiteboard.edit.ResizeNode
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.edit.EditPaneAttribute
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.ComponentType
@@ -36,12 +37,15 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
 
     abstract var color: MutableState<ComponentColor>
 
+    abstract val editPaneAttributes: List<EditPaneAttribute>
+
     abstract fun getComponentType(): ComponentType
 
     open fun toComponentState(): ComponentState {
         return ComponentState(
             uuid=uuid,
             depth=depth,
+            color = color.value,
             componentType = getComponentType(),
             size = cs346.whiteboard.shared.jsonmodels.Size(size.value.width, size.value.height),
             position = Position(coordinate.value.x, coordinate.value.y)
@@ -54,6 +58,7 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
             coordinate.value = newState.position.toOffset()
         }
         if (size.value != newState.size.toSize()) { size.value = newState.size.toSize() }
+        color.value = newState.color
     }
 
     @Composable

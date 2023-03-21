@@ -3,24 +3,21 @@ package whiteboard.edit
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import cs346.whiteboard.client.helpers.Quadruple
-import cs346.whiteboard.client.whiteboard.components.Component
+import cs346.whiteboard.client.whiteboard.edit.EditController
 import cs346.whiteboard.client.whiteboard.edit.ResizeNode
-import cs346.whiteboard.client.whiteboard.edit.SelectionBoxController
 import cs346.whiteboard.client.whiteboard.edit.SelectionBoxData
-import kotlinx.coroutines.selects.select
 import org.junit.jupiter.api.BeforeEach
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 
-class SelectionBoxControllerTest {
-    private lateinit var selectionBoxController: SelectionBoxController
+class EditControllerTest {
+    private lateinit var editController: EditController
     private lateinit var selectionBoxData: SelectionBoxData
     @BeforeEach
     fun setUp() {
-        selectionBoxController = SelectionBoxController()
+        editController = EditController()
         selectionBoxData = SelectionBoxData(
             emptyList(),
             Offset(0f, 0f),
@@ -32,8 +29,8 @@ class SelectionBoxControllerTest {
 
     @Test
     fun testPointInResizeNodeWithNoSelectionBox() {
-        assertNull(selectionBoxController.pointInResizeNode(Offset(0.0F, 0F), true))
-        assertNull(selectionBoxController.pointInResizeNode(Offset(10F, 10F), true))
+        assertNull(editController.pointInResizeNode(Offset(0.0F, 0F), true))
+        assertNull(editController.pointInResizeNode(Offset(10F, 10F), true))
     }
 
     @Test
@@ -55,7 +52,7 @@ class SelectionBoxControllerTest {
             Offset(coordinate.x, coordinate.y + size.height).minus(Offset(5f, 5f)),
             Offset(coordinate.x + size.width, coordinate.y + size.height).minus(Offset(5f, 5f))
         )
-        val actual = selectionBoxController.getSelectionBoxResizeNodeCoordinates(selectionBoxData)
+        val actual = editController.getSelectionBoxResizeNodeCoordinates(selectionBoxData)
         assertEquals(expected, actual)
     }
     @Test
@@ -72,9 +69,9 @@ class SelectionBoxControllerTest {
             resizeNodeSize
         )
         val expected = null
-        val actual = selectionBoxController.pointInResizeNode(Offset(5f, 5f), false)
+        val actual = editController.pointInResizeNode(Offset(5f, 5f), false)
         assertEquals(expected, actual)
-        assertNull(selectionBoxController.selectionBoxData?.resizeNodeAnchor)
+        assertNull(editController.selectionBoxData?.resizeNodeAnchor)
     }
 
 

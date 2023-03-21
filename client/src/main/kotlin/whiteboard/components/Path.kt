@@ -12,9 +12,11 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import cs346.whiteboard.client.helpers.toColor
+import cs346.whiteboard.client.helpers.toFloat
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.whiteboard.edit.ResizeNode
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.edit.EditPaneAttribute
 import cs346.whiteboard.shared.jsonmodels.*
 import java.util.*
 
@@ -29,6 +31,12 @@ class Path(
     var thickness: MutableState<PathThickness> = mutableStateOf(defaultPathThickness),
     uuid: String = UUID.randomUUID().toString()
 ) : Component(uuid) {
+
+    override val editPaneAttributes = listOf(
+        EditPaneAttribute.COLOR,
+        EditPaneAttribute.PATH_TYPE,
+        EditPaneAttribute.PATH_THICKNESS
+    )
 
     private var points = mutableStateListOf<Offset>()
 
@@ -46,6 +54,8 @@ class Path(
         super.setState(newState)
         points.clear()
         newState.path?.map { it.toOffset() }?.forEach { points.add(it) }
+        newState.pathType?.let { type.value = it }
+        newState.pathThickness?.let { thickness.value = it }
     }
 
     private fun drawPath(scope: DrawScope, controller: WhiteboardController) {
@@ -99,11 +109,7 @@ class Path(
     }
 
     private fun getStrokeWidth(scale: Float): Float {
-        return scale * getStrokeMultiplier() * when (thickness.value) {
-            PathThickness.THIN -> 10f
-            PathThickness.THICK -> 20f
-            PathThickness.EXTRA_THICK -> 30f
-        }
+        return scale * getStrokeMultiplier() * thickness.value.toFloat()
     }
 
     private fun getStrokeMultiplier(): Float {

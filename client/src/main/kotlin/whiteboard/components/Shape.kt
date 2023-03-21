@@ -17,7 +17,9 @@ import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.triangle
 import cs346.whiteboard.client.helpers.toColor
+import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.edit.EditPaneAttribute
 import cs346.whiteboard.shared.jsonmodels.*
 import java.util.*
 
@@ -34,10 +36,21 @@ class Shape(
     uuid: String = UUID.randomUUID().toString()
 ) : Component(uuid) {
 
+    override val editPaneAttributes = listOf(
+        EditPaneAttribute.COLOR,
+        EditPaneAttribute.SHAPE_FILL
+    )
+
     init {
         if (type.value == ShapeType.RECTANGLE && size.value == defaultShapeSize) {
             size.value = Size(defaultShapeSize.width * 2, defaultShapeSize.height)
         }
+    }
+
+    override fun setState(newState: ComponentState) {
+        super.setState(newState)
+        newState.shapeType?.let { type.value = it }
+        newState.shapeFill?.let { fill.value = it }
     }
 
     override fun getComponentType(): ComponentType {
