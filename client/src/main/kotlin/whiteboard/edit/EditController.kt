@@ -10,6 +10,11 @@ import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.helpers.toList
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.client.whiteboard.components.Component
+import cs346.whiteboard.client.whiteboard.components.Path
+import cs346.whiteboard.client.whiteboard.components.Shape
+import cs346.whiteboard.client.whiteboard.components.TextBox
+import cs346.whiteboard.shared.jsonmodels.*
+import org.w3c.dom.Text
 import kotlin.math.absoluteValue
 
 enum class ResizeNode {
@@ -36,6 +41,15 @@ enum class ResizeNode {
     }
 }
 
+enum class EditPaneAttribute {
+    COLOR,
+    PATH_TYPE,
+    PATH_THICKNESS,
+    SHAPE_FILL,
+    TEXT_FONT,
+    TEXT_SIZE
+}
+
 data class SelectionBoxData(
     val selectedComponents: List<Component>,
     var coordinate: Offset,
@@ -44,7 +58,7 @@ data class SelectionBoxData(
     val isResizable: Boolean,
     val resizeNodeSize: Size = Size(30f, 30f)
 )
-class SelectionBoxController {
+class EditController {
     var selectionBoxData by mutableStateOf<SelectionBoxData?>(null)
         private set
 
@@ -167,6 +181,124 @@ class SelectionBoxController {
                 component.move(dragAmount)
             }
             selectionBoxData = it.copy(coordinate = it.coordinate.plus(dragAmount))
+        }
+    }
+
+    fun selectedComponentsSharedColor(): ComponentColor? {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return null
+            val color = it.selectedComponents.first().color.value
+            it.selectedComponents.forEach { component -> if (component.color.value != color) return null }
+            return color
+        }
+        return null
+    }
+
+    fun selectedComponentsSharedPathType(): PathType? {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return null
+            if (it.selectedComponents.first() !is Path) return null
+            val type = (it.selectedComponents.first() as Path).type.value
+            it.selectedComponents.forEach { component -> if (component !is Path || component.type.value != type) return null }
+            return type
+        }
+        return null
+    }
+
+    fun selectedComponentsSharedThickness(): PathThickness? {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return null
+            if (it.selectedComponents.first() !is Path) return null
+            val thickness = (it.selectedComponents.first() as Path).thickness.value
+            it.selectedComponents.forEach { component -> if (component !is Path || component.thickness.value != thickness) return null }
+            return thickness
+        }
+        return null
+    }
+
+    fun selectedComponentsSharedFill(): ShapeFill? {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return null
+            if (it.selectedComponents.first() !is Shape) return null
+            val fill = (it.selectedComponents.first() as Shape).fill.value
+            it.selectedComponents.forEach { component -> if (component !is Shape || component.fill.value != fill) return null }
+            return fill
+        }
+        return null
+    }
+
+    fun selectedComponentsSharedFont(): TextFont? {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return null
+            if (it.selectedComponents.first() !is TextBox) return null
+            val font = (it.selectedComponents.first() as TextBox).font.value
+            it.selectedComponents.forEach { component -> if (component !is TextBox || component.font.value != font) return null }
+            return font
+        }
+        return null
+    }
+
+    fun selectedComponentsSharedFontSize(): TextSize? {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return null
+            if (it.selectedComponents.first() !is TextBox) return null
+            val fontSize = (it.selectedComponents.first() as TextBox).fontSize.value
+            it.selectedComponents.forEach { component -> if (component !is TextBox || component.fontSize.value != fontSize) return null }
+            return fontSize
+        }
+        return null
+    }
+
+    fun setColorSelectedComponents(color: ComponentColor) {
+        selectionBoxData?.let {
+            it.selectedComponents.forEach { component ->
+                component.color.value = color
+            }
+        }
+    }
+
+    fun setPathTypeSelectedComponents(type: PathType) {
+        selectionBoxData?.let {
+            it.selectedComponents.forEach { component ->
+                if (component !is Path) return
+                component.type.value = type
+            }
+        }
+    }
+
+    fun setThicknessSelectedComponents(thickness: PathThickness) {
+        selectionBoxData?.let {
+            it.selectedComponents.forEach { component ->
+                if (component !is Path) return
+                component.thickness.value = thickness
+            }
+        }
+    }
+
+    fun setFillSelectedComponents(fill: ShapeFill) {
+        selectionBoxData?.let {
+            it.selectedComponents.forEach { component ->
+                if (component !is Shape) return
+                component.fill.value = fill
+            }
+        }
+    }
+
+    fun setFontSelectedComponents(font: TextFont) {
+        selectionBoxData?.let {
+            it.selectedComponents.forEach { component ->
+                if (component !is TextBox) return
+                component.font.value = font
+            }
+        }
+    }
+
+    fun setFontSizeSelectedComponents(fontSize: TextSize) {
+        selectionBoxData?.let {
+            it.selectedComponents.forEach { component ->
+                if (component !is TextBox) return
+                component.fontSize.value = fontSize
+            }
         }
     }
 

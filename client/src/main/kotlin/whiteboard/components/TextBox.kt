@@ -23,9 +23,11 @@ import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
 import cs346.whiteboard.client.helpers.toColor
+import cs346.whiteboard.client.helpers.toFloat
 import cs346.whiteboard.client.helpers.toTextStyle
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.edit.EditPaneAttribute
 import cs346.whiteboard.shared.jsonmodels.*
 import java.awt.Rectangle
 import java.lang.ref.WeakReference
@@ -49,11 +51,18 @@ class TextBox(
 
     val text = mutableStateOf(TextFieldValue(initialWord))
 
+    override val editPaneAttributes = listOf(
+        EditPaneAttribute.COLOR,
+        EditPaneAttribute.TEXT_FONT,
+        EditPaneAttribute.TEXT_SIZE
+    )
+
     override fun getComponentType(): ComponentType = ComponentType.TEXT_BOX
     override fun setState(newState: ComponentState) {
         super.setState(newState)
-        val newText: String = newState.text ?: return
-        text.value = TextFieldValue(newText)
+        newState.text?.let { text.value = TextFieldValue(it) }
+        newState.textFont?.let { font.value = it }
+        newState.textSize?.let { fontSize.value = it }
     }
 
     override fun toComponentState(): ComponentState {
@@ -69,11 +78,7 @@ class TextBox(
     }
 
     private fun getFontSize(scale: Float): Float {
-        return scale * when(fontSize.value) {
-            TextSize.SMALL -> 16f
-            TextSize.MEDIUM -> 32f
-            TextSize.LARGE -> 64f
-        }
+        return scale * fontSize.value.toFloat()
     }
 
     @Composable
@@ -114,7 +119,7 @@ class TextBox(
 
                 enabled = isFocused.value,
                 modifier = modifier,
-                textStyle = font.value.toTextStyle(getFontSize(scale)),
+                textStyle = font.value.toTextStyle(getFontSize(scale)).copy(color = color.value.toColor()),
                 keyboardOptions = KeyboardOptions(
                     capitalization = KeyboardCapitalization.None,
                     autoCorrect = false

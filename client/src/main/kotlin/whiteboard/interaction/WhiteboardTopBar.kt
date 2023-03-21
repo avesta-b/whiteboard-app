@@ -71,6 +71,6 @@ fun WhiteboardTopBar(whiteboardController: WhiteboardController, modifier: Modif
             }
             Spacer(Modifier.width(10.dp))
         }
-        PrimarySubtitleText(whiteboardController.getWhiteboardTitle(), Modifier.align(Alignment.Center))
+        PrimarySubtitleText(text = whiteboardController.getWhiteboardTitle(), modifier = Modifier.align(Alignment.Center))
     }
 }

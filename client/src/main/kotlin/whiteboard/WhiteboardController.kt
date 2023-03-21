@@ -11,8 +11,8 @@ import cs346.whiteboard.client.helpers.toComponent
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import cs346.whiteboard.client.whiteboard.components.*
 import cs346.whiteboard.client.whiteboard.edit.Clipboard
+import cs346.whiteboard.client.whiteboard.edit.EditController
 import cs346.whiteboard.client.whiteboard.edit.QueryBoxController
-import cs346.whiteboard.client.whiteboard.edit.SelectionBoxController
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.shared.jsonmodels.ComponentState
@@ -32,7 +32,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     internal var whiteboardZoom by mutableStateOf(1f)
     internal var whiteboardSize by mutableStateOf(Size.Zero)
     internal var queryBoxController by mutableStateOf(QueryBoxController())
-    internal var selectionBoxController by mutableStateOf(SelectionBoxController())
+    internal var editController by mutableStateOf(EditController())
 
     internal val webSocketEventHandler = WebSocketEventHandler(
         username = UserManager.getUsername() ?: "default_user",
@@ -79,10 +79,6 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         }
     }
 
-    // TODO: move components logic into its own controller
-
-
-    // MARK:
     fun viewToWhiteboardCoordinate(point: Offset): Offset {
         val zoomOrigin = Offset(whiteboardSize.width / 2, whiteboardSize.height / 2)
         return Offset(
@@ -121,7 +117,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     }
 
     fun copySelected() {
-        selectionBoxController.selectionBoxData?.let {
+        editController.selectionBoxData?.let {
             clipboard.copy(it.selectedComponents)
         }
     }
@@ -133,15 +129,16 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             components[it.uuid] = it
             webSocketEventHandler.componentEventController.add(it)
         }
-        selectionBoxController.selectedComponents(selectionData)
+        editController.clearSelectionBox()
+        editController.selectedComponents(selectionData)
     }
 
     fun deleteSelected() {
-        selectionBoxController.selectionBoxData?.selectedComponents?.forEach {
+        editController.selectionBoxData?.selectedComponents?.forEach {
             components.remove(it.uuid)
             webSocketEventHandler.componentEventController.delete(it.uuid)
         }
-        selectionBoxController.clearSelectionBox()
+        editController.clearSelectionBox()
     }
 
     private fun preIncrementCurrentDepth(): Float {
@@ -153,7 +150,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         val whiteboardPoint = viewToWhiteboardCoordinate(point)
         when (currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
-                selectionBoxController.pointInResizeNode(whiteboardPoint, false)?.let {
+                editController.pointInResizeNode(whiteboardPoint, false)?.let {
                     if (!isResizingSelectionBox) {
                         cursorsController.currentCursor = it.getResizeCursorType()
                     }
@@ -171,14 +168,14 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         val whiteboardPoint = viewToWhiteboardCoordinate(startPoint)
         when (currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
-                if (selectionBoxController.pointInResizeNode(whiteboardPoint, true) != null) {
+                if (editController.pointInResizeNode(whiteboardPoint, true) != null) {
                     isResizingSelectionBox = true
-                } else if (selectionBoxController.isPointInSelectionBox(whiteboardPoint)) {
+                } else if (editController.isPointInSelectionBox(whiteboardPoint)) {
                     isDraggingSelectionBox = true
                 } else {
-                    selectionBoxController.clearSelectionBox()
+                    editController.clearSelectionBox()
                     getComponentAtPoint(whiteboardPoint)?.let {
-                        selectionBoxController.selectedSingleComponent(it)
+                        editController.selectedSingleComponent(it)
                         isDraggingSelectionBox = true
                     } ?: run {
                         queryBoxController.startQueryBox(whiteboardPoint)
@@ -186,7 +183,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 }
             }
             WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
-                selectionBoxController.clearSelectionBox()
+                editController.clearSelectionBox()
                 val whiteboardStartPoint = viewToWhiteboardCoordinate(startPoint)
                 val path = Path(
                     coordinate = mutableStateOf(whiteboardStartPoint),
@@ -203,11 +200,11 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 cursorsController.currentCursor = CursorType.GRAB
             }
             WhiteboardToolbarOptions.ERASE -> {
-                selectionBoxController.clearSelectionBox()
+                editController.clearSelectionBox()
                 useEraser(getComponentAtPoint(whiteboardPoint)?.uuid)
             }
             else -> {
-                selectionBoxController.clearSelectionBox()
+                editController.clearSelectionBox()
                 return
             }
         }
@@ -218,13 +215,13 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         when(currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
                 if (isResizingSelectionBox) {
-                    selectionBoxController.resizeSelectedComponents(whiteboardPoint, whiteboardZoom)
+                    editController.resizeSelectedComponents(whiteboardPoint, whiteboardZoom)
                     // TODO: Figure out how to update all components while dragging them
 //                    selectionBoxController.selectionBoxData?.selectedComponents?.forEach {
 //                        webSocketEventHandler.componentEventController.add(it)
 //                    }
                 } else if (isDraggingSelectionBox) {
-                    selectionBoxController.moveSelectedComponents(dragAmount.div(whiteboardZoom))
+                    editController.moveSelectedComponents(dragAmount.div(whiteboardZoom))
                     // TODO: Figure out how to update all components while dragging them
 //                    selectionBoxController.selectionBoxData?.selectedComponents?.forEach {
 //                        webSocketEventHandler.componentEventController.add(it)
@@ -255,7 +252,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         when(currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
                 if (isDraggingSelectionBox || isResizingSelectionBox) {
-                    selectionBoxController.selectionBoxData?.let {
+                    editController.selectionBoxData?.let {
                         it.selectedComponents.forEach { component ->
                             webSocketEventHandler.componentEventController.add(component)
                         }
@@ -266,7 +263,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 val componentsAndMinMaxCoordinates: Triple<List<Component>, Offset, Offset>? =
                     queryBoxController.getComponentsInQueryBoxAndMinMaxCoordinates(components.values.toList())
                 componentsAndMinMaxCoordinates?.let { (componentsInQueryBox, minCoordinate, maxCoordinate) ->
-                    selectionBoxController.selectedComponents(componentsInQueryBox, minCoordinate, maxCoordinate)
+                    editController.selectedComponents(componentsInQueryBox, minCoordinate, maxCoordinate)
                 }
                 queryBoxController.clearQueryBox()
             }
@@ -284,15 +281,17 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     fun handleOnTapGesture(point: Offset) {
         val whiteboardPoint = viewToWhiteboardCoordinate(point)
-        selectionBoxController.clearSelectionBox()
+        editController.clearSelectionBox()
         when(currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
                 val selectedComponent = getComponentAtPoint(whiteboardPoint)
                 selectedComponent?.let {
-                    selectionBoxController.selectedSingleComponent(it)
+                    editController.selectedSingleComponent(it)
                 }
             }
-            WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
+            WhiteboardToolbarOptions.PEN,
+            WhiteboardToolbarOptions.HIGHLIGHTER,
+            WhiteboardToolbarOptions.PAINT -> {
                 val path = Path(
                     coordinate = mutableStateOf(whiteboardPoint),
                     size = mutableStateOf(Size(1f, 1f)),
@@ -314,7 +313,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     type = mutableStateOf(currentTool.getShapeType())
                 )
                 components[shape.uuid] = shape
-                selectionBoxController.selectedSingleComponent(shape)
+                editController.selectedSingleComponent(shape)
                 currentTool = WhiteboardToolbarOptions.SELECT
                 webSocketEventHandler.componentEventController.add(shape)
             }
@@ -326,7 +325,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     webSocketEventHandler= WeakReference(webSocketEventHandler)
                 )
                 components[textBox.uuid] = textBox
-                selectionBoxController.selectedSingleComponent(textBox)
+                editController.selectedSingleComponent(textBox)
                 currentTool = WhiteboardToolbarOptions.SELECT
                 webSocketEventHandler.componentEventController.add(textBox)
             }
@@ -355,6 +354,11 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         return componentsAtPoint.maxByOrNull { it.depth }
     }
 
+    // TODO: remove this when we create attribute wrappers
+    fun sendComponentUpdate(component: Component) {
+        webSocketEventHandler.componentEventController.add(component)
+    }
+
     fun addComponent(state: ComponentState) {
         var component: Component? = components[state.uuid]
         if (component == null) {
@@ -364,7 +368,6 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         }
 
         component.setState(state)
-
     }
 
     private fun useEraser(component: String?) {

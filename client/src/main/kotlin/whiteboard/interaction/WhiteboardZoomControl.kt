@@ -25,9 +25,9 @@ import java.awt.Cursor
 import kotlin.math.roundToInt
 
 @Composable
-fun WhiteboardZoomControl(controller: WhiteboardController, modifier: Modifier) {
+fun WhiteboardZoomControl(controller: WhiteboardController) {
     Row(
-        modifier = modifier
+        modifier = Modifier
             .height(IntrinsicSize.Min)
             .padding(16.dp)
             .border(1.dp, Colors.secondaryVariant, Shapes.small)

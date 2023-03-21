@@ -57,6 +57,12 @@ enum class CustomIcon {
     },
     BACK {
         override fun fileName(): String = "back.png"
+    },
+    COPY {
+        override fun fileName(): String = "copy.png"
+    },
+    DELETE {
+        override fun fileName(): String = "delete.png"
     };
 
     abstract fun fileName(): String

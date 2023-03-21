@@ -114,7 +114,7 @@ enum class WhiteboardToolbarOptions {
 }
 
 @Composable
-fun WhiteboardToolbar(whiteboardController: WhiteboardController, modifier: Modifier) {
+fun WhiteboardToolbar(whiteboardController: WhiteboardController) {
 
     val pathToolIndex = 2
     val shapeToolIndex = 3
@@ -129,12 +129,12 @@ fun WhiteboardToolbar(whiteboardController: WhiteboardController, modifier: Modi
         )
     }
 
-    Column (modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column (modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         if (whiteboardController.currentTool.isPathTool() || whiteboardController.currentTool.isShapeTool()) {
             val toolName = if (whiteboardController.currentTool.isPathTool()) "path" else "shape"
             SmallBodyText("Click to change $toolName tool")
         }
-        Row(modifier = modifier
+        Row(modifier = Modifier
             .width(350.dp)
             .height(IntrinsicSize.Min)
             .padding(16.dp)

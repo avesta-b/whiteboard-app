@@ -64,8 +64,29 @@ fun OutlinedButton(modifier: Modifier,
             contentColor = Colors.secondaryVariant,
             disabledContentColor = Colors.secondaryVariant)
     ) {
-        PrimarySubtitleText(text)
+        PrimarySubtitleText(text = text)
     }
+}
+
+@Composable
+fun OutlinedButton(
+    modifier: Modifier = Modifier
+        .wrapContentSize(),
+    selected: Boolean,
+    onClick: () -> Unit,
+    content: @Composable() (RowScope.() -> Unit)
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier,
+        shape = Shapes.medium,
+        border = BorderStroke(1.dp, if (selected) Colors.primary else Colors.secondaryVariant),
+        colors = ButtonDefaults.outlinedButtonColors(
+            backgroundColor = Colors.background,
+            contentColor = Colors.primary
+        ),
+        content = content
+    )
 }
 
 @Composable
