@@ -31,6 +31,7 @@ enum class AuthUiState {
 
 internal class AuthViewModel (val onSuccessfulAuth: () -> Unit) {
     private var state by mutableStateOf(AuthUiState.SIGN_IN)
+
     var username = mutableStateOf(TextFieldValue(""))
     var password = mutableStateOf(TextFieldValue(""))
 
@@ -169,7 +170,7 @@ fun AuthView(modifier: Modifier, onSuccessfulAuth: () -> Unit) {
                     })
                 Spacer(Modifier.height(32.dp))
                 Box(Modifier.alpha(signInErrorAlpha)) {
-                    ErrorText("Invalid Credentials")
+                    ErrorText("Error: " + UserManager.error)
                 }
                 Spacer(Modifier.height(32.dp))
                 SecondarySubtitleText("Don't have an account?")
@@ -232,7 +233,7 @@ fun AuthView(modifier: Modifier, onSuccessfulAuth: () -> Unit) {
                 )
                 Spacer(Modifier.height(32.dp))
                 Box(Modifier.alpha(signUpErrorAlpha)) {
-                    ErrorText("Invalid Credentials")
+                    ErrorText("Error: " + UserManager.error)
                 }
                 Spacer(Modifier.height(32.dp))
                 UnderlinedTextButton(
