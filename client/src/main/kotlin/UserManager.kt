@@ -19,6 +19,8 @@ object UserManager {
         val password: String
     )
 
+    var error: String? = null
+
     var jwt: String? = null
         private set
 
@@ -50,6 +52,7 @@ object UserManager {
     // Returns true on success, false on fail
     suspend fun attemptSignUp(username: String, password: String): Boolean {
         if (!isValidCredentials(username, password)) {
+            error = "Empty or Invalid Username/Password"
             return false
         }
         return try {
@@ -57,13 +60,15 @@ object UserManager {
             // If service doesn't throw, then 2xx response -> successful sign up
             WhiteboardService.postRequest(path = "api/auth/register", body = requestBody)
             true
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            determineError(e.toString())
             false
         }
     }
 
     suspend fun attemptSignIn(username: String, password: String): Boolean {
         if (!isValidCredentials(username, password)) {
+            error = "Empty or Invalid Username/Password"
             return false
         }
         return try {
@@ -73,9 +78,17 @@ object UserManager {
             storedCredentials = Credentials(username, password)
             jwt = credentialsResponse.jwtToken
             true
-        } catch (_: Exception) {
+        } catch (e: Exception) {
+            determineError(e.toString())
             false
         }
+    }
+
+    private fun determineError(errorText: String){
+        if (errorText.contains("invalid: 409")) error = "Username Taken"
+        else if (errorText.contains("invalid: 400")) error = "Invalid Credentials"
+        else if (errorText.contains("invalid: 401")) error = "Invalid Credentials"
+        else if (errorText.contains("Failed to connect")) error = "Connection Error"
     }
 
     suspend fun attemptSignInWithStoredCredentials(): Boolean {
