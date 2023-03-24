@@ -46,7 +46,7 @@ compose.desktop {
         mainClass = "cs346.whiteboard.client.MainKt"
         val iconsRoot = project.file("src/main/resources")
         nativeDistributions {
-            packageVersion = "1.1.0"
+            packageVersion = "1.2.0"
             packageName = "Whiteboard"
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             macOS {
