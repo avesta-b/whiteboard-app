@@ -395,7 +395,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         components.remove(deleteComponent.uuid)
     }
 
-    fun applyServerUpdate(componentUpdate: ComponentUpdate) {
+    suspend fun applyServerUpdate(componentUpdate: ComponentUpdate) {
         var component: Component = components[componentUpdate.uuid] ?: return
 
         component.applyServerUpdate(componentUpdate)

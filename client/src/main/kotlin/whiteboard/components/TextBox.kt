@@ -50,7 +50,7 @@ class TextBox(
 
     override fun getComponentType(): ComponentType = ComponentType.TEXT_BOX
 
-    override fun applyServerUpdate(update: ComponentUpdate) {
+    override suspend fun applyServerUpdate(update: ComponentUpdate) {
         super.applyServerUpdate(update)
         update.username?.let { user ->
             update.text?.let {

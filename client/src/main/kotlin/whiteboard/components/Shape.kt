@@ -46,7 +46,7 @@ class Shape(
         }
     }
 
-    override fun applyServerUpdate(update: ComponentUpdate) {
+    override suspend fun applyServerUpdate(update: ComponentUpdate) {
         super.applyServerUpdate(update)
         update.username?.let {user ->
             update.shapeType?.let {
