@@ -9,6 +9,8 @@ import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.window.*
 import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.commands.CommandTypes
+import cs346.whiteboard.client.commands.WhiteboardEventHandler
+import cs346.whiteboard.client.helpers.Toolkit
 import cs346.whiteboard.client.ui.*
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import java.awt.event.*
@@ -22,15 +24,15 @@ object MenuBarState{
 fun createMenuBar(state: WindowState, frameScope: FrameWindowScope){
     frameScope.MenuBar {
         Menu("Tools", mnemonic = 'T') {
-            Item("Select", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SELECT).execute() }, shortcut = KeyShortcut(Key.V))
-            Item("Pan", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PAN).execute() }, shortcut = KeyShortcut(Key.D))
+            Item("Select", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SELECT).execute() }, shortcut = KeyShortcut(Key.V), enabled = WhiteboardEventHandler.isEditingText)
+            Item("Pan", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PAN).execute() }, shortcut = KeyShortcut(Key.D), enabled = WhiteboardEventHandler.isEditingText)
             Separator()
-            Item("Pen", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PEN).execute() }, shortcut = KeyShortcut(Key.P))
-            Item("Square", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SQUARE).execute() }, shortcut = KeyShortcut(Key.U))
-            Item("Circle", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.CIRCLE).execute() }, shortcut = KeyShortcut(Key.C))
-            Item("Text", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.TEXT).execute() }, shortcut = KeyShortcut(Key.T))
+            Item("Pen", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PEN).execute() }, shortcut = KeyShortcut(Key.P), enabled = WhiteboardEventHandler.isEditingText)
+            Item("Square", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SQUARE).execute() }, shortcut = KeyShortcut(Key.U), enabled = WhiteboardEventHandler.isEditingText)
+            Item("Circle", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.CIRCLE).execute() }, shortcut = KeyShortcut(Key.C), enabled = WhiteboardEventHandler.isEditingText)
+            Item("Text", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.TEXT).execute() }, shortcut = KeyShortcut(Key.T), enabled = WhiteboardEventHandler.isEditingText)
             Separator()
-            Item("Eraser", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.ERASE).execute() }, shortcut = KeyShortcut(Key.X))
+            Item("Eraser", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.ERASE).execute() }, shortcut = KeyShortcut(Key.X), enabled = WhiteboardEventHandler.isEditingText)
         }
         Menu("Edit", mnemonic = 'E') {
             Item("Delete", onClick = { CommandFactory.create(CommandTypes.DELETE).execute() }, shortcut = KeyShortcut(Key.Backspace))

@@ -107,4 +107,22 @@ class WhiteboardEventController(
             deleteComponent = deleteComponent
         )
     }
+
+    @MessageMapping("/whiteboard.sendMessage/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun sendMessage(
+        @DestinationVariable roomId: String,
+        chatMessage: ChatMessage,
+        headerAccessor: SimpMessageHeaderAccessor
+    ) : WebSocketEvent {
+        val userJwt = headerAccessor.sessionAttributes?.get("userJwt").toString()
+
+        val decodedJwt = JWT.decode(userJwt)
+        val username = decodedJwt.claims["username"]?.asString()
+
+        return WebSocketEvent(
+            eventType = WebSocketEventType.SEND_MESSAGE,
+            chatMessage = if (username == chatMessage.sender || chatMessage.content.isNotEmpty()) { chatMessage } else { null }
+        )
+    }
 }
