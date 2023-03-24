@@ -16,8 +16,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.UserManager
-import cs346.whiteboard.client.WindowManager
-import cs346.whiteboard.client.components.*
+import cs346.whiteboard.client.ui.*
 import kotlinx.coroutines.launch
 
 enum class AuthUiState {
@@ -32,6 +31,7 @@ enum class AuthUiState {
 
 internal class AuthViewModel (val onSuccessfulAuth: () -> Unit) {
     private var state by mutableStateOf(AuthUiState.SIGN_IN)
+
     var username = mutableStateOf(TextFieldValue(""))
     var password = mutableStateOf(TextFieldValue(""))
 
@@ -170,7 +170,7 @@ fun AuthView(modifier: Modifier, onSuccessfulAuth: () -> Unit) {
                     })
                 Spacer(Modifier.height(32.dp))
                 Box(Modifier.alpha(signInErrorAlpha)) {
-                    ErrorText("Invalid Credentials")
+                    ErrorText("Error: " + UserManager.error)
                 }
                 Spacer(Modifier.height(32.dp))
                 SecondarySubtitleText("Don't have an account?")
@@ -233,7 +233,7 @@ fun AuthView(modifier: Modifier, onSuccessfulAuth: () -> Unit) {
                 )
                 Spacer(Modifier.height(32.dp))
                 Box(Modifier.alpha(signUpErrorAlpha)) {
-                    ErrorText("Invalid Credentials")
+                    ErrorText("Error: " + UserManager.error)
                 }
                 Spacer(Modifier.height(32.dp))
                 UnderlinedTextButton(

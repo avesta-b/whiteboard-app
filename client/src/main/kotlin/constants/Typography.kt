@@ -29,6 +29,20 @@ val Inter = FontFamily(
     )
 )
 
+val Comic = FontFamily(
+    Font(resource = "$FONT_PATH/Comic Sans MS.ttf",
+        weight = FontWeight.Normal,
+        style = FontStyle.Normal
+    )
+)
+
+val Mono = FontFamily(
+    Font(resource = "$FONT_PATH/SpaceMono-Regular.ttf",
+        weight = FontWeight.Normal,
+        style = FontStyle.Normal
+    )
+)
+
 val Typography = Typography(
     h1 = TextStyle(
         fontFamily = Inter,
@@ -56,3 +70,42 @@ val Typography = Typography(
         fontSize = 14.sp
     )
 )
+
+val Typography.bodySmall: TextStyle
+    get() = TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    )
+
+fun Typography.subtitle2(scale: Float): TextStyle {
+    return TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Medium,
+        fontSize = (14 * scale).sp
+    )
+}
+
+fun Typography.textBoxDefault(size: Float): TextStyle {
+    return TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.Medium,
+        fontSize = size.sp
+    )
+}
+
+fun Typography.textBoxComic(size: Float): TextStyle {
+    return TextStyle(
+        fontFamily = Comic,
+        fontWeight = FontWeight.Medium,
+        fontSize = size.sp
+    )
+}
+
+fun Typography.textBoxMono(size: Float): TextStyle {
+    return TextStyle(
+        fontFamily = Mono,
+        fontWeight = FontWeight.Medium,
+        fontSize = size.sp
+    )
+}

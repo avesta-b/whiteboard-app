@@ -82,6 +82,19 @@ class WhiteboardEventController(
         )
     }
 
+    @MessageMapping("/whiteboard.updateComponent/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun updateComponent(
+        @DestinationVariable roomId: String,
+        componentUpdate: ComponentUpdate
+    ) : WebSocketEvent {
+        stateManager.updateComponent(roomId, componentUpdate)
+        return WebSocketEvent(
+            WebSocketEventType.UPDATE_COMPONENT,
+            updateComponent = componentUpdate
+        )
+    }
+
     @MessageMapping("/whiteboard.deleteComponent/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun deleteComponent(
@@ -92,6 +105,24 @@ class WhiteboardEventController(
         return WebSocketEvent(
             WebSocketEventType.DELETE_COMPONENT,
             deleteComponent = deleteComponent
+        )
+    }
+
+    @MessageMapping("/whiteboard.sendMessage/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun sendMessage(
+        @DestinationVariable roomId: String,
+        chatMessage: ChatMessage,
+        headerAccessor: SimpMessageHeaderAccessor
+    ) : WebSocketEvent {
+        val userJwt = headerAccessor.sessionAttributes?.get("userJwt").toString()
+
+        val decodedJwt = JWT.decode(userJwt)
+        val username = decodedJwt.claims["username"]?.asString()
+
+        return WebSocketEvent(
+            eventType = WebSocketEventType.SEND_MESSAGE,
+            chatMessage = if (username == chatMessage.sender || chatMessage.content.isNotEmpty()) { chatMessage } else { null }
         )
     }
 }

@@ -23,7 +23,7 @@ class WhiteboardStateManagerTest {
         val roomId = "Room 1"
         val component = ComponentState(
             uuid = "Component 1",
-            componentType = ComponentType.SQUARE,
+            componentType = ComponentType.SHAPE,
             size = Size(width = 10.0f, height = 10.0f),
             position = Position(x = 10.0f, y = 20.0f),
             depth = 0f
@@ -39,14 +39,14 @@ class WhiteboardStateManagerTest {
         val roomId = "Room 1"
         val component1 = ComponentState(
             uuid = "Component 1",
-            componentType = ComponentType.SQUARE,
+            componentType = ComponentType.SHAPE,
             size = Size(width = 10.0f, height = 10.0f),
             position = Position(x = 10.0f, y = 20.0f),
             depth = 0f
         )
         val component2 = ComponentState(
             uuid = "Component 2",
-            componentType = ComponentType.CIRCLE,
+            componentType = ComponentType.SHAPE,
             size = Size(width = 20.0f, height = 20.0f),
             position = Position(x = 30.0f, y = 40.0f),
             depth = 1f
@@ -64,7 +64,7 @@ class WhiteboardStateManagerTest {
         val roomId = "Room 1"
         val component = ComponentState(
             uuid = "Component 1",
-            componentType = ComponentType.SQUARE,
+            componentType = ComponentType.SHAPE,
             size = Size(width = 10.0f, height = 10.0f),
             position = Position(x = 10.0f, y = 20.0f),
             depth = 0f
@@ -80,7 +80,7 @@ class WhiteboardStateManagerTest {
         val roomId = "Room 1"
         val component = ComponentState(
             uuid = "Component 1",
-            componentType = ComponentType.SQUARE,
+            componentType = ComponentType.SHAPE,
             size = Size(width = 10.0f, height = 10.0f),
             position = Position(x = 10.0f, y = 20.0f),
             depth = 0f

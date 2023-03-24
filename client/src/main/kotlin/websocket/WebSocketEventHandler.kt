@@ -1,13 +1,17 @@
 package cs346.whiteboard.client.websocket
 
+import androidx.compose.runtime.snapshotFlow
 import cs346.whiteboard.client.BaseUrlProvider
+import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.toOffset
-import cs346.whiteboard.client.whiteboard.CursorsController
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.overlay.CursorsController
 import cs346.whiteboard.shared.jsonmodels.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.serialization.SerializationStrategy
 import okhttp3.OkHttpClient
@@ -28,9 +32,12 @@ import kotlin.time.Duration.Companion.seconds
 class WebSocketEventHandler(private val username: String,
                             private val coroutineScope: CoroutineScope,
                             private val roomId: String,
-                            private val whiteboardController: WhiteboardController) {
+                            private val whiteboardController: WhiteboardController
+) {
 
-    private val baseUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
+    private val localbaseUrl: String = "ws://" + BaseUrlProvider.HOST + "/ws"
+    private val remoteUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
+    private var baseUrl: String = if(MenuBarState.isLocal) localbaseUrl else remoteUrl
     private val subscribePath: String = "/topic/whiteboard/${roomId}"
     private var session: StompSession? = null
     private var stompClient: StompClient? = null
@@ -40,12 +47,24 @@ class WebSocketEventHandler(private val username: String,
 
     val userLobbyController: UserLobbyController = UserLobbyController(username, WeakReference(this))
 
-    val componentEventController: ComponentEventController = ComponentEventController(WeakReference(this))
+    val componentEventController: ComponentEventController = ComponentEventController(roomId, WeakReference(this), username)
+
+    val chatController: ChatController = ChatController(username, WeakReference(this))
 
     init {
         coroutineScope.launch {
             connect()
         }
+        snapshotFlow { MenuBarState.isLocal }
+            .onEach {
+                if(MenuBarState.isLocal) baseUrl = localbaseUrl
+                else baseUrl = remoteUrl
+            }
+            .launchIn(coroutineScope)
+    }
+
+    fun isDrawAlone(): Boolean {
+        return roomId == ""
     }
 
     private suspend fun connect() {
@@ -111,7 +130,6 @@ class WebSocketEventHandler(private val username: String,
                 userLobbyController.handleUserUpdate(update.users)
                 cursorsController.handleUsersUpdate(update.users)
             }
-
             WebSocketEventType.UPDATE_CURSOR -> {
                 val update: CursorUpdate = event.cursorUpdate ?: return
                 cursorsController.handleCursorMessage(
@@ -119,23 +137,27 @@ class WebSocketEventHandler(private val username: String,
                     userIdentifier = update.userIdentifier
                 )
             }
-
             WebSocketEventType.ADD_COMPONENT -> {
                 val newComponent = event.addComponent ?: return
                 whiteboardController.addComponent(newComponent)
             }
-
             WebSocketEventType.DELETE_COMPONENT -> {
                 val deleteComponent = event.deleteComponent ?: return
                 whiteboardController.deleteComponent(deleteComponent)
             }
-
             WebSocketEventType.GET_FULL_STATE -> {
                 val state: WhiteboardState = event.getFullState ?: return
                 whiteboardController.setState(state)
             }
+            WebSocketEventType.SEND_MESSAGE -> {
+                val chatMessage: ChatMessage = event.chatMessage ?: return
+                chatController.receiveMessage(chatMessage)
+            }
+            WebSocketEventType.UPDATE_COMPONENT -> {
+                val componentUpdate = event.updateComponent ?: return
+                whiteboardController.applyServerUpdate(componentUpdate)
+            }
         }
-
     }
 
     // Send an event to server

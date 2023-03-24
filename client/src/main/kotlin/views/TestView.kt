@@ -5,18 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.UserManager
-import cs346.whiteboard.client.components.PrimaryButton
-import cs346.whiteboard.client.components.TextFieldWithButton
+import cs346.whiteboard.client.ui.PrimaryButton
+import cs346.whiteboard.client.ui.TextFieldWithButton
 
 // TODO: replace TestView
 

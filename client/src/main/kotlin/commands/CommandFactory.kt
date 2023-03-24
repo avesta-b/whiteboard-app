@@ -1,7 +1,7 @@
 package cs346.whiteboard.client.commands
 
 import cs346.whiteboard.client.whiteboard.WhiteboardController
-import cs346.whiteboard.client.whiteboard.WhiteboardToolbarOptions
+import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 
 enum class CommandTypes {
     CUT, COPY, PASTE, DELETE, ZOOMIN, ZOOMOUT, SETTOOL,

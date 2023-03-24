@@ -1,6 +1,6 @@
 package cs346.whiteboard.client.helpers
 
-import cs346.whiteboard.client.whiteboard.WhiteboardToolbarOptions
+import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 
 object Toolkit {
     var toolHolder = WhiteboardToolbarOptions.SELECT
