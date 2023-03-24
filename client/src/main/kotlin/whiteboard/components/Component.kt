@@ -49,7 +49,7 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
         )
     }
 
-    open fun applyServerUpdate(update: ComponentUpdate) {
+    open suspend fun applyServerUpdate(update: ComponentUpdate) {
         update.username?.let {user ->
             update.size?.let {
                 size.setFromServer(it.toSize(), update.updateUUID, user)
