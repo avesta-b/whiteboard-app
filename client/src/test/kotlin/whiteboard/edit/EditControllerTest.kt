@@ -1,12 +1,12 @@
 package whiteboard.edit
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import cs346.whiteboard.client.helpers.Quadruple
-import cs346.whiteboard.client.whiteboard.edit.EditController
 import cs346.whiteboard.client.whiteboard.components.Component
 import cs346.whiteboard.client.whiteboard.components.Shape
+import cs346.whiteboard.client.whiteboard.components.attributeWrapper
+import cs346.whiteboard.client.whiteboard.edit.EditController
 import cs346.whiteboard.client.whiteboard.edit.ResizeNode
 import cs346.whiteboard.client.whiteboard.edit.SelectionBoxData
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
@@ -14,6 +14,7 @@ import cs346.whiteboard.shared.jsonmodels.ShapeFill
 import cs346.whiteboard.shared.jsonmodels.ShapeType
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
+import java.lang.ref.WeakReference
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -35,12 +36,14 @@ class EditControllerTest {
             true
         )
         component = Shape(
-            mutableStateOf(Offset(0f, 0f)),
-            mutableStateOf(Size(250f, 250f)),
-            mutableStateOf(ComponentColor.BLACK),
+            "",
+            WeakReference(null),
+            attributeWrapper(Offset(0f, 0f)),
+            attributeWrapper(Size(250f, 250f)),
+            attributeWrapper(ComponentColor.BLACK),
             0f,
-            mutableStateOf(ShapeType.SQUARE),
-            mutableStateOf(ShapeFill.OUTLINE)
+            attributeWrapper(ShapeType.SQUARE),
+            attributeWrapper(ShapeFill.OUTLINE)
         )
     }
 

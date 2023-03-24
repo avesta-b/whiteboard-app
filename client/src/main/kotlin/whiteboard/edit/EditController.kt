@@ -8,13 +8,12 @@ import androidx.compose.ui.geometry.Size
 import cs346.whiteboard.client.helpers.Quadruple
 import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.helpers.toList
-import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.client.whiteboard.components.Component
 import cs346.whiteboard.client.whiteboard.components.Path
 import cs346.whiteboard.client.whiteboard.components.Shape
 import cs346.whiteboard.client.whiteboard.components.TextBox
+import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.shared.jsonmodels.*
-import org.w3c.dom.Text
 import kotlin.math.absoluteValue
 
 enum class ResizeNode {
@@ -135,8 +134,8 @@ class EditController {
                     ) / 2
             for (component in data.selectedComponents) {
                 // Prevent shrinking components beyond min size
-                if (component.size.value.height * resizeMultiplier * scale <= component.smallestPossibleSize().height * scale
-                    && component.size.value.width * resizeMultiplier * scale <= component.smallestPossibleSize().width * scale
+                if (component.size.getValue().height * resizeMultiplier * scale <= component.smallestPossibleSize().height * scale
+                    && component.size.getValue().width * resizeMultiplier * scale <= component.smallestPossibleSize().width * scale
                     && component.isResizeable()
                     && resizeMultiplier <= 1f) {
                     return
@@ -187,8 +186,8 @@ class EditController {
     fun selectedComponentsSharedColor(): ComponentColor? {
         selectionBoxData?.let {
             if (it.selectedComponents.isEmpty()) return null
-            val color = it.selectedComponents.first().color.value
-            it.selectedComponents.forEach { component -> if (component.color.value != color) return null }
+            val color = it.selectedComponents.first().color.getValue()
+            it.selectedComponents.forEach { component -> if (component.color.getValue() != color) return null }
             return color
         }
         return null
@@ -198,8 +197,8 @@ class EditController {
         selectionBoxData?.let {
             if (it.selectedComponents.isEmpty()) return null
             if (it.selectedComponents.first() !is Path) return null
-            val type = (it.selectedComponents.first() as Path).type.value
-            it.selectedComponents.forEach { component -> if (component !is Path || component.type.value != type) return null }
+            val type = (it.selectedComponents.first() as Path).type.getValue()
+            it.selectedComponents.forEach { component -> if (component !is Path || component.type.getValue() != type) return null }
             return type
         }
         return null
@@ -209,8 +208,8 @@ class EditController {
         selectionBoxData?.let {
             if (it.selectedComponents.isEmpty()) return null
             if (it.selectedComponents.first() !is Path) return null
-            val thickness = (it.selectedComponents.first() as Path).thickness.value
-            it.selectedComponents.forEach { component -> if (component !is Path || component.thickness.value != thickness) return null }
+            val thickness = (it.selectedComponents.first() as Path).thickness.getValue()
+            it.selectedComponents.forEach { component -> if (component !is Path || component.thickness.getValue() != thickness) return null }
             return thickness
         }
         return null
@@ -220,8 +219,8 @@ class EditController {
         selectionBoxData?.let {
             if (it.selectedComponents.isEmpty()) return null
             if (it.selectedComponents.first() !is Shape) return null
-            val fill = (it.selectedComponents.first() as Shape).fill.value
-            it.selectedComponents.forEach { component -> if (component !is Shape || component.fill.value != fill) return null }
+            val fill = (it.selectedComponents.first() as Shape).fill.getValue()
+            it.selectedComponents.forEach { component -> if (component !is Shape || component.fill.getValue() != fill) return null }
             return fill
         }
         return null
@@ -231,8 +230,8 @@ class EditController {
         selectionBoxData?.let {
             if (it.selectedComponents.isEmpty()) return null
             if (it.selectedComponents.first() !is TextBox) return null
-            val font = (it.selectedComponents.first() as TextBox).font.value
-            it.selectedComponents.forEach { component -> if (component !is TextBox || component.font.value != font) return null }
+            val font = (it.selectedComponents.first() as TextBox).font.getValue()
+            it.selectedComponents.forEach { component -> if (component !is TextBox || component.font.getValue() != font) return null }
             return font
         }
         return null
@@ -242,8 +241,8 @@ class EditController {
         selectionBoxData?.let {
             if (it.selectedComponents.isEmpty()) return null
             if (it.selectedComponents.first() !is TextBox) return null
-            val fontSize = (it.selectedComponents.first() as TextBox).fontSize.value
-            it.selectedComponents.forEach { component -> if (component !is TextBox || component.fontSize.value != fontSize) return null }
+            val fontSize = (it.selectedComponents.first() as TextBox).fontSize.getValue()
+            it.selectedComponents.forEach { component -> if (component !is TextBox || component.fontSize.getValue() != fontSize) return null }
             return fontSize
         }
         return null
@@ -252,7 +251,7 @@ class EditController {
     fun setColorSelectedComponents(color: ComponentColor) {
         selectionBoxData?.let {
             it.selectedComponents.forEach { component ->
-                component.color.value = color
+                component.color.setLocally(color)
             }
         }
     }
@@ -261,7 +260,7 @@ class EditController {
         selectionBoxData?.let {
             it.selectedComponents.forEach { component ->
                 if (component !is Path) return
-                component.type.value = type
+                component.type.setLocally(type)
             }
         }
     }
@@ -270,7 +269,7 @@ class EditController {
         selectionBoxData?.let {
             it.selectedComponents.forEach { component ->
                 if (component !is Path) return
-                component.thickness.value = thickness
+                component.thickness.setLocally(thickness)
             }
         }
     }
@@ -279,7 +278,7 @@ class EditController {
         selectionBoxData?.let {
             it.selectedComponents.forEach { component ->
                 if (component !is Shape) return
-                component.fill.value = fill
+                component.fill.setLocally(fill)
             }
         }
     }
@@ -288,7 +287,7 @@ class EditController {
         selectionBoxData?.let {
             it.selectedComponents.forEach { component ->
                 if (component !is TextBox) return
-                component.font.value = font
+                component.font.setLocally(font)
             }
         }
     }
@@ -297,7 +296,7 @@ class EditController {
         selectionBoxData?.let {
             it.selectedComponents.forEach { component ->
                 if (component !is TextBox) return
-                component.fontSize.value = fontSize
+                component.fontSize.setLocally(fontSize)
             }
         }
     }
@@ -316,8 +315,8 @@ class EditController {
     fun selectedSingleComponent(component: Component) {
         selectionBoxData = SelectionBoxData(
             mutableListOf(component),
-            component.coordinate.value,
-            component.size.value,
+            component.coordinate.getValue(),
+            component.size.getValue(),
             null,
             component.isResizeable()
         )
@@ -341,13 +340,13 @@ class EditController {
 
     fun selectedComponents(components: List<Component>) {
         var minCoordinate = Offset(
-            components.minOf { it.coordinate.value.x },
-            components.minOf { it.coordinate.value.y }
+            components.minOf { it.coordinate.getValue().x },
+            components.minOf { it.coordinate.getValue().y }
         )
 
         var maxCoordinate = Offset(
-            components.maxOf { it.coordinate.value.x + it.size.value.width },
-            components.maxOf { it.coordinate.value.y + it.size.value.height }
+            components.maxOf { it.coordinate.getValue().x + it.size.getValue().width },
+            components.maxOf { it.coordinate.getValue().y + it.size.getValue().height }
         )
 
         selectedComponents(components, minCoordinate, maxCoordinate)

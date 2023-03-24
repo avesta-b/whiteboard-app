@@ -82,6 +82,19 @@ class WhiteboardEventController(
         )
     }
 
+    @MessageMapping("/whiteboard.updateComponent/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun updateComponent(
+        @DestinationVariable roomId: String,
+        componentUpdate: ComponentUpdate
+    ) : WebSocketEvent {
+        stateManager.updateComponent(roomId, componentUpdate)
+        return WebSocketEvent(
+            WebSocketEventType.UPDATE_COMPONENT,
+            updateComponent = componentUpdate
+        )
+    }
+
     @MessageMapping("/whiteboard.deleteComponent/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun deleteComponent(

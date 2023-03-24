@@ -11,6 +11,7 @@ enum class WebSocketEventType(val value: String) {
     UPDATE_ROOM("UPDATE_ROOM"),
     UPDATE_CURSOR("CURSOR_UPDATE"),
     ADD_COMPONENT("COMPONENT_UPDATE"),
+    UPDATE_COMPONENT("UPDATE_COMPONENT"),
     DELETE_COMPONENT("DELETE_COMPONENT"),
     GET_FULL_STATE("GET_FULL_STATE"),
     SEND_MESSAGE("SEND_MESSAGE"),
@@ -88,6 +89,27 @@ data class ComponentState(
 )
 
 @Serializable
+data class ComponentUpdate(
+    var username: String? = null,
+    val uuid: String = "", // UUID of component being updated
+    val updateUUID: String = UUID.randomUUID().toString(), // UUID corresponding to the update event
+    val size: Size? = null,
+    val position: Position? = null,
+    val color: ComponentColor? = null,
+    // Path component
+    val path: List<Position>? = null,
+    val pathType: PathType? = null,
+    val pathThickness: PathThickness? = null,
+    // Shape component
+    val shapeType: ShapeType? = null,
+    val shapeFill: ShapeFill? = null,
+    // Textbox component
+    val text: String? = null,
+    val textFont: TextFont? = null,
+    val textSize: TextSize? = null
+)
+
+@Serializable
 data class WhiteboardState(
     var components: MutableMap<String, ComponentState> = mutableMapOf()
 )
@@ -99,6 +121,7 @@ data class WebSocketEvent(
     val cursorUpdate: CursorUpdate? = null,
     val roomUpdate: RoomUpdate? = null,
     val addComponent: ComponentState? = null,
+    val updateComponent: ComponentUpdate? = null,
     val deleteComponent: DeleteComponent? = null,
     val getFullState: WhiteboardState? = null,
     val chatMessage: ChatMessage? = null

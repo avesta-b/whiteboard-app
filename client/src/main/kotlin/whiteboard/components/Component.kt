@@ -14,13 +14,10 @@ import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.helpers.toDp
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.helpers.toSize
-import cs346.whiteboard.client.whiteboard.edit.ResizeNode
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.edit.EditPaneAttribute
-import cs346.whiteboard.shared.jsonmodels.ComponentColor
-import cs346.whiteboard.shared.jsonmodels.ComponentState
-import cs346.whiteboard.shared.jsonmodels.ComponentType
-import cs346.whiteboard.shared.jsonmodels.Position
+import cs346.whiteboard.client.whiteboard.edit.ResizeNode
+import cs346.whiteboard.shared.jsonmodels.*
 import java.util.*
 
 val defaultComponentColor = ComponentColor.BLACK
@@ -31,11 +28,11 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
 
     abstract var depth: Float
 
-    abstract var coordinate: MutableState<Offset>
+    abstract var coordinate: AttributeWrapper<Offset>
 
-    abstract var size: MutableState<Size>
+    abstract var size: AttributeWrapper<Size>
 
-    abstract var color: MutableState<ComponentColor>
+    abstract var color: AttributeWrapper<ComponentColor>
 
     abstract val editPaneAttributes: List<EditPaneAttribute>
 
@@ -45,30 +42,35 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
         return ComponentState(
             uuid=uuid,
             depth=depth,
-            color = color.value,
+            color = color.getValue(),
             componentType = getComponentType(),
-            size = cs346.whiteboard.shared.jsonmodels.Size(size.value.width, size.value.height),
-            position = Position(coordinate.value.x, coordinate.value.y)
+            size = cs346.whiteboard.shared.jsonmodels.Size(size.getValue().width, size.getValue().height),
+            position = Position(coordinate.getValue().x, coordinate.getValue().y)
         )
     }
 
-    open fun setState(newState: ComponentState) {
-        if (depth != newState.depth) { depth = newState.depth }
-        if (coordinate.value != newState.position.toOffset()) {
-            coordinate.value = newState.position.toOffset()
+    open fun applyServerUpdate(update: ComponentUpdate) {
+        update.username?.let {user ->
+            update.size?.let {
+                size.setFromServer(it.toSize(), update.updateUUID, user)
+            }
+            update.position?.let {
+                coordinate.setFromServer(it.toOffset(), update.updateUUID, user)
+            }
+            update.color?.let {
+                color.setFromServer(it, update.updateUUID, user)
+            }
         }
-        if (size.value != newState.size.toSize()) { size.value = newState.size.toSize() }
-        color.value = newState.color
     }
 
     @Composable
     open fun getModifier(controller: WhiteboardController): Modifier {
-        val componentViewCoordinate = controller.whiteboardToViewCoordinate(coordinate.value)
+        val componentViewCoordinate = controller.whiteboardToViewCoordinate(coordinate.getValue())
         return Modifier
             .wrapContentSize(Alignment.TopStart, true)
             .offset(componentViewCoordinate.x.toDp(), componentViewCoordinate.y.toDp())
-            .size((size.value.width * controller.whiteboardZoom).toDp(),
-                (size.value.height * controller.whiteboardZoom).toDp())
+            .size((size.getValue().width * controller.whiteboardZoom).toDp(),
+                (size.getValue().height * controller.whiteboardZoom).toDp())
             .zIndex(depth)
     }
 
@@ -82,7 +84,7 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
     }
 
     open fun move(amount: Offset) {
-        coordinate.value = coordinate.value.plus(amount)
+        coordinate.setLocally(coordinate.getValue().plus(amount))
     }
 
     open fun smallestPossibleSize(): Size {
@@ -90,20 +92,21 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
     }
 
     open fun resize(resizeMultiplier: Float, resizeNodeAnchor: ResizeNode, anchorPoint: Offset) {
+        val newSize = size.getValue().times(resizeMultiplier)
         var componentAnchorPoint =
             when (resizeNodeAnchor) {
-                ResizeNode.TOP_LEFT -> coordinate.value
+                ResizeNode.TOP_LEFT -> coordinate.getValue()
                 ResizeNode.TOP_RIGHT -> Offset(
-                    coordinate.value.x + size.value.width,
-                    coordinate.value.y
+                    coordinate.getValue().x + size.getValue().width,
+                    coordinate.getValue().y
                 )
                 ResizeNode.BOTTOM_LEFT -> Offset(
-                    coordinate.value.x,
-                    coordinate.value.y + size.value.height
+                    coordinate.getValue().x,
+                    coordinate.getValue().y + size.getValue().height
                 )
                 ResizeNode.BOTTOM_RIGHT -> Offset(
-                    coordinate.value.x + size.value.width,
-                    coordinate.value.y + size.value.height
+                    coordinate.getValue().x + size.getValue().width,
+                    coordinate.getValue().y + size.getValue().height
                 )
             }
         var componentRelativeAnchorPoint =
@@ -125,7 +128,6 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
                     anchorPoint.y - (anchorPoint.y - componentAnchorPoint.y) * resizeMultiplier
                 )
             }
-        val newSize = size.value.times(resizeMultiplier)
         val newCoordinate =
             when (resizeNodeAnchor) {
                 ResizeNode.TOP_LEFT -> componentRelativeAnchorPoint
@@ -142,9 +144,9 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
                     componentRelativeAnchorPoint.y - newSize.height
                 )
             }
-        coordinate.value = newCoordinate
+        coordinate.setLocally(newCoordinate)
         if (isResizeable()) {
-            size.value = newSize
+            size.setLocally(newSize)
         }
     }
 

@@ -51,17 +51,17 @@ class QueryBoxController {
                 if (overlap(
                     queryBox.coordinate,
                     queryBox.size,
-                    component.coordinate.value,
-                    component.size.value
+                    component.coordinate.getValue(),
+                    component.size.getValue()
                 )) {
                     componentsInQueryBox.add(component)
                     minCoordinate = Offset(
-                        minOf(minCoordinate.x, component.coordinate.value.x),
-                        minOf(minCoordinate.y, component.coordinate.value.y)
+                        minOf(minCoordinate.x, component.coordinate.getValue().x),
+                        minOf(minCoordinate.y, component.coordinate.getValue().y)
                     )
                     maxCoordinate = Offset(
-                        maxOf(maxCoordinate.x, component.coordinate.value.x + component.size.value.width),
-                        maxOf(maxCoordinate.y, component.coordinate.value.y + component.size.value.height)
+                        maxOf(maxCoordinate.x, component.coordinate.getValue().x + component.size.getValue().width),
+                        maxOf(maxCoordinate.y, component.coordinate.getValue().y + component.size.getValue().height)
                     )
                 }
             }

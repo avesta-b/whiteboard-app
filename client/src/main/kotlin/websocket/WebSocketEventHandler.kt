@@ -5,8 +5,8 @@ import cs346.whiteboard.client.BaseUrlProvider
 import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.toOffset
-import cs346.whiteboard.client.whiteboard.overlay.CursorsController
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.overlay.CursorsController
 import cs346.whiteboard.shared.jsonmodels.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -32,7 +32,8 @@ import kotlin.time.Duration.Companion.seconds
 class WebSocketEventHandler(private val username: String,
                             private val coroutineScope: CoroutineScope,
                             private val roomId: String,
-                            private val whiteboardController: WhiteboardController) {
+                            private val whiteboardController: WhiteboardController
+) {
 
 
     private val localbaseUrl: String = "ws://" + BaseUrlProvider.HOST + "/ws"
@@ -47,7 +48,7 @@ class WebSocketEventHandler(private val username: String,
 
     val userLobbyController: UserLobbyController = UserLobbyController(username, WeakReference(this))
 
-    val componentEventController: ComponentEventController = ComponentEventController(WeakReference(this))
+    val componentEventController: ComponentEventController = ComponentEventController(roomId, WeakReference(this), username)
 
     init {
         coroutineScope.launch {
@@ -148,6 +149,11 @@ class WebSocketEventHandler(private val username: String,
             }
 
             WebSocketEventType.SEND_MESSAGE -> {}
+
+            WebSocketEventType.UPDATE_COMPONENT -> {
+                val componentUpdate = event.updateComponent ?: return
+                whiteboardController.applyServerUpdate(componentUpdate)
+            }
         }
 
     }

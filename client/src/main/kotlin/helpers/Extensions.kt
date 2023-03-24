@@ -1,7 +1,6 @@
 package cs346.whiteboard.client.helpers
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawBehind
@@ -114,42 +113,45 @@ fun TextSize.toFloat(): Float {
 }
 
 fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
+    val compController = WeakReference(eventHandler.componentEventController)
     when(componentType) {
         ComponentType.TEXT_BOX -> {
             return TextBox(
                 uuid = uuid,
-                coordinate = mutableStateOf(position.toOffset()),
-                size = mutableStateOf(size.toSize()),
-                color = mutableStateOf(color),
+                controller = compController,
+                coordinate = attributeWrapper(position.toOffset(), compController, uuid),
+                size = attributeWrapper(size.toSize(), compController, uuid),
+                color = attributeWrapper(color, compController, uuid),
                 depth = depth,
-                font = mutableStateOf(textFont ?: TextFont.DEFAULT),
-                fontSize = mutableStateOf(textSize ?: TextSize.SMALL),
-                initialWord = text ?: "",
-                webSocketEventHandler = WeakReference(eventHandler)
+                font = attributeWrapper(textFont ?: TextFont.DEFAULT, compController, uuid),
+                fontSize = attributeWrapper(textSize ?: TextSize.SMALL, compController, uuid),
+                initialWord = text ?: ""
             )
         }
         ComponentType.PATH -> {
             val path = Path(
-                coordinate = mutableStateOf(position.toOffset()),
-                size = mutableStateOf(size.toSize()),
-                color = mutableStateOf(color),
+                coordinate = attributeWrapper(position.toOffset(), compController, uuid),
+                controller = compController,
+                size = attributeWrapper(size.toSize(), compController, uuid),
+                color = attributeWrapper(color, compController, uuid),
                 depth = depth,
                 uuid = uuid,
-                type = mutableStateOf(pathType ?: PathType.BRUSH),
-                thickness = mutableStateOf(pathThickness ?: PathThickness.THIN)
+                type = attributeWrapper(pathType ?: PathType.BRUSH, compController, uuid),
+                thickness = attributeWrapper(pathThickness ?: PathThickness.THIN, compController, uuid)
             )
-            this.path?.forEach { path.insertPoint(it.toOffset()) }
+            this.path?.forEach { path.insertLocalWithoutConfirm(it.toOffset()) }
             return path
         }
         ComponentType.SHAPE -> {
             return Shape(
                 uuid = uuid,
-                coordinate = mutableStateOf(position.toOffset()),
-                size = mutableStateOf(size.toSize()),
-                color = mutableStateOf(color),
+                controller = compController,
+                coordinate = attributeWrapper(position.toOffset(), compController, uuid),
+                size = attributeWrapper(size.toSize(), compController, uuid),
+                color = attributeWrapper(color, compController, uuid),
                 depth = depth,
-                type = mutableStateOf(shapeType ?: ShapeType.SQUARE),
-                fill = mutableStateOf(shapeFill ?: ShapeFill.OUTLINE)
+                type = attributeWrapper(shapeType ?: ShapeType.SQUARE, compController, uuid),
+                fill = attributeWrapper(shapeFill ?: ShapeFill.OUTLINE, compController, uuid)
             )
         }
     }

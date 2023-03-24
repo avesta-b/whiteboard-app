@@ -5,35 +5,34 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.constants.Colors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.triangle
 import cs346.whiteboard.client.helpers.toColor
-import cs346.whiteboard.client.helpers.toOffset
+import cs346.whiteboard.client.websocket.ComponentEventController
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.edit.EditPaneAttribute
 import cs346.whiteboard.shared.jsonmodels.*
+import java.lang.ref.WeakReference
 import java.util.*
 
 val defaultShapeSize = Size(250f, 250f)
 val defaultShapeFill = ShapeFill.OUTLINE
 
 class Shape(
-    override var coordinate: MutableState<Offset>,
-    override var size: MutableState<Size> = mutableStateOf(defaultShapeSize),
-    override var color: MutableState<ComponentColor> = mutableStateOf(defaultComponentColor),
+    uuid: String = UUID.randomUUID().toString(),
+    private val controller: WeakReference<ComponentEventController?>,
+    override var coordinate: AttributeWrapper<Offset>,
+    override var size: AttributeWrapper<Size> = attributeWrapper(defaultShapeSize, controller, uuid),
+    override var color: AttributeWrapper<ComponentColor> = attributeWrapper(defaultComponentColor, controller, uuid),
     override var depth: Float,
-    var type: MutableState<ShapeType>,
-    var fill: MutableState<ShapeFill> = mutableStateOf(defaultShapeFill),
-    uuid: String = UUID.randomUUID().toString()
+    var type: AttributeWrapper<ShapeType>,
+    var fill: AttributeWrapper<ShapeFill> = attributeWrapper(defaultShapeFill, controller, uuid),
 ) : Component(uuid) {
 
     override val editPaneAttributes = listOf(
@@ -42,16 +41,23 @@ class Shape(
     )
 
     init {
-        if (type.value == ShapeType.RECTANGLE && size.value == defaultShapeSize) {
-            size.value = Size(defaultShapeSize.width * 2, defaultShapeSize.height)
+        if (type.getValue() == ShapeType.RECTANGLE && size.getValue() == defaultShapeSize) {
+            size.setLocally(Size(defaultShapeSize.width * 2, defaultShapeSize.height))
         }
     }
 
-    override fun setState(newState: ComponentState) {
-        super.setState(newState)
-        newState.shapeType?.let { type.value = it }
-        newState.shapeFill?.let { fill.value = it }
+    override fun applyServerUpdate(update: ComponentUpdate) {
+        super.applyServerUpdate(update)
+        update.username?.let {user ->
+            update.shapeType?.let {
+                type.setFromServer(it, update.updateUUID, user)
+            }
+            update.shapeFill?.let {
+                fill.setFromServer(it, update.updateUUID, user)
+            }
+        }
     }
+
 
     override fun getComponentType(): ComponentType {
         return ComponentType.SHAPE
@@ -59,17 +65,17 @@ class Shape(
 
     override fun toComponentState(): ComponentState {
         var res = super.toComponentState()
-        res.shapeType = type.value
-        res.shapeFill = fill.value
+        res.shapeType = type.getValue()
+        res.shapeFill = fill.getValue()
         return res
     }
 
     @Composable
     override fun getModifier(controller: WhiteboardController): Modifier {
         var modifier = super.getModifier(controller).clip(getShape())
-        modifier = when (fill.value) {
-            ShapeFill.FILL -> modifier.background(color.value.toColor())
-            ShapeFill.OUTLINE -> modifier.border((4 * controller.whiteboardZoom).dp, color.value.toColor(), getShape())
+        modifier = when (fill.getValue()) {
+            ShapeFill.FILL -> modifier.background(color.getValue().toColor())
+            ShapeFill.OUTLINE -> modifier.border((4 * controller.whiteboardZoom).dp, color.getValue().toColor(), getShape())
         }
         return modifier
     }
@@ -80,18 +86,21 @@ class Shape(
     }
 
     override fun clone(): Component {
+        val newUUID = UUID.randomUUID().toString()
         return Shape(
-            coordinate = mutableStateOf(Offset(coordinate.value.x, coordinate.value.y)),
-            size = mutableStateOf(size.value),
-            color = mutableStateOf(color.value),
+            uuid=newUUID,
+            controller=controller,
+            coordinate = attributeWrapper(Offset(coordinate.getValue().x, coordinate.getValue().y), controller, newUUID),
+            size = attributeWrapper(size.getValue(), controller, newUUID),
+            color = attributeWrapper(color.getValue(), controller, newUUID),
             depth = depth,
-            type = mutableStateOf(type.value),
-            fill = mutableStateOf(fill.value)
+            type = attributeWrapper(type.getValue(), controller, newUUID),
+            fill = attributeWrapper(fill.getValue(), controller, newUUID)
         )
     }
 
     private fun getShape(): androidx.compose.ui.graphics.Shape {
-        return when(type.value) {
+        return when(type.getValue()) {
             ShapeType.SQUARE, ShapeType.RECTANGLE, -> RectangleShape
             ShapeType.CIRCLE -> CircleShape
             ShapeType.TRIANGLE -> Shapes.triangle

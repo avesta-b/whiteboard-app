@@ -1,10 +1,10 @@
 package whiteboard.edit
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import cs346.whiteboard.client.whiteboard.components.Component
 import cs346.whiteboard.client.whiteboard.components.Shape
+import cs346.whiteboard.client.whiteboard.components.attributeWrapper
 import cs346.whiteboard.client.whiteboard.edit.QueryBoxController
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ShapeFill
@@ -13,6 +13,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.lang.ref.WeakReference
 
 class QueryBoxControllerTest {
 
@@ -24,28 +25,34 @@ class QueryBoxControllerTest {
         queryBoxController = QueryBoxController()
         components = listOf(
             Shape(
-                mutableStateOf(Offset(0f, 0f)),
-                mutableStateOf(Size(250f, 250f)),
-                mutableStateOf(ComponentColor.BLACK),
+                "",
+                WeakReference(null),
+                attributeWrapper(Offset(0f, 0f)),
+                attributeWrapper(Size(250f, 250f)),
+                attributeWrapper(ComponentColor.BLACK),
                 0f,
-                mutableStateOf(ShapeType.SQUARE),
-                mutableStateOf(ShapeFill.OUTLINE)
+                attributeWrapper(ShapeType.SQUARE),
+                attributeWrapper(ShapeFill.OUTLINE)
             ),
             Shape(
-                mutableStateOf(Offset(20f, 20f)),
-                mutableStateOf(Size(250f, 250f)),
-                mutableStateOf(ComponentColor.BLACK),
+                "",
+                WeakReference(null),
+                attributeWrapper(Offset(20f, 20f)),
+                attributeWrapper(Size(250f, 250f)),
+                attributeWrapper(ComponentColor.BLACK),
                 0f,
-                mutableStateOf(ShapeType.SQUARE),
-                mutableStateOf(ShapeFill.OUTLINE)
+                attributeWrapper(ShapeType.SQUARE),
+                attributeWrapper(ShapeFill.OUTLINE)
             ),
             Shape(
-                mutableStateOf(Offset(40f, 40f)),
-                mutableStateOf(Size(250f, 250f)),
-                mutableStateOf(ComponentColor.BLACK),
+                "",
+                WeakReference(null),
+                attributeWrapper(Offset(40f, 40f)),
+                attributeWrapper(Size(250f, 250f)),
+                attributeWrapper(ComponentColor.BLACK),
                 0f,
-                mutableStateOf(ShapeType.SQUARE),
-                mutableStateOf(ShapeFill.OUTLINE)
+                attributeWrapper(ShapeType.SQUARE),
+                attributeWrapper(ShapeFill.OUTLINE)
             )
         )
     }

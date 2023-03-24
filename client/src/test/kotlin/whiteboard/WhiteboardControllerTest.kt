@@ -1,24 +1,23 @@
 package cs346.whiteboard.client.whiteboard
 
 import androidx.compose.ui.geometry.Offset
-import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-import kotlinx.coroutines.test.TestCoroutineScope
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Size
 import cs346.whiteboard.client.whiteboard.components.Shape
-import cs346.whiteboard.client.whiteboard.components.TextBox
+import cs346.whiteboard.client.whiteboard.components.attributeWrapper
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ShapeFill
 import cs346.whiteboard.shared.jsonmodels.ShapeType
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import java.lang.ref.WeakReference
+import kotlin.test.assertEquals
 
 const val ROOM_ID = "54269818"
 class WhiteboardControllerTest {
@@ -106,12 +105,14 @@ class WhiteboardControllerTest {
     @Test
     fun `test pasteFromClipboard`() {
         val square = Shape(
-            mutableStateOf(Offset(0f, 0f)),
-            mutableStateOf(Size(250f, 250f)),
-            mutableStateOf(ComponentColor.BLACK),
+            "",
+            WeakReference(null),
+            attributeWrapper(Offset(0f, 0f)),
+            attributeWrapper(Size(250f, 250f)),
+            attributeWrapper(ComponentColor.BLACK),
             0f,
-            mutableStateOf(ShapeType.SQUARE),
-            mutableStateOf(ShapeFill.OUTLINE)
+            attributeWrapper(ShapeType.SQUARE),
+            attributeWrapper(ShapeFill.OUTLINE)
         )
 
         whiteboardController.clipboard.copy(listOf(square))
@@ -124,12 +125,14 @@ class WhiteboardControllerTest {
     @Test
     fun `test deleteSelected`() = runBlockingTest {
         val square = Shape(
-            mutableStateOf(Offset(0f, 0f)),
-            mutableStateOf(Size(250f, 250f)),
-            mutableStateOf(ComponentColor.BLACK),
+            "",
+            WeakReference(null),
+            attributeWrapper(Offset(0f, 0f)),
+            attributeWrapper(Size(250f, 250f)),
+            attributeWrapper(ComponentColor.BLACK),
             0f,
-            mutableStateOf(ShapeType.SQUARE),
-            mutableStateOf(ShapeFill.OUTLINE)
+            attributeWrapper(ShapeType.SQUARE),
+            attributeWrapper(ShapeFill.OUTLINE)
         )
 
         whiteboardController.components[square.uuid] = square

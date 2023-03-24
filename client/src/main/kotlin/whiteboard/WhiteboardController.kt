@@ -16,13 +16,14 @@ import cs346.whiteboard.client.whiteboard.edit.QueryBoxController
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.shared.jsonmodels.ComponentState
+import cs346.whiteboard.shared.jsonmodels.ComponentUpdate
 import cs346.whiteboard.shared.jsonmodels.DeleteComponent
-import cs346.whiteboard.shared.jsonmodels.ShapeType
 import cs346.whiteboard.shared.jsonmodels.WhiteboardState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import java.lang.ref.WeakReference
+import java.util.*
 
 class WhiteboardController(private val roomId: String, private val coroutineScope: CoroutineScope, private val onExit: () -> Unit) {
 
@@ -185,11 +186,15 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
                 editController.clearSelectionBox()
                 val whiteboardStartPoint = viewToWhiteboardCoordinate(startPoint)
+                val compController = WeakReference(webSocketEventHandler.componentEventController)
+                val componentUUID = UUID.randomUUID().toString()
                 val path = Path(
-                    coordinate = mutableStateOf(whiteboardStartPoint),
-                    size = mutableStateOf(Size(1f, 1f)),
+                    uuid= componentUUID,
+                    controller=WeakReference(webSocketEventHandler.componentEventController),
+                    coordinate = attributeWrapper(whiteboardStartPoint, compController, componentUUID),
+                    size = attributeWrapper(Size(1f, 1f), compController, componentUUID ),
                     depth = preIncrementCurrentDepth(),
-                    type = mutableStateOf(currentTool.getPathType())
+                    type = attributeWrapper(currentTool.getPathType(), compController, componentUUID)
                 )
                 path.insertPoint(whiteboardStartPoint)
                 components[path.uuid] = path
@@ -237,8 +242,6 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 components[lastComponentId]?.let {
                     if (it !is Path) return
                     it.insertPoint(whiteboardPoint)
-                    // TODO: Figure out how to update path as we are drawing it
-//                    webSocketEventHandler.componentEventController.add(it)
                 }
             }
             WhiteboardToolbarOptions.ERASE -> {
@@ -253,11 +256,13 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             WhiteboardToolbarOptions.SELECT -> {
                 if (isDraggingSelectionBox || isResizingSelectionBox) {
                     editController.selectionBoxData?.let {
-                        it.selectedComponents.forEach { component ->
-                            webSocketEventHandler.componentEventController.add(component)
-                        }
+//                        it.selectedComponents.forEach { component ->
+//                            webSocketEventHandler.componentEventController.add(component)
+//                        }
                     }
                 }
+
+
                 isResizingSelectionBox = false
                 isDraggingSelectionBox = false
                 val componentsAndMinMaxCoordinates: Triple<List<Component>, Offset, Offset>? =
@@ -271,9 +276,9 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 cursorsController.currentCursor = CursorType.HAND
             }
             WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
-                components[lastComponentId]?.let {
-                    webSocketEventHandler.componentEventController.add(it)
-                }
+//                components[lastComponentId]?.let {
+//                    webSocketEventHandler.componentEventController.add(it)
+//                }
             }
             else -> { return }
         }
@@ -292,25 +297,33 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             WhiteboardToolbarOptions.PEN,
             WhiteboardToolbarOptions.HIGHLIGHTER,
             WhiteboardToolbarOptions.PAINT -> {
+                val compController = WeakReference(webSocketEventHandler.componentEventController)
+                val componentUUID = UUID.randomUUID().toString()
                 val path = Path(
-                    coordinate = mutableStateOf(whiteboardPoint),
-                    size = mutableStateOf(Size(1f, 1f)),
+                    uuid= componentUUID,
+                    controller=WeakReference(webSocketEventHandler.componentEventController),
+                    coordinate = attributeWrapper(whiteboardPoint, compController, componentUUID),
+                    size = attributeWrapper(Size(1f, 1f), compController, componentUUID ),
                     depth = preIncrementCurrentDepth(),
-                    type = mutableStateOf(currentTool.getPathType())
+                    type = attributeWrapper(currentTool.getPathType(), compController, componentUUID)
                 )
-                path.insertPoint(whiteboardPoint)
-                path.insertPoint(whiteboardPoint)
+                path.insertLocalWithoutConfirm(whiteboardPoint)
+                path.insertLocalWithoutConfirm(whiteboardPoint) // no updateUUID needed because we are adding
                 components[path.uuid] = path
-                webSocketEventHandler.componentEventController.add(path)
+                webSocketEventHandler.componentEventController.add(path) // we add
             }
             WhiteboardToolbarOptions.SQUARE,
             WhiteboardToolbarOptions.RECTANGLE,
             WhiteboardToolbarOptions.TRIANGLE,
             WhiteboardToolbarOptions.CIRCLE -> {
+                val compController = WeakReference(webSocketEventHandler.componentEventController)
+                val componentUUID = UUID.randomUUID().toString()
                 val shape = Shape(
-                    coordinate = mutableStateOf(whiteboardPoint),
+                    uuid = componentUUID,
+                    controller = compController,
+                    coordinate = attributeWrapper(whiteboardPoint, compController, componentUUID),
                     depth = preIncrementCurrentDepth(),
-                    type = mutableStateOf(currentTool.getShapeType())
+                    type = attributeWrapper(currentTool.getShapeType(), compController, componentUUID)
                 )
                 components[shape.uuid] = shape
                 editController.selectedSingleComponent(shape)
@@ -318,11 +331,14 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 webSocketEventHandler.componentEventController.add(shape)
             }
             WhiteboardToolbarOptions.TEXT -> {
+                val compController = WeakReference(webSocketEventHandler.componentEventController)
+                val componentUUID = UUID.randomUUID().toString()
                 val textBox = TextBox(
-                    coordinate = mutableStateOf(whiteboardPoint),
+                    uuid = componentUUID,
+                    controller = compController,
+                    coordinate = attributeWrapper(whiteboardPoint, compController, componentUUID),
                     depth = preIncrementCurrentDepth(),
-                    initialWord = "",
-                    webSocketEventHandler= WeakReference(webSocketEventHandler)
+                    initialWord = ""
                 )
                 components[textBox.uuid] = textBox
                 editController.selectedSingleComponent(textBox)
@@ -345,8 +361,8 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             if (overlap(
                     point.minus(Offset(5f, 5f)),
                     Size(10f, 10f),
-                    component.coordinate.value,
-                    component.size.value)
+                    component.coordinate.getValue(),
+                    component.size.getValue())
             ) {
                 componentsAtPoint.add(component)
             }
@@ -367,7 +383,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             return
         }
 
-        component.setState(state)
+        // TODO: Set component
     }
 
     private fun useEraser(component: String?) {
@@ -377,6 +393,12 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     fun deleteComponent(deleteComponent: DeleteComponent) {
         components.remove(deleteComponent.uuid)
+    }
+
+    fun applyServerUpdate(componentUpdate: ComponentUpdate) {
+        var component: Component = components[componentUpdate.uuid] ?: return
+
+        component.applyServerUpdate(componentUpdate)
     }
 
     fun setState(state: WhiteboardState) {
