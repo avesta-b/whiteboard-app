@@ -35,7 +35,6 @@ class WebSocketEventHandler(private val username: String,
                             private val whiteboardController: WhiteboardController
 ) {
 
-
     private val localbaseUrl: String = "ws://" + BaseUrlProvider.HOST + "/ws"
     private val remoteUrl: String = "wss://" + BaseUrlProvider.HOST + "/ws"
     private var baseUrl: String = if(MenuBarState.isLocal) localbaseUrl else remoteUrl
@@ -50,6 +49,8 @@ class WebSocketEventHandler(private val username: String,
 
     val componentEventController: ComponentEventController = ComponentEventController(roomId, WeakReference(this), username)
 
+    val chatController: ChatController = ChatController(username, WeakReference(this))
+
     init {
         coroutineScope.launch {
             connect()
@@ -61,6 +62,11 @@ class WebSocketEventHandler(private val username: String,
             }
             .launchIn(coroutineScope)
     }
+
+    fun isDrawAlone(): Boolean {
+        return roomId == ""
+    }
+
     private suspend fun connect() {
         if (roomId.isEmpty()) return
 
@@ -124,7 +130,6 @@ class WebSocketEventHandler(private val username: String,
                 userLobbyController.handleUserUpdate(update.users)
                 cursorsController.handleUsersUpdate(update.users)
             }
-
             WebSocketEventType.UPDATE_CURSOR -> {
                 val update: CursorUpdate = event.cursorUpdate ?: return
                 cursorsController.handleCursorMessage(
@@ -132,30 +137,27 @@ class WebSocketEventHandler(private val username: String,
                     userIdentifier = update.userIdentifier
                 )
             }
-
             WebSocketEventType.ADD_COMPONENT -> {
                 val newComponent = event.addComponent ?: return
                 whiteboardController.addComponent(newComponent)
             }
-
             WebSocketEventType.DELETE_COMPONENT -> {
                 val deleteComponent = event.deleteComponent ?: return
                 whiteboardController.deleteComponent(deleteComponent)
             }
-
             WebSocketEventType.GET_FULL_STATE -> {
                 val state: WhiteboardState = event.getFullState ?: return
                 whiteboardController.setState(state)
             }
-
-            WebSocketEventType.SEND_MESSAGE -> {}
-
+            WebSocketEventType.SEND_MESSAGE -> {
+                val chatMessage: ChatMessage = event.chatMessage ?: return
+                chatController.receiveMessage(chatMessage)
+            }
             WebSocketEventType.UPDATE_COMPONENT -> {
                 val componentUpdate = event.updateComponent ?: return
                 whiteboardController.applyServerUpdate(componentUpdate)
             }
         }
-
     }
 
     // Send an event to server
