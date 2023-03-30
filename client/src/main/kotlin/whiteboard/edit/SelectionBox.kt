@@ -17,8 +17,8 @@ import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
 
 @Composable
 fun SelectionBox(controller: WhiteboardController, data: SelectionBoxData) {
-    val coordinate = controller.whiteboardToViewCoordinate(data.coordinate)
-    val size = controller.whiteboardToViewSize(data.size)
+    val coordinate = controller.whiteboardToViewCoordinate(controller.editController.getCoordinate(data))
+    val size = controller.whiteboardToViewSize(controller.editController.getSize(data))
     val resizeNodeSize = controller.whiteboardToViewSize(data.resizeNodeSize)
     val borderWidth = 2.dp * controller.whiteboardZoom
     Box(Modifier

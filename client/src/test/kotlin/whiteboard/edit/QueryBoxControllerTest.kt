@@ -80,18 +80,16 @@ class QueryBoxControllerTest {
     fun getComponentsInQueryBoxAndMinMaxCoordinates_noOverlap() {
         queryBoxController.startQueryBox(Offset(300f, 300f))
         queryBoxController.updateQueryBox(Offset(310f, 310f))
-        val componentsInQueryBox = queryBoxController.getComponentsInQueryBoxAndMinMaxCoordinates(components)
-        assertNull(componentsInQueryBox)
+        val componentsInQueryBox = queryBoxController.getComponentsInQueryBox(components)
+        assert(componentsInQueryBox.isEmpty())
     }
 
     @Test
     fun getComponentsInQueryBoxAndMinMaxCoordinates_withOverlap() {
         queryBoxController.startQueryBox(Offset(0f, 0f))
         queryBoxController.updateQueryBox(Offset(100f, 100f))
-        val componentsInQueryBox = queryBoxController.getComponentsInQueryBoxAndMinMaxCoordinates(components)
-        assertEquals(3, componentsInQueryBox?.first?.size)
-        assertEquals(Offset(0f, 0f), componentsInQueryBox?.second)
-        assertEquals(Offset(290f, 290f), componentsInQueryBox?.third)
+        val componentsInQueryBox = queryBoxController.getComponentsInQueryBox(components)
+        assertEquals(3, componentsInQueryBox.size)
     }
 
     @Test

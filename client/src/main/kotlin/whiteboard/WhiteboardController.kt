@@ -221,16 +221,8 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             WhiteboardToolbarOptions.SELECT -> {
                 if (isResizingSelectionBox) {
                     editController.resizeSelectedComponents(whiteboardPoint, whiteboardZoom)
-                    // TODO: Figure out how to update all components while dragging them
-//                    selectionBoxController.selectionBoxData?.selectedComponents?.forEach {
-//                        webSocketEventHandler.componentEventController.add(it)
-//                    }
                 } else if (isDraggingSelectionBox) {
                     editController.moveSelectedComponents(dragAmount.div(whiteboardZoom))
-                    // TODO: Figure out how to update all components while dragging them
-//                    selectionBoxController.selectionBoxData?.selectedComponents?.forEach {
-//                        webSocketEventHandler.componentEventController.add(it)
-//                    }
                 } else {
                     queryBoxController.updateQueryBox(whiteboardPoint)
                 }
@@ -254,31 +246,21 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     fun handleOnDragGestureEnd() {
         when(currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
-                if (isDraggingSelectionBox || isResizingSelectionBox) {
-                    editController.selectionBoxData?.let {
-//                        it.selectedComponents.forEach { component ->
-//                            webSocketEventHandler.componentEventController.add(component)
-//                        }
-                    }
+                if (isResizingSelectionBox) {
+                    editController.forceSelectedComponentsSizeUpdate()
+                } else if (isDraggingSelectionBox) {
+                    editController.forceSelectedComponentsPositionUpdate()
                 }
-
-
                 isResizingSelectionBox = false
                 isDraggingSelectionBox = false
-                val componentsAndMinMaxCoordinates: Triple<List<Component>, Offset, Offset>? =
-                    queryBoxController.getComponentsInQueryBoxAndMinMaxCoordinates(components.values.toList())
-                componentsAndMinMaxCoordinates?.let { (componentsInQueryBox, minCoordinate, maxCoordinate) ->
-                    editController.selectedComponents(componentsInQueryBox, minCoordinate, maxCoordinate)
+                val queriedComponents = queryBoxController.getComponentsInQueryBox(components.values.toList())
+                if (queriedComponents.isNotEmpty()) {
+                    editController.selectedComponents(queriedComponents)
                 }
                 queryBoxController.clearQueryBox()
             }
             WhiteboardToolbarOptions.PAN -> {
                 cursorsController.currentCursor = CursorType.HAND
-            }
-            WhiteboardToolbarOptions.PEN, WhiteboardToolbarOptions.HIGHLIGHTER, WhiteboardToolbarOptions.PAINT -> {
-//                components[lastComponentId]?.let {
-//                    webSocketEventHandler.componentEventController.add(it)
-//                }
             }
             else -> { return }
         }
@@ -370,11 +352,6 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         return componentsAtPoint.maxByOrNull { it.depth }
     }
 
-    // TODO: remove this when we create attribute wrappers
-    fun sendComponentUpdate(component: Component) {
-        webSocketEventHandler.componentEventController.add(component)
-    }
-
     fun addComponent(state: ComponentState) {
         var component: Component? = components[state.uuid]
         if (component == null) {
@@ -382,8 +359,6 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
             components[state.uuid] = component
             return
         }
-
-        // TODO: Set component
     }
 
     private fun useEraser(component: String?) {
@@ -393,6 +368,15 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     fun deleteComponent(deleteComponent: DeleteComponent) {
         components.remove(deleteComponent.uuid)
+        editController.selectionBoxData?.let {
+            if (it.selectedComponents.size == 1 && it.selectedComponents.first().uuid == deleteComponent.uuid) {
+                editController.clearSelectionBox()
+            } else {
+                it.selectedComponents.removeIf { selected ->
+                    selected.uuid == deleteComponent.uuid
+                }
+            }
+        }
     }
 
     suspend fun applyServerUpdate(componentUpdate: ComponentUpdate) {
