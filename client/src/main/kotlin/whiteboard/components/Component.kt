@@ -84,7 +84,7 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
     }
 
     open fun move(amount: Offset) {
-        coordinate.setLocally(coordinate.getValue().plus(amount))
+        coordinate.setLocally(coordinate.getValue().plus(amount), false)
     }
 
     open fun smallestPossibleSize(): Size {
@@ -144,9 +144,9 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
                     componentRelativeAnchorPoint.y - newSize.height
                 )
             }
-        coordinate.setLocally(newCoordinate)
+        coordinate.setLocally(newCoordinate, false)
         if (isResizeable()) {
-            size.setLocally(newSize)
+            size.setLocally(newSize, false)
         }
     }
 

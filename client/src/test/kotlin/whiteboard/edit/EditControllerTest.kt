@@ -1,5 +1,6 @@
 package whiteboard.edit
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import cs346.whiteboard.client.helpers.Quadruple
@@ -12,6 +13,8 @@ import cs346.whiteboard.client.whiteboard.edit.SelectionBoxData
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ShapeFill
 import cs346.whiteboard.shared.jsonmodels.ShapeType
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import java.lang.ref.WeakReference
@@ -29,9 +32,7 @@ class EditControllerTest {
     fun setUp() {
         controller = EditController()
         selectionBoxData = SelectionBoxData(
-            emptyList(),
-            Offset(0f, 0f),
-            Size(50f, 50f),
+            mutableStateListOf(),
             null,
             true
         )
@@ -59,9 +60,13 @@ class EditControllerTest {
 
     @org.junit.jupiter.api.Test
     fun `test moveSelectedComponents`() {
-        controller.selectedSingleComponent(component)
-        controller.moveSelectedComponents(Offset(20f, 20f))
-        Assertions.assertEquals(Offset(20f, 20f), controller.selectionBoxData?.coordinate)
+        runBlocking {
+            controller.selectedSingleComponent(component)
+            controller.moveSelectedComponents(Offset(20f, 20f))
+            delay(100)
+            Assertions.assertNotNull(controller.selectionBoxData)
+            Assertions.assertEquals(Offset(20f, 20f), controller.getCoordinate(controller.selectionBoxData!!))
+        }
     }
 
     @org.junit.jupiter.api.Test
@@ -96,38 +101,14 @@ class EditControllerTest {
 
         Assertions.assertNull(controller.selectionBoxData)
     }
-
-    @Test
-    fun testGetSelectionBoxResizeNodeCoordinates() {
-        val size = Size(100f, 50f)
-        val coordinate = Offset(0f, 0f)
-        val resizeNodeSize = Size(10f, 10f)
-        val selectionBoxData = SelectionBoxData(
-            emptyList(),
-            coordinate,
-            size,
-            ResizeNode.BOTTOM_RIGHT,
-            true,
-            resizeNodeSize
-        )
-        val expected = Quadruple(
-            coordinate.minus(Offset(5f, 5f)),
-            Offset(coordinate.x + size.width, coordinate.y).minus(Offset(5f, 5f)),
-            Offset(coordinate.x, coordinate.y + size.height).minus(Offset(5f, 5f)),
-            Offset(coordinate.x + size.width, coordinate.y + size.height).minus(Offset(5f, 5f))
-        )
-        val actual = controller.getSelectionBoxResizeNodeCoordinates(selectionBoxData)
-        assertEquals(expected, actual)
-    }
+    
     @Test
     fun testPointInResizeNodeShouldNotSetAnchorNode() {
         val size = Size(100f, 50f)
         val coordinate = Offset(0f, 0f)
         val resizeNodeSize = Size(10f, 10f)
         val selectionBoxData = SelectionBoxData(
-            emptyList(),
-            coordinate,
-            size,
+            mutableStateListOf(),
             null,
             true,
             resizeNodeSize

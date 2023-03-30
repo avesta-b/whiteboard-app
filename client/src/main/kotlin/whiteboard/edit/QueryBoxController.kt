@@ -41,11 +41,8 @@ class QueryBoxController {
     }
 
     // Returns (list of components in query box, minCoordinate, maxCoordinate)
-    fun getComponentsInQueryBoxAndMinMaxCoordinates(components: List<Component>):
-            Triple<List<Component>, Offset, Offset>? {
+    fun getComponentsInQueryBox(components: List<Component>): List<Component> {
         val componentsInQueryBox = mutableListOf<Component>()
-        var minCoordinate = Offset(Float.POSITIVE_INFINITY, Float.POSITIVE_INFINITY)
-        var maxCoordinate = Offset(Float.NEGATIVE_INFINITY, Float.NEGATIVE_INFINITY)
         queryBoxData?.let { queryBox ->
             components.forEach { component ->
                 if (overlap(
@@ -55,22 +52,10 @@ class QueryBoxController {
                     component.size.getValue()
                 )) {
                     componentsInQueryBox.add(component)
-                    minCoordinate = Offset(
-                        minOf(minCoordinate.x, component.coordinate.getValue().x),
-                        minOf(minCoordinate.y, component.coordinate.getValue().y)
-                    )
-                    maxCoordinate = Offset(
-                        maxOf(maxCoordinate.x, component.coordinate.getValue().x + component.size.getValue().width),
-                        maxOf(maxCoordinate.y, component.coordinate.getValue().y + component.size.getValue().height)
-                    )
                 }
             }
-            if (componentsInQueryBox.isNotEmpty()) {
-                return Triple(componentsInQueryBox, minCoordinate, maxCoordinate)
-            }
-            return null
         }
-        return null
+        return componentsInQueryBox
     }
 
     fun clearQueryBox() {

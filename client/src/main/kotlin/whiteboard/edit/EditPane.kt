@@ -58,9 +58,6 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                     selected = color == sharedComponentColor,
                                     onClick = {
                                         whiteboardController.editController.setColorSelectedComponents(color)
-                                        data.selectedComponents.forEach { component ->
-                                            whiteboardController.sendComponentUpdate(component)
-                                        }
                                     }
                                 ) {
                                     Box(Modifier
@@ -76,9 +73,6 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                     selected = color == sharedComponentColor,
                                     onClick = {
                                         whiteboardController.editController.setColorSelectedComponents(color)
-                                        data.selectedComponents.forEach { component ->
-                                            whiteboardController.sendComponentUpdate(component)
-                                        }
                                     }
                                 ) {
                                     Box(Modifier
@@ -99,9 +93,6 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 selected = type == sharedPathType,
                                 onClick = {
                                     whiteboardController.editController.setPathTypeSelectedComponents(type)
-                                    data.selectedComponents.forEach { component ->
-                                        whiteboardController.sendComponentUpdate(component)
-                                    }
                                 }
                             ) {
                                 Image(
@@ -123,9 +114,6 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 selected = thickness == sharedThickness,
                                 onClick = {
                                     whiteboardController.editController.setThicknessSelectedComponents(thickness)
-                                    data.selectedComponents.forEach { component ->
-                                        whiteboardController.sendComponentUpdate(component)
-                                    }
                                 }
                             ) {
                                 Box(Modifier
@@ -145,9 +133,6 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 selected = fill == sharedFill,
                                 onClick = {
                                     whiteboardController.editController.setFillSelectedComponents(fill)
-                                    data.selectedComponents.forEach { component ->
-                                        whiteboardController.sendComponentUpdate(component)
-                                    }
                                 }
                             ) {
                                 PrimarySubtitleText(text = fill.description(), modifier = Modifier.height(16.dp))
@@ -165,9 +150,6 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 selected = font == sharedFont,
                                 onClick = {
                                     whiteboardController.editController.setFontSelectedComponents(font)
-                                    data.selectedComponents.forEach { component ->
-                                        whiteboardController.sendComponentUpdate(component)
-                                    }
                                 }
                             ) {
                                 PrimarySubtitleText("Aa", font.toTextStyle(16f), Modifier.wrapContentSize())
@@ -185,9 +167,6 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 selected = size == sharedFontSize,
                                 onClick = {
                                     whiteboardController.editController.setFontSizeSelectedComponents(size)
-                                    data.selectedComponents.forEach { component ->
-                                        whiteboardController.sendComponentUpdate(component)
-                                    }
                                 }
                             ) {
                                 PrimarySubtitleText(size.description(), TextFont.DEFAULT.toTextStyle(12f + size.toFloat() / 16f), Modifier.wrapContentSize())
