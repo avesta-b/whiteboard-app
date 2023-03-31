@@ -24,6 +24,7 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
@@ -244,8 +245,9 @@ fun ChatMessage(userName: String, time: String, text: String, modifier: Modifier
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ChatTextFieldWithButton(
-    text: MutableState<String>,
+    text: MutableState<TextFieldValue>,
     modifier: Modifier,
+    textFieldModifier: Modifier,
     placeholder: String,
     enabled: Boolean,
     onClick: () -> Unit
@@ -255,7 +257,7 @@ fun ChatTextFieldWithButton(
             OutlinedTextField(
                 value = text.value,
                 onValueChange = { text.value = it },
-                modifier = Modifier
+                modifier = textFieldModifier
                     .height(60.dp)
                     .weight(1f)
                     .padding(0.dp, 0.dp, 10.dp, 0.dp)

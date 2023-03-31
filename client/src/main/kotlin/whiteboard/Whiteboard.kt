@@ -36,7 +36,7 @@ object WhiteboardLayerZIndices {
     const val zoomControl: Float = 4f
     const val toolbar: Float = 4f
     const val topBar: Float = 4f
-    const val chat:Float = 4f
+    const val chat: Float = 4f
 }
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class)

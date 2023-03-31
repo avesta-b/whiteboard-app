@@ -16,8 +16,10 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
@@ -30,7 +32,7 @@ import java.awt.Cursor
 
 @Composable
 fun ChatBar(chatController: ChatController) {
-    val messageState = remember { mutableStateOf("") }
+    val messageState = remember { mutableStateOf(TextFieldValue("")) }
     val scrollState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -40,10 +42,10 @@ fun ChatBar(chatController: ChatController) {
     )
 
     fun sendMessage() {
-        if (messageState.value == "") return
+        if (messageState.value.text.isEmpty()) return
 
-        chatController.sendMessage(messageState.value)
-        messageState.value = ""
+        chatController.sendMessage(messageState.value.text)
+        messageState.value = TextFieldValue("")
 
         coroutineScope.launch {
             scrollState.animateScrollToItem(chatController.messages.size - 1)
@@ -58,7 +60,7 @@ fun ChatBar(chatController: ChatController) {
             .shadow(16.dp, Shapes.small, true)
             .background(Colors.background)
             .clip(Shapes.small)
-            .zIndex(WhiteboardLayerZIndices.toolbar)
+            .zIndex(WhiteboardLayerZIndices.chat)
             .pointerHoverIcon(PointerIcon(Cursor.getDefaultCursor()))
             .animateContentSize(
                 animationSpec = tween(
@@ -73,14 +75,12 @@ fun ChatBar(chatController: ChatController) {
                     .fillMaxWidth()
                     .clickable {
                         expandedState = !expandedState
-                        WhiteboardEventHandler.isEditingText = expandedState
                     },
                 arrowModifier = Modifier
                     .alpha(ContentAlpha.medium)
                     .rotate(rotationState),
                 onClick = {
                     expandedState = !expandedState
-                    WhiteboardEventHandler.isEditingText = expandedState
                 }
             )
 
@@ -107,7 +107,12 @@ fun ChatBar(chatController: ChatController) {
                     text = messageState,
                     placeholder = "Message",
                     enabled = true,
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier
+                        .padding(20.dp),
+                    textFieldModifier = Modifier
+                        .onFocusChanged {
+                            WhiteboardEventHandler.isEditingText = it.isFocused
+                        },
                     onClick = ::sendMessage
                 )
             }
