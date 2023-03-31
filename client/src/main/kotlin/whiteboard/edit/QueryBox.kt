@@ -9,8 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.Colors
-import cs346.whiteboard.client.constants.queryBoxColor
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.helpers.toDp
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
@@ -24,7 +23,7 @@ fun QueryBox(controller: WhiteboardController, data: QueryBoxData) {
             .wrapContentSize(Alignment.TopStart, true)
             .offset(coordinate.x.toDp(), coordinate.y.toDp())
             .size(size.width.toDp(),size.height.toDp())
-            .background(Colors.queryBoxColor)
+            .background(WhiteboardColors.queryBoxColor)
             .zIndex(WhiteboardLayerZIndices.queryBox)
     )
 }

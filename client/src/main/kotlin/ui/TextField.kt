@@ -15,13 +15,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
 
 val textSelectionColors = TextSelectionColors(
-    handleColor = Colors.primary,
-    backgroundColor = Colors.secondaryVariant
+    handleColor = WhiteboardColors.primary,
+    backgroundColor = WhiteboardColors.secondaryVariant
 )
 @Composable
 fun AuthenticationTextField(text: MutableState<TextFieldValue>,
@@ -45,15 +45,15 @@ fun AuthenticationTextField(text: MutableState<TextFieldValue>,
             singleLine = true,
             shape = Shapes.small,
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = Colors.primary,
-                disabledTextColor = Colors.secondaryVariant,
-                cursorColor = Colors.primary,
-                focusedBorderColor = Colors.primary,
-                unfocusedBorderColor = Colors.secondaryVariant,
-                disabledBorderColor = Colors.secondaryVariant,
-                focusedLabelColor = Colors.primary,
-                unfocusedLabelColor = Colors.secondaryVariant,
-                disabledLabelColor = Colors.secondaryVariant),
+                textColor = WhiteboardColors.primary,
+                disabledTextColor = WhiteboardColors.secondaryVariant,
+                cursorColor = WhiteboardColors.primary,
+                focusedBorderColor = WhiteboardColors.primary,
+                unfocusedBorderColor = WhiteboardColors.secondaryVariant,
+                disabledBorderColor = WhiteboardColors.secondaryVariant,
+                focusedLabelColor = WhiteboardColors.primary,
+                unfocusedLabelColor = WhiteboardColors.secondaryVariant,
+                disabledLabelColor = WhiteboardColors.secondaryVariant),
         )
     }
 }
@@ -74,10 +74,10 @@ fun TextFieldWithButton(
             enabled = enabled,
             shape = Shapes.small,
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = Colors.primary,
-                contentColor = Colors.background,
-                disabledBackgroundColor = Colors.secondary,
-                disabledContentColor = Colors.background
+                backgroundColor = WhiteboardColors.primary,
+                contentColor = WhiteboardColors.background,
+                disabledBackgroundColor = WhiteboardColors.secondary,
+                disabledContentColor = WhiteboardColors.background
             )) {
             PrimaryButtonText(buttonText)
         }
@@ -95,15 +95,15 @@ fun TextFieldWithButton(
             singleLine = true,
             shape = Shapes.small,
             colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = Colors.primary,
-                disabledTextColor = Colors.secondaryVariant,
-                cursorColor = Colors.primary,
-                focusedBorderColor = Colors.primary,
-                unfocusedBorderColor = Colors.secondaryVariant,
-                disabledBorderColor = Colors.secondaryVariant,
-                focusedLabelColor = Colors.primary,
-                unfocusedLabelColor = Colors.secondaryVariant,
-                disabledLabelColor = Colors.secondaryVariant),
+                textColor = WhiteboardColors.primary,
+                disabledTextColor = WhiteboardColors.secondaryVariant,
+                cursorColor = WhiteboardColors.primary,
+                focusedBorderColor = WhiteboardColors.primary,
+                unfocusedBorderColor = WhiteboardColors.secondaryVariant,
+                disabledBorderColor = WhiteboardColors.secondaryVariant,
+                focusedLabelColor = WhiteboardColors.primary,
+                unfocusedLabelColor = WhiteboardColors.secondaryVariant,
+                disabledLabelColor = WhiteboardColors.secondaryVariant),
         )
     }
 }

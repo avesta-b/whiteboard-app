@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
 
 @Composable
@@ -15,7 +15,7 @@ fun Dialog(modifier: Modifier,
            description: String,
            buttonText: String,
            onClick: () -> Unit) {
-    Box(modifier = modifier.border(1.dp, Colors.secondaryVariant, Shapes.small)) {
+    Box(modifier = modifier.border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)) {
         Column(
             modifier = modifier.padding(32.dp).align(Alignment.Center),
             horizontalAlignment = Alignment.Start) {
