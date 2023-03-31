@@ -1,5 +1,6 @@
 package cs346.whiteboard.client.helpers
 
+import cs346.whiteboard.client.constants.WhiteboardColors
 import java.awt.image.BufferedImage
 import java.io.InputStream
 import javax.imageio.ImageIO
@@ -68,7 +69,12 @@ enum class CustomIcon {
     abstract fun fileName(): String
 
     fun path(): String {
-        return "/icons/${fileName()}"
+        var fileName = fileName()
+        var indexOfDot = fileName.indexOf('.')
+        if (WhiteboardColors.isDarkMode) {
+            fileName = "${fileName.substring(0, indexOfDot)}-dark${fileName.substring(indexOfDot)}"
+        }
+        return "/icons/$fileName"
     }
     fun image(): BufferedImage {
         return ImageIO.read(getResource(path()))

@@ -12,7 +12,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.helpers.CustomIcon
 import cs346.whiteboard.client.helpers.bottomBorder
@@ -28,8 +28,8 @@ fun WhiteboardTopBar(whiteboardController: WhiteboardController, modifier: Modif
     Box(modifier = modifier
         .fillMaxWidth()
         .height(50.dp)
-        .background(Colors.background)
-        .bottomBorder(1.dp, Colors.secondaryVariant)
+        .background(WhiteboardColors.background)
+        .bottomBorder(1.dp, WhiteboardColors.secondaryVariant)
         .zIndex(WhiteboardLayerZIndices.topBar)
         .pointerHoverIcon(PointerIcon(Cursor.getDefaultCursor()))) {
         Row(modifier.fillMaxSize(), verticalAlignment = Alignment.CenterVertically) {

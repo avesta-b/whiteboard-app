@@ -16,7 +16,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.helpers.CustomIcon
 import cs346.whiteboard.client.ui.CustomIconButton
@@ -138,9 +138,9 @@ fun WhiteboardToolbar(whiteboardController: WhiteboardController) {
             .width(350.dp)
             .height(IntrinsicSize.Min)
             .padding(16.dp)
-            .border(1.dp, Colors.secondaryVariant, Shapes.small)
+            .border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)
             .shadow(16.dp, Shapes.small, true)
-            .background(Colors.background)
+            .background(WhiteboardColors.background)
             .clip(Shapes.small)
             .zIndex(WhiteboardLayerZIndices.toolbar)
             .pointerHoverIcon(PointerIcon(Cursor.getDefaultCursor())),

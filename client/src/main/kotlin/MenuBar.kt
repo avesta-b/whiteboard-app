@@ -10,6 +10,7 @@ import androidx.compose.ui.window.*
 import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.commands.CommandTypes
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.helpers.Toolkit
 import cs346.whiteboard.client.ui.*
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
@@ -42,6 +43,10 @@ fun createMenuBar(state: WindowState, frameScope: FrameWindowScope){
             Item("Paste", onClick = { CommandFactory.create(CommandTypes.PASTE).execute() }, shortcut = KeyShortcut(Key.V, ctrl = !isMacOS(), meta = isMacOS()))
         }
         Menu("View", mnemonic = 'V') {
+            CheckboxItem("Dark mode", checked = WhiteboardColors.isDarkMode, onCheckedChange = {
+                WhiteboardColors.isDarkMode = !WhiteboardColors.isDarkMode
+            })
+            Separator()
             Item("Zoom in", onClick = { CommandFactory.create(CommandTypes.ZOOMIN).execute() }, shortcut = KeyShortcut(Key.Plus, ctrl = !isMacOS(), meta = isMacOS()))
             Item("Zoom out", onClick = { CommandFactory.create(CommandTypes.ZOOMOUT).execute() }, shortcut = KeyShortcut(Key.Minus, ctrl = !isMacOS(), meta = isMacOS()))
         }

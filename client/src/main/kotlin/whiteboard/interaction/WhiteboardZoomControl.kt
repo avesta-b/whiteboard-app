@@ -13,7 +13,7 @@ import androidx.compose.ui.input.pointer.PointerIcon
 import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.helpers.CustomIcon
 import cs346.whiteboard.client.ui.CustomIconButton
@@ -30,9 +30,9 @@ fun WhiteboardZoomControl(controller: WhiteboardController) {
         modifier = Modifier
             .height(IntrinsicSize.Min)
             .padding(16.dp)
-            .border(1.dp, Colors.secondaryVariant, Shapes.small)
+            .border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)
             .shadow(16.dp, Shapes.small, true)
-            .background(Colors.background)
+            .background(WhiteboardColors.background)
             .clip(Shapes.small)
             .zIndex(WhiteboardLayerZIndices.zoomControl)
             .pointerHoverIcon(PointerIcon(Cursor.getDefaultCursor())),
@@ -44,7 +44,7 @@ fun WhiteboardZoomControl(controller: WhiteboardController) {
                 controller.zoomOut()
             }
         )
-        VerticalDivider(color = Colors.secondaryVariant)
+        VerticalDivider(color = WhiteboardColors.secondaryVariant)
         Box(Modifier.padding(8.dp).width(48.dp)) {
             PrimarySubtitleText(
                 text = "${(100 * controller.whiteboardZoom).roundToInt()}%",
@@ -52,7 +52,7 @@ fun WhiteboardZoomControl(controller: WhiteboardController) {
             )
         }
 
-        VerticalDivider(color = Colors.secondaryVariant)
+        VerticalDivider(color = WhiteboardColors.secondaryVariant)
         CustomIconButton(
             icon = CustomIcon.PLUS,
             onClick = {

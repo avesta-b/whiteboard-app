@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.window.*
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.views.RootView
 import java.awt.Dimension
 import java.awt.event.*
@@ -17,7 +17,7 @@ import java.awt.event.*
 fun App() {
     MaterialTheme {
         RootView(
-            modifier = Modifier.fillMaxSize().background(Colors.background)
+            modifier = Modifier.fillMaxSize().background(WhiteboardColors.background)
         )
     }
 }

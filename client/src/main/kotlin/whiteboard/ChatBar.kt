@@ -23,7 +23,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.websocket.ChatController
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.ui.*
@@ -56,9 +56,9 @@ fun ChatBar(chatController: ChatController) {
         modifier = Modifier
             .width(400.dp)
             .padding(16.dp)
-            .border(1.dp, Colors.secondaryVariant, Shapes.small)
+            .border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)
             .shadow(16.dp, Shapes.small, true)
-            .background(Colors.background)
+            .background(WhiteboardColors.background)
             .clip(Shapes.small)
             .zIndex(WhiteboardLayerZIndices.chat)
             .pointerHoverIcon(PointerIcon(Cursor.getDefaultCursor()))

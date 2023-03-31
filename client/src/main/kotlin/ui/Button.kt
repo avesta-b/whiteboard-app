@@ -18,10 +18,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
-import cs346.whiteboard.client.constants.backgroundDotColor
-import cs346.whiteboard.client.constants.highlightedIconButtonColor
 import cs346.whiteboard.client.helpers.CustomIcon
 
 @Composable
@@ -35,10 +33,10 @@ fun PrimaryButton(modifier: Modifier,
         enabled = enabled,
         shape = Shapes.small,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Colors.primary,
-            contentColor = Colors.background,
-            disabledBackgroundColor = Colors.primary,
-            disabledContentColor = Colors.background
+            backgroundColor = WhiteboardColors.primary,
+            contentColor = WhiteboardColors.background,
+            disabledBackgroundColor = WhiteboardColors.primary,
+            disabledContentColor = WhiteboardColors.background
         )) {
         if (enabled) {
             PrimaryButtonText(text)
@@ -58,11 +56,11 @@ fun OutlinedButton(modifier: Modifier,
         modifier = modifier,
         enabled = enabled,
         shape = Shapes.small,
-        border = BorderStroke(1.dp, Colors.secondaryVariant),
+        border = BorderStroke(1.dp, WhiteboardColors.secondaryVariant),
         colors = ButtonDefaults.outlinedButtonColors(
-            backgroundColor = Colors.background,
-            contentColor = Colors.secondaryVariant,
-            disabledContentColor = Colors.secondaryVariant)
+            backgroundColor = WhiteboardColors.background,
+            contentColor = WhiteboardColors.secondaryVariant,
+            disabledContentColor = WhiteboardColors.secondaryVariant)
     ) {
         PrimarySubtitleText(text = text)
     }
@@ -80,10 +78,10 @@ fun OutlinedButton(
         onClick = onClick,
         modifier = modifier,
         shape = Shapes.medium,
-        border = BorderStroke(1.dp, if (selected) Colors.primary else Colors.secondaryVariant),
+        border = BorderStroke(1.dp, if (selected) WhiteboardColors.primary else WhiteboardColors.secondaryVariant),
         colors = ButtonDefaults.outlinedButtonColors(
-            backgroundColor = Colors.background,
-            contentColor = Colors.primary
+            backgroundColor = WhiteboardColors.background,
+            contentColor = WhiteboardColors.primary
         ),
         content = content
     )
@@ -100,9 +98,9 @@ fun UnderlinedTextButton(modifier: Modifier,
         enabled = enabled,
         shape = Shapes.small,
         colors = ButtonDefaults.textButtonColors(
-            backgroundColor = Colors.background,
-            contentColor = Colors.secondaryVariant,
-            disabledContentColor = Colors.secondaryVariant
+            backgroundColor = WhiteboardColors.background,
+            contentColor = WhiteboardColors.secondaryVariant,
+            disabledContentColor = WhiteboardColors.secondaryVariant
         )
     ) {
         UnderlinedText(text)
@@ -117,11 +115,11 @@ fun OutlinedCustomIconButton(modifier: Modifier,
         onClick = onClick,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Colors.background,
-            contentColor = Colors.primary
+            backgroundColor = WhiteboardColors.background,
+            contentColor = WhiteboardColors.primary
         ),
         shape = Shapes.small,
-        border = BorderStroke(1.dp, Colors.secondaryVariant),
+        border = BorderStroke(1.dp, WhiteboardColors.secondaryVariant),
     ) {
         Image(
             painterResource(icon.path()),
@@ -143,8 +141,8 @@ fun CustomIconButton(
         onClick = onClick,
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Colors.background,
-            contentColor = Colors.primary
+            backgroundColor = WhiteboardColors.background,
+            contentColor = WhiteboardColors.primary
         ),
         shape = shape,
         elevation = null,
@@ -157,7 +155,7 @@ fun CustomIconButton(
                         .size(16.dp)
                         .padding(8.dp)
                         .clip(shape)
-                        .background(Colors.highlightedIconButtonColor)
+                        .background(WhiteboardColors.highlightedIconButtonColor)
                         .align(Alignment.Center)
                 )
             }

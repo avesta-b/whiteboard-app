@@ -35,7 +35,7 @@ import cs346.whiteboard.client.helpers.getUserColor
 fun TitleText(text: String) {
     Text(
         text = text,
-        color = Colors.primary,
+        color = WhiteboardColors.primary,
         style = Typography.h1,
         textAlign = TextAlign.Center
     )
@@ -43,7 +43,7 @@ fun TitleText(text: String) {
 
 @Composable
 fun TooltipText(text: String, modifier: Modifier = Modifier) {
-    Box(modifier.clip(Shapes.small).background(Colors.primary)) {
+    Box(modifier.clip(Shapes.small).background(WhiteboardColors.primary)) {
         Text(
             text = text,
             modifier = Modifier.padding(5.dp),
@@ -77,7 +77,7 @@ fun UserIconText(character: String, color: Color) {
                 )
             },
         text = character,
-        color = Colors.background,
+        color = WhiteboardColors.background,
         style = Typography.subtitle2
     )
 }
@@ -86,7 +86,7 @@ fun UserIconText(character: String, color: Color) {
 fun SmallTitleText(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
-        color = Colors.primary,
+        color = WhiteboardColors.primary,
         style = Typography.h2,
         modifier = modifier
     )
@@ -104,7 +104,7 @@ fun TextFieldPlaceholderText(text: String) {
 fun PrimaryButtonText(text: String) {
     Text(
         text = text,
-        color = Colors.background,
+        color = WhiteboardColors.background,
         style = Typography.subtitle2
     )
 }
@@ -113,7 +113,7 @@ fun PrimaryButtonText(text: String) {
 fun SecondarySubtitleText(text: String) {
     Text(
         text = text,
-        color = Colors.secondary,
+        color = WhiteboardColors.secondary,
         style = Typography.subtitle2
     )
 }
@@ -122,7 +122,7 @@ fun SecondarySubtitleText(text: String) {
 fun PrimarySubtitleText(text: String, style: TextStyle = Typography.subtitle2, modifier: Modifier = Modifier) {
     Text(
         text = text,
-        color = Colors.primary,
+        color = WhiteboardColors.primary,
         style = style,
         modifier = modifier
     )
@@ -132,7 +132,7 @@ fun PrimarySubtitleText(text: String, style: TextStyle = Typography.subtitle2, m
 fun UnderlinedText(text: String) {
     Text(
         text = text,
-        color = Colors.primary,
+        color = WhiteboardColors.primary,
         style = Typography.subtitle2,
         textDecoration = TextDecoration.Underline
     )
@@ -142,7 +142,7 @@ fun UnderlinedText(text: String) {
 fun SecondaryBodyText(text: String) {
     Text(
         text = text,
-        color = Colors.secondary,
+        color = WhiteboardColors.secondary,
         style = Typography.body1
     )
 }
@@ -151,7 +151,7 @@ fun SecondaryBodyText(text: String) {
 fun SmallBodyText(text: String) {
     Text(
         text = text,
-        color = Colors.secondary,
+        color = WhiteboardColors.secondary,
         style = Typography.bodySmall
     )
 }
@@ -160,7 +160,7 @@ fun SmallBodyText(text: String) {
 fun ErrorText(text: String) {
     Text(
         text = text,
-        color = Colors.error,
+        color = WhiteboardColors.error,
         style = Typography.subtitle2
     )
 }
@@ -193,7 +193,7 @@ fun ChatToolHeader(titleModifier: Modifier, arrowModifier: Modifier, onClick: ()
 fun ChatUserName(text: String) {
     Text(
         text = text,
-        color = Colors.primary,
+        color = WhiteboardColors.primary,
         style = Typography.body1,
         fontWeight = FontWeight.SemiBold
     )
@@ -203,7 +203,7 @@ fun ChatUserName(text: String) {
 fun ChatTime(text: String) {
     Text(
         text = text,
-        color = Colors.secondary,
+        color = WhiteboardColors.secondary,
         style = Typography.bodySmall,
         modifier = Modifier.padding(10.dp, 0.dp, 0.dp, 0.dp)
     )
@@ -213,7 +213,7 @@ fun ChatTime(text: String) {
 fun ChatText(text: String) {
     Text(
         text = text,
-        color = Colors.primary,
+        color = WhiteboardColors.primary,
         style = Typography.body1,
         fontWeight = FontWeight.Light
     )
@@ -280,15 +280,15 @@ fun ChatTextFieldWithButton(
                 singleLine = true,
                 shape = Shapes.small,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
-                    textColor = Colors.primary,
-                    disabledTextColor = Colors.secondaryVariant,
-                    cursorColor = Colors.primary,
-                    focusedBorderColor = Colors.primary,
-                    unfocusedBorderColor = Colors.secondaryVariant,
-                    disabledBorderColor = Colors.secondaryVariant,
-                    focusedLabelColor = Colors.primary,
-                    unfocusedLabelColor = Colors.secondaryVariant,
-                    disabledLabelColor = Colors.secondaryVariant
+                    textColor = WhiteboardColors.primary,
+                    disabledTextColor = WhiteboardColors.secondaryVariant,
+                    cursorColor = WhiteboardColors.primary,
+                    focusedBorderColor = WhiteboardColors.primary,
+                    unfocusedBorderColor = WhiteboardColors.secondaryVariant,
+                    disabledBorderColor = WhiteboardColors.secondaryVariant,
+                    focusedLabelColor = WhiteboardColors.primary,
+                    unfocusedLabelColor = WhiteboardColors.secondaryVariant,
+                    disabledLabelColor = WhiteboardColors.secondaryVariant
                 ),
             )
             Button(
@@ -299,10 +299,10 @@ fun ChatTextFieldWithButton(
                 enabled = enabled,
                 shape = Shapes.small,
                 colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Colors.primary,
-                    contentColor = Colors.background,
-                    disabledBackgroundColor = Colors.secondary,
-                    disabledContentColor = Colors.background
+                    backgroundColor = WhiteboardColors.primary,
+                    contentColor = WhiteboardColors.background,
+                    disabledBackgroundColor = WhiteboardColors.secondary,
+                    disabledContentColor = WhiteboardColors.background
                 )
             ) {
                 Icon(

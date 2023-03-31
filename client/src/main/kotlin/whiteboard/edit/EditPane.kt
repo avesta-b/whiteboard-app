@@ -16,7 +16,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.helpers.*
 import cs346.whiteboard.client.ui.OutlinedButton
@@ -36,9 +36,9 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
             .width(350.dp)
             .height(IntrinsicSize.Min)
             .padding(16.dp)
-            .border(1.dp, Colors.secondaryVariant, Shapes.small)
+            .border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)
             .shadow(16.dp, Shapes.small, true)
-            .background(Colors.background)
+            .background(WhiteboardColors.background)
             .clip(Shapes.small)
             .padding(16.dp)
             .zIndex(WhiteboardLayerZIndices.editPane)
@@ -62,7 +62,7 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 ) {
                                     Box(Modifier
                                         .size(16.dp)
-                                        .border(1.dp, Colors.secondaryVariant, CircleShape)
+                                        .border(1.dp, WhiteboardColors.secondaryVariant, CircleShape)
                                         .background(color.toColor(), CircleShape))
                                 }
                             }
@@ -77,7 +77,7 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 ) {
                                     Box(Modifier
                                         .size(16.dp)
-                                        .border(1.dp, Colors.secondaryVariant, CircleShape)
+                                        .border(1.dp, WhiteboardColors.secondaryVariant, CircleShape)
                                         .background(color.toColor(), CircleShape))
                                 }
                             }
@@ -119,7 +119,7 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 Box(Modifier
                                     .width(16.dp)
                                     .height((thickness.toFloat() / 8).dp)
-                                    .background(Colors.primary, CircleShape))
+                                    .background(WhiteboardColors.primary, CircleShape))
                             }
                         }
                     }
