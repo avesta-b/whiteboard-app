@@ -112,6 +112,13 @@ fun TextSize.toFloat(): Float {
     }
 }
 
+fun AccessLevel.toIcon(): CustomIcon {
+    return when(this) {
+        AccessLevel.LOCKED -> CustomIcon.LOCK
+        AccessLevel.UNLOCKED -> CustomIcon.UNLOCK
+    }
+}
+
 fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
     val compController = WeakReference(eventHandler.componentEventController)
     when(componentType) {
@@ -123,6 +130,8 @@ fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
                 size = attributeWrapper(size.toSize(), compController, uuid),
                 color = attributeWrapper(color, compController, uuid),
                 depth = depth,
+                owner = owner,
+                accessLevel = attributeWrapper(accessLevel, compController, uuid),
                 font = attributeWrapper(textFont ?: TextFont.DEFAULT, compController, uuid),
                 fontSize = attributeWrapper(textSize ?: TextSize.SMALL, compController, uuid),
                 initialWord = text ?: ""
@@ -130,12 +139,14 @@ fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
         }
         ComponentType.PATH -> {
             val path = Path(
+                uuid = uuid,
                 coordinate = attributeWrapper(position.toOffset(), compController, uuid),
                 controller = compController,
                 size = attributeWrapper(size.toSize(), compController, uuid),
                 color = attributeWrapper(color, compController, uuid),
                 depth = depth,
-                uuid = uuid,
+                owner = owner,
+                accessLevel = attributeWrapper(accessLevel, compController, uuid),
                 type = attributeWrapper(pathType ?: PathType.BRUSH, compController, uuid),
                 thickness = attributeWrapper(pathThickness ?: PathThickness.THIN, compController, uuid)
             )
@@ -150,6 +161,8 @@ fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
                 size = attributeWrapper(size.toSize(), compController, uuid),
                 color = attributeWrapper(color, compController, uuid),
                 depth = depth,
+                owner = owner,
+                accessLevel = attributeWrapper(accessLevel, compController, uuid),
                 type = attributeWrapper(shapeType ?: ShapeType.SQUARE, compController, uuid),
                 fill = attributeWrapper(shapeFill ?: ShapeFill.OUTLINE, compController, uuid)
             )

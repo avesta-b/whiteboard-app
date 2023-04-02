@@ -28,6 +28,7 @@ fun <T> makeComponentUpdate(t: T, componentUUID: String, username: String): Comp
         is TextFieldValue -> ComponentUpdate(uuid = componentUUID, text = t.text, username= username)
         is TextFont -> ComponentUpdate(uuid = componentUUID, textFont = t, username= username)
         is TextSize -> ComponentUpdate(uuid = componentUUID, textSize = t, username= username)
+        is AccessLevel -> ComponentUpdate(uuid = componentUUID, accessLevel = t, username = username)
         else -> null
     }
 }

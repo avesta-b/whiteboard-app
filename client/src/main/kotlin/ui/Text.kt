@@ -43,7 +43,7 @@ fun TitleText(text: String) {
 
 @Composable
 fun TooltipText(text: String, modifier: Modifier = Modifier) {
-    Box(modifier.clip(Shapes.small).background(WhiteboardColors.primary)) {
+    Box(modifier.clip(Shapes.small).background(WhiteboardColors.tooltipBackgroundColor)) {
         Text(
             text = text,
             modifier = Modifier.padding(5.dp),
@@ -77,7 +77,7 @@ fun UserIconText(character: String, color: Color) {
                 )
             },
         text = character,
-        color = WhiteboardColors.background,
+        color = Color.White,
         style = Typography.subtitle2
     )
 }

@@ -1,9 +1,6 @@
 package cs346.whiteboard.service.services
 
-import cs346.whiteboard.shared.jsonmodels.ComponentState
-import cs346.whiteboard.shared.jsonmodels.ComponentUpdate
-import cs346.whiteboard.shared.jsonmodels.DeleteComponent
-import cs346.whiteboard.shared.jsonmodels.WhiteboardState
+import cs346.whiteboard.shared.jsonmodels.*
 import org.springframework.stereotype.Service
 
 @Service
@@ -17,17 +14,23 @@ class WhiteboardStateManager {
         whiteboard.components[component.uuid] = component
     }
 
-    fun deleteComponent(roomId: String, deleteComponent: DeleteComponent) {
-        val whiteboard = states[roomId] ?: return
+    // Returns true on success
+    fun deleteComponent(roomId: String, deleteComponent: DeleteComponent): Boolean {
+        val whiteboard = states[roomId] ?: return false
+        val componentState = whiteboard.components[deleteComponent.uuid] ?: return false
+        if (componentState.accessLevel == AccessLevel.LOCKED && deleteComponent.username != componentState.owner) return false
         whiteboard.components.remove(deleteComponent.uuid)
         if (whiteboard.components.isEmpty()) {
             states.remove(roomId)
         }
+        return true
     }
 
-    fun updateComponent(roomId: String, update: ComponentUpdate) {
-        val whiteboard = states[roomId] ?: return
-        var componentState = whiteboard.components[update.uuid] ?: return
+    // Returns true on success
+    fun updateComponent(roomId: String, update: ComponentUpdate): Boolean {
+        val whiteboard = states[roomId] ?: return false
+        var componentState = whiteboard.components[update.uuid] ?: return false
+        if (componentState.accessLevel == AccessLevel.LOCKED && update.username != componentState.owner) return false
         update.size?.let {
             componentState.size = it
         }
@@ -61,6 +64,10 @@ class WhiteboardStateManager {
         update.textSize?.let {
             componentState.textSize = it
         }
+        update.accessLevel?.let {
+            componentState.accessLevel = it
+        }
         whiteboard.components[update.uuid] = componentState
+        return true
     }
 }

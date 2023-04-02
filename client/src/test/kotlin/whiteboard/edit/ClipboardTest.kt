@@ -5,6 +5,7 @@ import androidx.compose.ui.geometry.Size
 import cs346.whiteboard.client.whiteboard.components.Component
 import cs346.whiteboard.client.whiteboard.components.Shape
 import cs346.whiteboard.client.whiteboard.components.attributeWrapper
+import cs346.whiteboard.shared.jsonmodels.AccessLevel
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ShapeFill
 import cs346.whiteboard.shared.jsonmodels.ShapeType
@@ -30,6 +31,8 @@ class ClipboardTest {
             attributeWrapper(Size(250f, 250f)),
             attributeWrapper(ComponentColor.BLACK),
             0f,
+            "",
+            attributeWrapper(AccessLevel.UNLOCKED),
             attributeWrapper(ShapeType.SQUARE),
             attributeWrapper(ShapeFill.OUTLINE)
         )
@@ -40,6 +43,8 @@ class ClipboardTest {
             attributeWrapper(Size(250f, 250f)),
             attributeWrapper(ComponentColor.BLACK),
             0f,
+            "",
+            attributeWrapper(AccessLevel.UNLOCKED),
             attributeWrapper(ShapeType.SQUARE),
             attributeWrapper(ShapeFill.OUTLINE)
         )
@@ -50,6 +55,8 @@ class ClipboardTest {
             attributeWrapper(Size(250f, 250f)),
             attributeWrapper(ComponentColor.BLACK),
             0f,
+            "",
+            attributeWrapper(AccessLevel.UNLOCKED),
             attributeWrapper(ShapeType.SQUARE),
             attributeWrapper(ShapeFill.OUTLINE)
         )

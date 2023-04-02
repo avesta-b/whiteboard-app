@@ -136,8 +136,10 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     fun deleteSelected() {
         editController.selectionBoxData?.selectedComponents?.forEach {
-            components.remove(it.uuid)
-            webSocketEventHandler.componentEventController.delete(it.uuid)
+            if (it.isEditable()) {
+                components.remove(it.uuid)
+                webSocketEventHandler.componentEventController.delete(it.uuid)
+            }
         }
         editController.clearSelectionBox()
     }
@@ -194,6 +196,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     coordinate = attributeWrapper(whiteboardStartPoint, compController, componentUUID),
                     size = attributeWrapper(Size(1f, 1f), compController, componentUUID ),
                     depth = preIncrementCurrentDepth(),
+                    owner = UserManager.getUsername() ?: "default_user",
                     type = attributeWrapper(currentTool.getPathType(), compController, componentUUID)
                 )
                 path.insertPoint(whiteboardStartPoint)
@@ -287,10 +290,11 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     coordinate = attributeWrapper(whiteboardPoint, compController, componentUUID),
                     size = attributeWrapper(Size(1f, 1f), compController, componentUUID ),
                     depth = preIncrementCurrentDepth(),
+                    owner = UserManager.getUsername() ?: "default_user",
                     type = attributeWrapper(currentTool.getPathType(), compController, componentUUID)
                 )
-                path.insertLocalWithoutConfirm(whiteboardPoint)
-                path.insertLocalWithoutConfirm(whiteboardPoint) // no updateUUID needed because we are adding
+                path.insertPoint(whiteboardPoint)
+                path.insertPoint(whiteboardPoint) // no updateUUID needed because we are adding
                 components[path.uuid] = path
                 webSocketEventHandler.componentEventController.add(path) // we add
             }
@@ -305,6 +309,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     controller = compController,
                     coordinate = attributeWrapper(whiteboardPoint, compController, componentUUID),
                     depth = preIncrementCurrentDepth(),
+                    owner = UserManager.getUsername() ?: "default_user",
                     type = attributeWrapper(currentTool.getShapeType(), compController, componentUUID)
                 )
                 components[shape.uuid] = shape
@@ -320,6 +325,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                     controller = compController,
                     coordinate = attributeWrapper(whiteboardPoint, compController, componentUUID),
                     depth = preIncrementCurrentDepth(),
+                    owner = UserManager.getUsername() ?: "default_user",
                     initialWord = ""
                 )
                 components[textBox.uuid] = textBox
@@ -361,9 +367,13 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
         }
     }
 
-    private fun useEraser(component: String?) {
-        components.remove(component)
-        webSocketEventHandler.componentEventController.delete(component)
+    private fun useEraser(componentUUID: String?) {
+        components[componentUUID]?.let {
+            if (it.isEditable()) {
+                components.remove(it.uuid)
+                webSocketEventHandler.componentEventController.delete(it.uuid)
+            }
+        }
     }
 
     fun deleteComponent(deleteComponent: DeleteComponent) {

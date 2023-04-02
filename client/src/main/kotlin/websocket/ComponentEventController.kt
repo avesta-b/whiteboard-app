@@ -52,7 +52,7 @@ class ComponentEventController(
                     is DeleteComponentEvent -> handler.get()?.let {
                         it.send<DeleteComponent>(
                             sendSuffix = ".deleteComponent",
-                            body = DeleteComponent(event.componentId),
+                            body = DeleteComponent(event.componentId, username),
                             serializationStrategy = DeleteComponent.serializer()
                         )
                     }

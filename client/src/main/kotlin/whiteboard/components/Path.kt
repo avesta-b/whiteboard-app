@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
+import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.toColor
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.websocket.ComponentEventController
@@ -27,6 +28,8 @@ class Path(
     override var size: AttributeWrapper<Size>,
     override var color: AttributeWrapper<ComponentColor> = attributeWrapper(defaultComponentColor, controller, uuid),
     override var depth: Float,
+    override var owner: String,
+    override var accessLevel: AttributeWrapper<AccessLevel> = attributeWrapper(defaultAccessLevel, controller, uuid),
     var type: AttributeWrapper<PathType>,
     var thickness: AttributeWrapper<PathThickness> = attributeWrapper(defaultPathThickness, controller, uuid),
     ) : Component(uuid) {
@@ -34,7 +37,8 @@ class Path(
     override val editPaneAttributes = listOf(
         EditPaneAttribute.COLOR,
         EditPaneAttribute.PATH_TYPE,
-        EditPaneAttribute.PATH_THICKNESS
+        EditPaneAttribute.PATH_THICKNESS,
+        EditPaneAttribute.ACCESS_LEVEL
     )
 
     private var points = IterableAttributeWrapper(controller, uuid)
@@ -50,7 +54,6 @@ class Path(
         res.pathThickness = thickness.getValue()
         return res
     }
-
 
     override suspend fun applyServerUpdate(update: ComponentUpdate) {
         super.applyServerUpdate(update)
@@ -70,28 +73,24 @@ class Path(
     fun insertLocalWithoutConfirm(point: Offset) {
         points.addWithoutConfirm(point)
 
-        // TODO: There's got to be a better way to do this... works in the meantime -M
-        // If it ain't broke don't fix it :D -Y
-        if (point.x > coordinate.getValue().x && point.x - coordinate.getValue().x > size.getValue().width) {
-            size.setWithoutConfirm(Size(point.x - coordinate.getValue().x, size.getValue().height))
+        var currentSize = size.getValue()
+        var currentCoordinate = coordinate.getValue()
+        if (point.x > currentCoordinate.x && point.x - currentCoordinate.x > currentSize.width) {
+            currentSize = Size(point.x - currentCoordinate.x, currentSize.height)
         }
-        if (point.y > coordinate.getValue().y && point.y - coordinate.getValue().y > size.getValue().height) {
-            size.setWithoutConfirm(Size(size.getValue().width, point.y - coordinate.getValue().y))
+        if (point.y > currentCoordinate.y && point.y - currentCoordinate.y > currentSize.height) {
+            currentSize = Size(currentSize.width, point.y - currentCoordinate.y)
         }
-        if (point.x < coordinate.getValue().x) {
-            size.setWithoutConfirm(
-                Size(coordinate.getValue().x - point.x + size.getValue().width, size.getValue().height)
-            )
-            coordinate.setWithoutConfirm(Offset(point.x, coordinate.getValue().y))
+        if (point.x < currentCoordinate.x) {
+            currentSize = Size(currentCoordinate.x - point.x + currentSize.width, currentSize.height)
+            currentCoordinate = Offset(point.x, currentCoordinate.y)
         }
-        if (point.y < coordinate.getValue().y) {
-            size.setWithoutConfirm(
-                Size(size.getValue().width, coordinate.getValue().y - point.y + size.getValue().height)
-            )
-            coordinate.setWithoutConfirm(
-                Offset(coordinate.getValue().x, point.y)
-            )
+        if (point.y < currentCoordinate.y) {
+            currentSize = Size(currentSize.width, currentCoordinate.y - point.y + currentSize.height)
+            currentCoordinate = Offset(currentCoordinate.x, point.y)
         }
+        size.setWithoutConfirm(currentSize)
+        coordinate.setWithoutConfirm(currentCoordinate)
     }
 
 
@@ -177,6 +176,8 @@ class Path(
             attributeWrapper(size.getValue(), controller, newUUID),
             attributeWrapper(color.getValue(), controller, newUUID),
             depth,
+            UserManager.getUsername() ?: "default_user",
+            attributeWrapper(AccessLevel.UNLOCKED, controller, newUUID),
             attributeWrapper(type.getValue(), controller, newUUID),
             attributeWrapper(thickness.getValue(), controller, newUUID)
         )
@@ -191,10 +192,11 @@ class Path(
 
     override fun isResizeable(): Boolean {
         // A dot is not resizable
-        return !(points.getValue().size == 1 || points.getValue().size == 2 && points.getValue()[0] == points.getValue()[1])
+        return super.isResizeable() && !(points.getValue().size == 1 || points.getValue().size == 2 && points.getValue()[0] == points.getValue()[1])
     }
 
-    override fun move(amount: Offset) {
+    override fun move(amount: Offset, force: Boolean) {
+        if (!isEditable() && !force) return
         for (idx in 0 until points.getValue().size) {
             val p = points.getValue()[idx].plus(amount)
             points.setIndex(p, idx)
@@ -209,7 +211,7 @@ class Path(
 
     override fun resize(resizeMultiplier: Float, resizeNodeAnchor: ResizeNode, anchorPoint: Offset) {
         super.resize(resizeMultiplier, resizeNodeAnchor, anchorPoint)
-        val updateUUID = ""
+        if (!isEditable()) return
         val newPoints = points.getValue().map {
             when (resizeNodeAnchor) {
                 ResizeNode.TOP_LEFT -> Offset(
@@ -239,29 +241,24 @@ class Path(
 
     fun insertPoint(point: Offset) {
         points.addLocally(point)
-
-        // TODO: There's got to be a better way to do this... works in the meantime -M
-        // If it ain't broke don't fix it :D -Y
-        if (point.x > coordinate.getValue().x && point.x - coordinate.getValue().x > size.getValue().width) {
-            size.setLocally(Size(point.x - coordinate.getValue().x, size.getValue().height))
+        var currentSize = size.getValue()
+        var currentCoordinate = coordinate.getValue()
+        if (point.x > currentCoordinate.x && point.x - currentCoordinate.x > currentSize.width) {
+            currentSize = Size(point.x - currentCoordinate.x, currentSize.height)
         }
-        if (point.y > coordinate.getValue().y && point.y - coordinate.getValue().y > size.getValue().height) {
-            size.setLocally(Size(size.getValue().width, point.y - coordinate.getValue().y))
+        if (point.y > currentCoordinate.y && point.y - currentCoordinate.y > currentSize.height) {
+            currentSize = Size(currentSize.width, point.y - currentCoordinate.y)
         }
-        if (point.x < coordinate.getValue().x) {
-            size.setLocally(
-                Size(coordinate.getValue().x - point.x + size.getValue().width, size.getValue().height)
-            )
-            coordinate.setLocally(Offset(point.x, coordinate.getValue().y))
+        if (point.x < currentCoordinate.x) {
+            currentSize = Size(currentCoordinate.x - point.x + currentSize.width, currentSize.height)
+            currentCoordinate = Offset(point.x, currentCoordinate.y)
         }
-        if (point.y < coordinate.getValue().y) {
-            size.setLocally(
-                Size(size.getValue().width, coordinate.getValue().y - point.y + size.getValue().height)
-            )
-            coordinate.setLocally(
-                Offset(coordinate.getValue().x, point.y)
-            )
+        if (point.y < currentCoordinate.y) {
+            currentSize = Size(currentSize.width, currentCoordinate.y - point.y + currentSize.height)
+            currentCoordinate = Offset(currentCoordinate.x, point.y)
         }
+        size.setLocally(currentSize)
+        coordinate.setLocally(currentCoordinate)
     }
 
     private fun createPathFromPoints(points: List<Offset>, controller: WhiteboardController): Path {

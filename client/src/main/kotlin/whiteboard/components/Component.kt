@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.zIndex
+import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.toDp
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.helpers.toSize
@@ -21,6 +22,7 @@ import cs346.whiteboard.shared.jsonmodels.*
 import java.util.*
 
 val defaultComponentColor = ComponentColor.BLACK
+val defaultAccessLevel = AccessLevel.UNLOCKED
 
 abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
 
@@ -28,11 +30,15 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
 
     abstract var depth: Float
 
+    abstract var owner: String
+
     abstract var coordinate: AttributeWrapper<Offset>
 
     abstract var size: AttributeWrapper<Size>
 
     abstract var color: AttributeWrapper<ComponentColor>
+
+    abstract var accessLevel: AttributeWrapper<AccessLevel>
 
     abstract val editPaneAttributes: List<EditPaneAttribute>
 
@@ -45,7 +51,9 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
             color = color.getValue(),
             componentType = getComponentType(),
             size = cs346.whiteboard.shared.jsonmodels.Size(size.getValue().width, size.getValue().height),
-            position = Position(coordinate.getValue().x, coordinate.getValue().y)
+            position = Position(coordinate.getValue().x, coordinate.getValue().y),
+            owner = owner,
+            accessLevel = accessLevel.getValue()
         )
     }
 
@@ -59,6 +67,9 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
             }
             update.color?.let {
                 color.setFromServer(it, update.updateUUID, user)
+            }
+            update.accessLevel?.let {
+                accessLevel.setFromServer(it, update.updateUUID, user)
             }
         }
     }
@@ -79,11 +90,20 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
 
     abstract fun clone(): Component
 
-    open fun isResizeable(): Boolean {
-        return true
+    fun isOwnedByCurrentUser(): Boolean {
+        return UserManager.getUsername() == owner
     }
 
-    open fun move(amount: Offset) {
+    fun isEditable(): Boolean {
+        return isOwnedByCurrentUser() || accessLevel.getValue() == AccessLevel.UNLOCKED
+    }
+
+    open fun isResizeable(): Boolean {
+        return isEditable()
+    }
+
+    open fun move(amount: Offset, force: Boolean = false) {
+        if (!isEditable() && !force) return
         coordinate.setLocally(coordinate.getValue().plus(amount), false)
     }
 
@@ -92,6 +112,7 @@ abstract class Component(val uuid: String = UUID.randomUUID().toString()) {
     }
 
     open fun resize(resizeMultiplier: Float, resizeNodeAnchor: ResizeNode, anchorPoint: Offset) {
+        if (!isEditable()) return
         val newSize = size.getValue().times(resizeMultiplier)
         var componentAnchorPoint =
             when (resizeNodeAnchor) {
