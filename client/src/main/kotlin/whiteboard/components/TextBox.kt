@@ -12,6 +12,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
+import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.helpers.toColor
 import cs346.whiteboard.client.helpers.toFloat
@@ -35,6 +36,8 @@ class TextBox(
     override var size: AttributeWrapper<Size> = attributeWrapper(defaultTextBoxSize, controller, uuid),
     override var color: AttributeWrapper<ComponentColor> = attributeWrapper(defaultComponentColor, controller, uuid),
     override var depth: Float,
+    override var owner: String,
+    override var accessLevel: AttributeWrapper<AccessLevel> = attributeWrapper(defaultAccessLevel, controller, uuid),
     var font: AttributeWrapper<TextFont> = attributeWrapper(defaultFont, controller, uuid),
     var fontSize: AttributeWrapper<TextSize> = attributeWrapper(defaultFontSize, controller, uuid),
     initialWord: String = "",
@@ -45,7 +48,8 @@ class TextBox(
     override val editPaneAttributes = listOf(
         EditPaneAttribute.COLOR,
         EditPaneAttribute.TEXT_FONT,
-        EditPaneAttribute.TEXT_SIZE
+        EditPaneAttribute.TEXT_SIZE,
+        EditPaneAttribute.ACCESS_LEVEL
     )
 
     override fun getComponentType(): ComponentType = ComponentType.TEXT_BOX
@@ -107,7 +111,7 @@ class TextBox(
                     this.text.setLocally(it)
                 },
 
-                enabled = isFocused.value,
+                enabled = isFocused.value && isEditable(),
                 modifier = modifier,
                 textStyle = font.getValue().toTextStyle(getFontSize(scale)).copy(color = color.getValue().toColor()),
                 keyboardOptions = KeyboardOptions(
@@ -128,6 +132,8 @@ class TextBox(
             attributeWrapper(size.getValue(), controller, newUUID),
             attributeWrapper(color.getValue(), controller, newUUID),
             depth = depth,
+            owner = UserManager.getUsername() ?: "default_user",
+            accessLevel = attributeWrapper(AccessLevel.UNLOCKED, controller, newUUID),
             font = attributeWrapper(font.getValue(), controller, newUUID),
             fontSize = attributeWrapper(fontSize.getValue(), controller, newUUID),
             initialWord = text.getValue().text

@@ -22,4 +22,5 @@ object WhiteboardColors {
     val selectionNodeColor
         get() = if (isDarkMode) Color(0xFF64748b) else Color(0xFFf8fafc)
     val highlightedIconButtonColor = secondaryVariant.copy(alpha = 0.4f)
+    val tooltipBackgroundColor = Color.Black
 }

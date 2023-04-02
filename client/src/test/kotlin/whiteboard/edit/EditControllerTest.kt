@@ -10,6 +10,7 @@ import cs346.whiteboard.client.whiteboard.components.attributeWrapper
 import cs346.whiteboard.client.whiteboard.edit.EditController
 import cs346.whiteboard.client.whiteboard.edit.ResizeNode
 import cs346.whiteboard.client.whiteboard.edit.SelectionBoxData
+import cs346.whiteboard.shared.jsonmodels.AccessLevel
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ShapeFill
 import cs346.whiteboard.shared.jsonmodels.ShapeType
@@ -43,6 +44,8 @@ class EditControllerTest {
             attributeWrapper(Size(250f, 250f)),
             attributeWrapper(ComponentColor.BLACK),
             0f,
+            "",
+            attributeWrapper(AccessLevel.UNLOCKED),
             attributeWrapper(ShapeType.SQUARE),
             attributeWrapper(ShapeFill.OUTLINE)
         )

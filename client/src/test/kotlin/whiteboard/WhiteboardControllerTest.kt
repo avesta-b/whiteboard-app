@@ -6,6 +6,7 @@ import cs346.whiteboard.client.whiteboard.components.Shape
 import cs346.whiteboard.client.whiteboard.components.attributeWrapper
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
+import cs346.whiteboard.shared.jsonmodels.AccessLevel
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ShapeFill
 import cs346.whiteboard.shared.jsonmodels.ShapeType
@@ -111,6 +112,8 @@ class WhiteboardControllerTest {
             attributeWrapper(Size(250f, 250f)),
             attributeWrapper(ComponentColor.BLACK),
             0f,
+            "",
+            attributeWrapper(AccessLevel.UNLOCKED),
             attributeWrapper(ShapeType.SQUARE),
             attributeWrapper(ShapeFill.OUTLINE)
         )
@@ -131,6 +134,8 @@ class WhiteboardControllerTest {
             attributeWrapper(Size(250f, 250f)),
             attributeWrapper(ComponentColor.BLACK),
             0f,
+            "",
+            attributeWrapper(AccessLevel.UNLOCKED),
             attributeWrapper(ShapeType.SQUARE),
             attributeWrapper(ShapeFill.OUTLINE)
         )

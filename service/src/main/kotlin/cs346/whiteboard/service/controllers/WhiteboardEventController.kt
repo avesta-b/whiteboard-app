@@ -88,10 +88,10 @@ class WhiteboardEventController(
         @DestinationVariable roomId: String,
         componentUpdate: ComponentUpdate
     ) : WebSocketEvent {
-        stateManager.updateComponent(roomId, componentUpdate)
+        val success = stateManager.updateComponent(roomId, componentUpdate)
         return WebSocketEvent(
             WebSocketEventType.UPDATE_COMPONENT,
-            updateComponent = componentUpdate
+            updateComponent = if (success) componentUpdate else null
         )
     }
 
@@ -101,10 +101,10 @@ class WhiteboardEventController(
         @DestinationVariable roomId: String,
         deleteComponent: DeleteComponent
     ) : WebSocketEvent {
-        stateManager.deleteComponent(roomId, deleteComponent)
+        val success = stateManager.deleteComponent(roomId, deleteComponent)
         return WebSocketEvent(
             WebSocketEventType.DELETE_COMPONENT,
-            deleteComponent = deleteComponent
+            deleteComponent = if (success) deleteComponent else null
         )
     }
 

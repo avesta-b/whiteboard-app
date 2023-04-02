@@ -45,7 +45,8 @@ enum class EditPaneAttribute {
     PATH_THICKNESS,
     SHAPE_FILL,
     TEXT_FONT,
-    TEXT_SIZE
+    TEXT_SIZE,
+    ACCESS_LEVEL
 }
 
 data class SelectionBoxData(
@@ -129,6 +130,11 @@ class EditController {
 
     fun resizeSelectedComponents(newPosition: Offset, scale: Float) {
         selectionBoxData?.let { data ->
+            data.selectedComponents.removeIf { !it.isEditable() }
+            if (data.selectedComponents.isEmpty()) {
+                clearSelectionBox()
+                return
+            }
             val coordinate = getCoordinate(data)
             val size = getSize(data)
             val resizeNodeAnchor = data.resizeNodeAnchor?.let { it } ?: return
@@ -188,9 +194,14 @@ class EditController {
     }
 
     fun moveSelectedComponents(dragAmount: Offset) {
-        selectionBoxData?.let {
-            for (component in it.selectedComponents) {
-                component.move(dragAmount)
+        selectionBoxData?.let { data ->
+            data.selectedComponents.removeIf { !it.isEditable() }
+            if (data.selectedComponents.isEmpty()) {
+                clearSelectionBox()
+                return
+            }
+            for (component in data.selectedComponents) {
+                component.move(amount = dragAmount)
             }
         }
     }
@@ -276,9 +287,20 @@ class EditController {
         return null
     }
 
+    fun selectedComponentsSharedAccessLevel(): AccessLevel? {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return null
+            val accessLevel = it.selectedComponents.first().accessLevel.getValue()
+            it.selectedComponents.forEach { component -> if (component.accessLevel.getValue() != accessLevel) return null }
+            return accessLevel
+        }
+        return null
+    }
+
     fun setColorSelectedComponents(color: ComponentColor) {
         selectionBoxData?.let {
-            it.selectedComponents.forEach { component ->
+            it.selectedComponents.forEach skip@ { component ->
+                if (!component.isEditable()) return@skip
                 component.color.setLocally(color)
             }
         }
@@ -286,7 +308,8 @@ class EditController {
 
     fun setPathTypeSelectedComponents(type: PathType) {
         selectionBoxData?.let {
-            it.selectedComponents.forEach { component ->
+            it.selectedComponents.forEach skip@ { component ->
+                if (!component.isEditable()) return@skip
                 if (component !is Path) return
                 component.type.setLocally(type)
             }
@@ -295,7 +318,8 @@ class EditController {
 
     fun setThicknessSelectedComponents(thickness: PathThickness) {
         selectionBoxData?.let {
-            it.selectedComponents.forEach { component ->
+            it.selectedComponents.forEach skip@ { component ->
+                if (!component.isEditable()) return@skip
                 if (component !is Path) return
                 component.thickness.setLocally(thickness)
             }
@@ -304,7 +328,8 @@ class EditController {
 
     fun setFillSelectedComponents(fill: ShapeFill) {
         selectionBoxData?.let {
-            it.selectedComponents.forEach { component ->
+            it.selectedComponents.forEach skip@ { component ->
+                if (!component.isEditable()) return@skip
                 if (component !is Shape) return
                 component.fill.setLocally(fill)
             }
@@ -313,7 +338,8 @@ class EditController {
 
     fun setFontSelectedComponents(font: TextFont) {
         selectionBoxData?.let {
-            it.selectedComponents.forEach { component ->
+            it.selectedComponents.forEach skip@ { component ->
+                if (!component.isEditable()) return@skip
                 if (component !is TextBox) return
                 component.font.setLocally(font)
             }
@@ -322,9 +348,19 @@ class EditController {
 
     fun setFontSizeSelectedComponents(fontSize: TextSize) {
         selectionBoxData?.let {
-            it.selectedComponents.forEach { component ->
+            it.selectedComponents.forEach skip@ { component ->
+                if (!component.isEditable()) return@skip
                 if (component !is TextBox) return
                 component.fontSize.setLocally(fontSize)
+            }
+        }
+    }
+
+    fun setAccessLevelSelectedComponents(accessLevel: AccessLevel) {
+        selectionBoxData?.let {
+            it.selectedComponents.forEach skip@ { component ->
+                if (!component.isEditable()) return@skip
+                component.accessLevel.setLocally(accessLevel)
             }
         }
     }
@@ -352,11 +388,13 @@ class EditController {
     }
 
     fun selectedComponents(components: List<Component>) {
-        val isResizable: Boolean = !(components.size == 1 && !components.first().isResizeable())
+        val allNotResizable = !components.fold(false) { acc, component ->
+            acc || component.isResizeable()
+        }
         selectionBoxData = SelectionBoxData(
             components.toMutableStateList(),
             null,
-            isResizable
+            !allNotResizable
         )
         if (components.size == 1) {
             components.first().isFocused.value = true

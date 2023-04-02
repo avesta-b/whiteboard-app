@@ -43,6 +43,7 @@ enum class PathType {
     BRUSH, HIGHLIGHTER, PAINT
 }
 
+@Serializable
 enum class PathThickness {
     THIN, THICK, EXTRA_THICK
 }
@@ -62,8 +63,14 @@ enum class TextFont {
     DEFAULT, COMIC, MONO
 }
 
+@Serializable
 enum class TextSize {
     SMALL, MEDIUM, LARGE
+}
+
+@Serializable
+enum class AccessLevel {
+    LOCKED, UNLOCKED
 }
 
 @Serializable
@@ -75,6 +82,8 @@ data class ComponentState(
     var position: Position = Position(),
     var depth: Float = 0f,
     var color: ComponentColor = ComponentColor.BLACK,
+    var owner: String = "",
+    var accessLevel: AccessLevel = AccessLevel.UNLOCKED,
     // Path component
     var path: List<Position>? = null,
     var pathType: PathType? = null,
@@ -96,6 +105,7 @@ data class ComponentUpdate(
     val size: Size? = null,
     val position: Position? = null,
     val color: ComponentColor? = null,
+    var accessLevel: AccessLevel? = null,
     // Path component
     val path: List<Position>? = null,
     val pathType: PathType? = null,
@@ -128,7 +138,10 @@ data class WebSocketEvent(
 )
 
 @Serializable
-data class DeleteComponent(val uuid: String = "")
+data class DeleteComponent(
+    val uuid: String = "",
+    val username: String? = null
+)
 
 @Serializable
 data class ChatMessage(

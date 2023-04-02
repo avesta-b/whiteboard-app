@@ -64,6 +64,12 @@ enum class CustomIcon {
     },
     DELETE {
         override fun fileName(): String = "delete.png"
+    },
+    LOCK {
+        override fun fileName(): String = "lock.png"
+    },
+    UNLOCK {
+        override fun fileName(): String = "unlock.png"
     };
 
     abstract fun fileName(): String
