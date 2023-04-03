@@ -4,9 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import cs346.whiteboard.client.MenuBarState
 
 object WhiteboardColors {
-    var isDarkMode by mutableStateOf(false)
+    var isDarkMode by mutableStateOf(MenuBarState.menuBarPreferences.isDarkMode)
     val primary
         get() = if (isDarkMode) Color.White else Color.Black
     val secondary

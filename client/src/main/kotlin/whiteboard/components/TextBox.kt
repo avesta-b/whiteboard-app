@@ -12,6 +12,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
+import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.helpers.toColor
@@ -94,6 +95,7 @@ class TextBox(
             modifier = getModifier(controller)
                 .onFocusChanged {
                     WhiteboardEventHandler.isEditingText = it.isFocused
+                    MenuBarState.isToolEnabled = !it.isFocused
                 }
         )
     }

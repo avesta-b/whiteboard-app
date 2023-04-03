@@ -9,31 +9,62 @@ import androidx.compose.ui.input.key.KeyShortcut
 import androidx.compose.ui.window.*
 import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.commands.CommandTypes
-import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.constants.WhiteboardColors
-import cs346.whiteboard.client.helpers.Toolkit
 import cs346.whiteboard.client.ui.*
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.Serializable
 import java.awt.event.*
 
+const val MENUBAR_KEY = "menubar"
+
 object MenuBarState{
-    private val _isLocal = mutableStateOf(false)
+    private val _isLocal: MutableState<Boolean> = mutableStateOf(menuBarPreferences.isLocal)
     var isLocal: Boolean by _isLocal
+    private val _isToolEnabled: MutableState<Boolean> = mutableStateOf(false)
+    var isToolEnabled: Boolean by _isToolEnabled
+
+    @Serializable
+    data class MenuBarPreferences(
+        var isLocal: Boolean,
+        var isDarkMode: Boolean
+    )
+    var menuBarPreferences : MenuBarPreferences
+        get(){
+            PreferencesManager.readFromPreferences(MENUBAR_KEY)?.let{
+                return Json.decodeFromString(MenuBarPreferences.serializer(), it)
+            }
+            return MenuBarPreferences(isLocal = false, isDarkMode = false)
+        }
+        set(pref){
+            PreferencesManager.writeToPreferencesWithKey(MENUBAR_KEY, Json.encodeToString(pref))
+        }
+
+    fun toggleIsLocal(){
+        isLocal = !isLocal
+        menuBarPreferences = MenuBarPreferences(isLocal, menuBarPreferences.isDarkMode)
+    }
+
+    fun toggleDarkMode(){
+        WhiteboardColors.isDarkMode = !WhiteboardColors.isDarkMode
+        menuBarPreferences = MenuBarPreferences(isLocal, WhiteboardColors.isDarkMode)
+    }
 }
 @Composable
 @OptIn(ExperimentalComposeUiApi::class)
 fun createMenuBar(state: WindowState, frameScope: FrameWindowScope){
     frameScope.MenuBar {
         Menu("Tools", mnemonic = 'T') {
-            Item("Select", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SELECT).execute() }, shortcut = KeyShortcut(Key.V), enabled = WhiteboardEventHandler.isEditingText)
-            Item("Pan", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PAN).execute() }, shortcut = KeyShortcut(Key.D), enabled = WhiteboardEventHandler.isEditingText)
+            Item("Select", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SELECT).execute() }, shortcut = KeyShortcut(Key.V), enabled = MenuBarState.isToolEnabled)
+            Item("Pan", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PAN).execute() }, shortcut = KeyShortcut(Key.D), enabled = MenuBarState.isToolEnabled)
             Separator()
-            Item("Pen", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PEN).execute() }, shortcut = KeyShortcut(Key.P), enabled = WhiteboardEventHandler.isEditingText)
-            Item("Square", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SQUARE).execute() }, shortcut = KeyShortcut(Key.U), enabled = WhiteboardEventHandler.isEditingText)
-            Item("Circle", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.CIRCLE).execute() }, shortcut = KeyShortcut(Key.C), enabled = WhiteboardEventHandler.isEditingText)
-            Item("Text", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.TEXT).execute() }, shortcut = KeyShortcut(Key.T), enabled = WhiteboardEventHandler.isEditingText)
+            Item("Pen", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.PEN).execute() }, shortcut = KeyShortcut(Key.P), enabled = MenuBarState.isToolEnabled)
+            Item("Square", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.SQUARE).execute() }, shortcut = KeyShortcut(Key.U), enabled = MenuBarState.isToolEnabled)
+            Item("Circle", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.CIRCLE).execute() }, shortcut = KeyShortcut(Key.C), enabled = MenuBarState.isToolEnabled)
+            Item("Text", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.TEXT).execute() }, shortcut = KeyShortcut(Key.T), enabled = MenuBarState.isToolEnabled)
             Separator()
-            Item("Eraser", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.ERASE).execute() }, shortcut = KeyShortcut(Key.X), enabled = WhiteboardEventHandler.isEditingText)
+            Item("Eraser", onClick = { CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.ERASE).execute() }, shortcut = KeyShortcut(Key.X), enabled = MenuBarState.isToolEnabled)
         }
         Menu("Edit", mnemonic = 'E') {
             Item("Delete", onClick = { CommandFactory.create(CommandTypes.DELETE).execute() }, shortcut = KeyShortcut(Key.Backspace))
@@ -44,7 +75,7 @@ fun createMenuBar(state: WindowState, frameScope: FrameWindowScope){
         }
         Menu("View", mnemonic = 'V') {
             CheckboxItem("Dark mode", checked = WhiteboardColors.isDarkMode, onCheckedChange = {
-                WhiteboardColors.isDarkMode = !WhiteboardColors.isDarkMode
+                MenuBarState.toggleDarkMode()
             })
             Separator()
             Item("Zoom in", onClick = { CommandFactory.create(CommandTypes.ZOOMIN).execute() }, shortcut = KeyShortcut(Key.Plus, ctrl = !isMacOS(), meta = isMacOS()))
@@ -71,7 +102,7 @@ fun createMenuBar(state: WindowState, frameScope: FrameWindowScope){
         Menu("Developer", mnemonic = 'D'){
             CheckboxItem("Toggle localhost", checked = MenuBarState.isLocal, onCheckedChange = {
                 BaseUrlProvider.toggleLocalHost()
-                MenuBarState.isLocal = !MenuBarState.isLocal
+                MenuBarState.toggleIsLocal()
             })
         }
     }

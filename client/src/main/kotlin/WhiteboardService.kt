@@ -9,7 +9,7 @@ import io.ktor.http.*
 object BaseUrlProvider {
     const val REMOTEHOST = "lobster-app-laueo.ondigitalocean.app"
     const val LOCALHOST = "localhost:80"
-    var HOST = REMOTEHOST
+    var HOST = if(MenuBarState.isLocal) LOCALHOST else REMOTEHOST
     fun toggleLocalHost(){
         HOST = if(HOST == REMOTEHOST) LOCALHOST else REMOTEHOST
     }
