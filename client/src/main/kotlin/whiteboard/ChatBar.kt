@@ -22,6 +22,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.websocket.ChatController
@@ -112,6 +113,7 @@ fun ChatBar(chatController: ChatController) {
                     textFieldModifier = Modifier
                         .onFocusChanged {
                             WhiteboardEventHandler.isEditingText = it.isFocused
+                            MenuBarState.isToolEnabled = !it.isFocused
                         },
                     onClick = ::sendMessage
                 )

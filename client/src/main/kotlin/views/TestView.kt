@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
+import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.ui.PrimaryButton
 import cs346.whiteboard.client.ui.TextFieldWithButton
 
@@ -32,6 +33,7 @@ fun TestView(modifier: Modifier, onSignOut: () -> Unit) {
         Crossfade(testUiState) { state ->
             when (state) {
                 TestUiState.MENU -> {
+                    MenuBarState.isToolEnabled = false
                     Box(modifier, Alignment.Center) {
                         Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
                             PrimaryButton(Modifier.size(280.dp, 50.dp), "Sign out", true) {
@@ -49,6 +51,7 @@ fun TestView(modifier: Modifier, onSignOut: () -> Unit) {
                     }
                 }
                 TestUiState.DRAW -> {
+                    MenuBarState.isToolEnabled = true
                     WhiteboardView(modifier, roomId.value.text, onExit = {
                         testUiState = TestUiState.MENU
                     })
