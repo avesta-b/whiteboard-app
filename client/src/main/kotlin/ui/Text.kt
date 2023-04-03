@@ -30,6 +30,8 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.constants.*
 import cs346.whiteboard.client.helpers.getUserColor
+import cs346.whiteboard.client.helpers.toText
+import cs346.whiteboard.shared.jsonmodels.EmojiPing
 
 @Composable
 fun TitleText(text: String) {
@@ -63,6 +65,15 @@ fun CursorUserNameText(username: String, color: Color, modifier: Modifier, scale
             style = Typography.subtitle2(scale)
         )
     }
+}
+
+@Composable
+fun EmojiPingText(ping: EmojiPing, scale: Float) {
+    Text(
+        text = ping.toText(),
+        color = WhiteboardColors.primary,
+        style = Typography.h2(scale)
+    )
 }
 
 @Composable

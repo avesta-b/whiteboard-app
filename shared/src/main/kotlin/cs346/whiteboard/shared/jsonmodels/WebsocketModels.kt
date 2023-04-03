@@ -15,6 +15,7 @@ enum class WebSocketEventType(val value: String) {
     DELETE_COMPONENT("DELETE_COMPONENT"),
     GET_FULL_STATE("GET_FULL_STATE"),
     SEND_MESSAGE("SEND_MESSAGE"),
+    SEND_PING("SEND_PING")
 }
 
 @Serializable
@@ -134,7 +135,8 @@ data class WebSocketEvent(
     val updateComponent: ComponentUpdate? = null,
     val deleteComponent: DeleteComponent? = null,
     val getFullState: WhiteboardState? = null,
-    val chatMessage: ChatMessage? = null
+    val chatMessage: ChatMessage? = null,
+    val ping: Ping? = null
 )
 
 @Serializable
@@ -152,6 +154,25 @@ data class ChatMessage(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ChatMessage) return false
+        return uuid == other.uuid
+    }
+}
+
+@Serializable
+enum class EmojiPing {
+    THUMBS, SMILE, SKULL, THINK
+}
+
+@Serializable
+data class Ping(
+    val sender: String = "",
+    val emojiPing: EmojiPing = EmojiPing.THUMBS,
+    val position: Position = Position(0f, 0f),
+    val uuid: String = UUID.randomUUID().toString()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Ping) return false
         return uuid == other.uuid
     }
 }

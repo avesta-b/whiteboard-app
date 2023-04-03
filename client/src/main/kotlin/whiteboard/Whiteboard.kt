@@ -19,17 +19,17 @@ import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.whiteboard.edit.EditPane
 import cs346.whiteboard.client.whiteboard.edit.QueryBox
 import cs346.whiteboard.client.whiteboard.edit.SelectionBox
-import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbar
-import cs346.whiteboard.client.whiteboard.interaction.WhiteboardTopBar
-import cs346.whiteboard.client.whiteboard.interaction.WhiteboardZoomControl
+import cs346.whiteboard.client.whiteboard.interaction.*
 import cs346.whiteboard.client.whiteboard.overlay.Background
 import cs346.whiteboard.client.whiteboard.overlay.Cursors
+import cs346.whiteboard.client.whiteboard.overlay.Pings
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 object WhiteboardLayerZIndices {
     const val background: Float = 0f
     const val cursors: Float = 1f
+    const val pings: Float = 1f
     const val selectionBox: Float = 2f
     const val queryBox: Float = 3f
     const val editPane: Float = 4f
@@ -37,6 +37,7 @@ object WhiteboardLayerZIndices {
     const val toolbar: Float = 4f
     const val topBar: Float = 4f
     const val chat: Float = 4f
+    const val pingWheel: Float = 5f
 }
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class)
@@ -100,6 +101,9 @@ fun Whiteboard(
             // Cursors
             Cursors(whiteboardController)
 
+            // Pings
+            Pings(whiteboardController)
+
             // Components
             whiteboardController.components.forEach { (_, component) ->
                 component.drawComposableComponent(whiteboardController)
@@ -142,8 +146,12 @@ fun Whiteboard(
         // Top bar
         WhiteboardTopBar(whiteboardController, Modifier.align(Alignment.TopCenter))
 
+        // Ping Wheel
+        whiteboardController.pingController.pingWheelData?.let {
+            PingMenu(whiteboardController, it)
+        }
 
-        if (!whiteboardController.webSocketEventHandler.isDrawAlone()) {
+        if (!whiteboardController.webSocketEventHandler.isDrawingAlone()) {
             AnimatedVisibility(
                 visibleState = initialTransitionState,
                 enter = slideInVertically(initialOffsetY = { 2 * it }) + fadeIn(),
