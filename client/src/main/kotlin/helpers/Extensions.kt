@@ -119,6 +119,15 @@ fun AccessLevel.toIcon(): CustomIcon {
     }
 }
 
+fun EmojiPing.toText(): String {
+    return when(this) {
+        EmojiPing.THUMBS -> "\uD83D\uDC4D"
+        EmojiPing.SMILE -> "\uD83D\uDE03"
+        EmojiPing.SKULL -> "\uD83D\uDC80"
+        EmojiPing.THINK -> "\uD83E\uDDD0"
+    }
+}
+
 fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
     val compController = WeakReference(eventHandler.componentEventController)
     when(componentType) {

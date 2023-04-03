@@ -6,6 +6,7 @@ import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.interaction.PingController
 import cs346.whiteboard.client.whiteboard.overlay.CursorsController
 import cs346.whiteboard.shared.jsonmodels.*
 import kotlinx.coroutines.CoroutineScope
@@ -51,6 +52,8 @@ class WebSocketEventHandler(private val username: String,
 
     val chatController: ChatController = ChatController(username, WeakReference(this))
 
+    val pingController: PingController = PingController(username, WeakReference(this))
+
     init {
         coroutineScope.launch {
             connect()
@@ -63,12 +66,12 @@ class WebSocketEventHandler(private val username: String,
             .launchIn(coroutineScope)
     }
 
-    fun isDrawAlone(): Boolean {
-        return roomId == ""
+    fun isDrawingAlone(): Boolean {
+        return roomId.isEmpty()
     }
 
     private suspend fun connect() {
-        if (roomId.isEmpty()) return
+        if (isDrawingAlone()) return
 
         val headers = mapOf<String, String>("username" to username)
         val subscribeHeaders = StompSubscribeHeaders(
@@ -156,6 +159,10 @@ class WebSocketEventHandler(private val username: String,
             WebSocketEventType.UPDATE_COMPONENT -> {
                 val componentUpdate = event.updateComponent ?: return
                 whiteboardController.applyServerUpdate(componentUpdate)
+            }
+            WebSocketEventType.SEND_PING -> {
+                val ping: Ping = event.ping ?: return
+                pingController.receivePing(ping)
             }
         }
     }

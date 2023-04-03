@@ -6,6 +6,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerInputChange
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.commands.CommandFactory
+import cs346.whiteboard.client.helpers.Toolkit
 import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.helpers.toComponent
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
@@ -44,6 +45,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     internal var cursorsController by mutableStateOf(webSocketEventHandler.cursorsController)
     internal var userLobbyController by mutableStateOf(webSocketEventHandler.userLobbyController)
+    internal var pingController by mutableStateOf(webSocketEventHandler.pingController)
 
     private var lastComponentId = ""
     private var currentDepth = 0f
@@ -169,6 +171,11 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     fun handleOnDragGestureStart(startPoint: Offset) {
         val whiteboardPoint = viewToWhiteboardCoordinate(startPoint)
+        // Show emoji wheel
+        if (Toolkit.shiftHolder) {
+            pingController.startPingMenu(startPoint, whiteboardPoint)
+            return
+        }
         when (currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
                 if (editController.pointInResizeNode(whiteboardPoint, true) != null) {
@@ -220,6 +227,12 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     fun handleOnDragGesture(change: PointerInputChange, dragAmount: Offset) {
         val whiteboardPoint = viewToWhiteboardCoordinate(change.position)
+        if (Toolkit.shiftHolder && pingController.pingWheelData != null) {
+            pingController.updatePing(change.position)
+            return
+        }
+        pingController.clearPingWheel()
+
         when(currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
                 if (isResizingSelectionBox) {
@@ -247,6 +260,11 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     }
 
     fun handleOnDragGestureEnd() {
+        if (Toolkit.shiftHolder && pingController.pingWheelData != null) {
+            pingController.sendPingIfNeeded()
+            return
+        }
+        pingController.clearPingWheel()
         when(currentTool) {
             WhiteboardToolbarOptions.SELECT -> {
                 if (isResizingSelectionBox) {

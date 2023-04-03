@@ -85,8 +85,13 @@ object WhiteboardEventHandler {
                 Toolkit.metaHolder = true
                 true
             }
+            (event.isShiftPressed) -> {
+                Toolkit.shiftHolder = true
+                true
+            }
             else -> {
                 Toolkit.metaHolder = false
+                Toolkit.shiftHolder = false
                 false
             }
         }

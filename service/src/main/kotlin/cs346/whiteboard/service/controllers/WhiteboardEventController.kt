@@ -125,4 +125,22 @@ class WhiteboardEventController(
             chatMessage = if (username == chatMessage.sender || chatMessage.content.isNotEmpty()) { chatMessage } else { null }
         )
     }
+
+    @MessageMapping("/whiteboard.sendPing/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun sendPing(
+        @DestinationVariable roomId: String,
+        ping: Ping,
+        headerAccessor: SimpMessageHeaderAccessor
+    ) : WebSocketEvent {
+        val userJwt = headerAccessor.sessionAttributes?.get("userJwt").toString()
+
+        val decodedJwt = JWT.decode(userJwt)
+        val username = decodedJwt.claims["username"]?.asString()
+
+        return WebSocketEvent(
+            eventType = WebSocketEventType.SEND_PING,
+            ping = if (username == ping.sender) { ping } else { null }
+        )
+    }
 }
