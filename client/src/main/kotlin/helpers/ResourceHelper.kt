@@ -70,6 +70,15 @@ enum class CustomIcon {
     },
     UNLOCK {
         override fun fileName(): String = "unlock.png"
+    },
+    EXPAND {
+        override fun fileName(): String = "expand.png"
+    },
+    COLLAPSE {
+        override fun fileName(): String = "collapse.png"
+    },
+    SEND {
+        override fun fileName(): String = "send.png"
     };
 
     abstract fun fileName(): String
