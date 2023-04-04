@@ -1,9 +1,7 @@
 package cs346.whiteboard.client.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,6 +18,20 @@ fun VerticalDivider(
         modifier
             .fillMaxHeight()
             .width(thickness)
+            .background(color = color)
+    )
+}
+
+@Composable
+fun HorizontalDivider(
+    modifier: Modifier = Modifier,
+    color: Color,
+    thickness: Dp = 1.dp
+) {
+    Box(
+        modifier
+            .fillMaxWidth()
+            .height(thickness)
             .background(color = color)
     )
 }
