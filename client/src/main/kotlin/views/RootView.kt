@@ -75,7 +75,7 @@ fun RootView(modifier: Modifier) {
                     }
                 }
                 RootUiState.SIGNED_IN -> {
-                    TestView(modifier) {
+                    HomeView(modifier) {
                         model.onSignOut()
                     }
                 }

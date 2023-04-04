@@ -19,7 +19,7 @@ import java.awt.event.*
 
 const val MENUBAR_KEY = "menubar"
 
-object MenuBarState{
+object MenuBarState {
     private val _isLocal: MutableState<Boolean> = mutableStateOf(menuBarPreferences.isLocal)
     var isLocal: Boolean by _isLocal
     private val _isToolEnabled: MutableState<Boolean> = mutableStateOf(false)
@@ -74,9 +74,12 @@ fun createMenuBar(state: WindowState, frameScope: FrameWindowScope){
             Item("Paste", onClick = { CommandFactory.create(CommandTypes.PASTE).execute() }, shortcut = KeyShortcut(Key.V, ctrl = !isMacOS(), meta = isMacOS()))
         }
         Menu("View", mnemonic = 'V') {
-            CheckboxItem("Dark mode", checked = WhiteboardColors.isDarkMode, onCheckedChange = {
-                MenuBarState.toggleDarkMode()
-            })
+            CheckboxItem(
+                "Dark mode",
+                checked = WhiteboardColors.isDarkMode,
+                onCheckedChange = { MenuBarState.toggleDarkMode() }, // TODO("Figure out why shortcut doesn't trigger this callback
+                shortcut = KeyShortcut(Key.M, ctrl = !isMacOS(), meta = isMacOS()) // See commands.EventHandlers for invocation of shortcut
+            )
             Separator()
             Item("Zoom in", onClick = { CommandFactory.create(CommandTypes.ZOOMIN).execute() }, shortcut = KeyShortcut(Key.Plus, ctrl = !isMacOS(), meta = isMacOS()))
             Item("Zoom out", onClick = { CommandFactory.create(CommandTypes.ZOOMOUT).execute() }, shortcut = KeyShortcut(Key.Minus, ctrl = !isMacOS(), meta = isMacOS()))

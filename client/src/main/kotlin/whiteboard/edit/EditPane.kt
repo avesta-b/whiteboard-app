@@ -205,7 +205,9 @@ fun EditPane(whiteboardController: WhiteboardController, data: SelectionBoxData,
                                 OutlinedButton(
                                     selected = accessLevel == sharedAccessLevel,
                                     onClick = {
-                                        whiteboardController.editController.setAccessLevelSelectedComponents(accessLevel)
+                                        whiteboardController.editController.setAccessLevelSelectedComponents(
+                                            accessLevel
+                                        )
                                     }
                                 ) {
                                     Image(

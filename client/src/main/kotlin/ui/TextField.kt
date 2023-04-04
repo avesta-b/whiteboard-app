@@ -9,7 +9,11 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.MutableState
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
@@ -39,56 +43,6 @@ fun AuthenticationTextField(text: MutableState<TextFieldValue>,
             label = { TextFieldPlaceholderText(placeholder) },
             visualTransformation = if (isSecure) PasswordVisualTransformation()
             else VisualTransformation.None,
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.None,
-                autoCorrect = false),
-            singleLine = true,
-            shape = Shapes.small,
-            colors = TextFieldDefaults.outlinedTextFieldColors(
-                textColor = WhiteboardColors.primary,
-                disabledTextColor = WhiteboardColors.secondaryVariant,
-                cursorColor = WhiteboardColors.primary,
-                focusedBorderColor = WhiteboardColors.primary,
-                unfocusedBorderColor = WhiteboardColors.secondaryVariant,
-                disabledBorderColor = WhiteboardColors.secondaryVariant,
-                focusedLabelColor = WhiteboardColors.primary,
-                unfocusedLabelColor = WhiteboardColors.secondaryVariant,
-                disabledLabelColor = WhiteboardColors.secondaryVariant),
-        )
-    }
-}
-
-@Composable
-fun TextFieldWithButton(
-    text: MutableState<TextFieldValue>,
-    buttonText: String,
-    modifier: Modifier,
-    placeholder: String,
-    enabled: Boolean,
-    onClick: () -> Unit) {
-    // TODO: separate this
-    Column {
-        Button(
-            onClick = onClick,
-            modifier = modifier,
-            enabled = enabled,
-            shape = Shapes.small,
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = WhiteboardColors.primary,
-                contentColor = WhiteboardColors.background,
-                disabledBackgroundColor = WhiteboardColors.secondary,
-                disabledContentColor = WhiteboardColors.background
-            )) {
-            PrimaryButtonText(buttonText)
-        }
-    }
-    CompositionLocalProvider(LocalTextSelectionColors provides textSelectionColors) {
-        OutlinedTextField(
-            value = text.value,
-            onValueChange = { text.value = it },
-            modifier = Modifier.size(280.dp, 60.dp),
-            textStyle = Typography.subtitle1,
-            label = { TextFieldPlaceholderText(placeholder) },
             keyboardOptions = KeyboardOptions(
                 capitalization = KeyboardCapitalization.None,
                 autoCorrect = false),
