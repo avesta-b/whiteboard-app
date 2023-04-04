@@ -4,10 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.OutlinedButton
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.TextButton
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Shape
@@ -108,23 +105,30 @@ fun UnderlinedTextButton(modifier: Modifier,
 }
 
 @Composable
-fun OutlinedCustomIconButton(modifier: Modifier,
-                     icon: CustomIcon,
-                     onClick: () -> Unit) {
-    OutlinedButton(
-        onClick = onClick,
-        modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = WhiteboardColors.background,
-            contentColor = WhiteboardColors.primary
-        ),
-        shape = Shapes.small,
-        border = BorderStroke(1.dp, WhiteboardColors.secondaryVariant),
-    ) {
+fun CustomIcon(
+    modifier: Modifier = Modifier.size(48.dp),
+    icon: CustomIcon,
+    iconSize: Dp = 8.dp,
+    iconPadding: Dp = 16.dp,
+    shape: Shape = RectangleShape,
+    isHighlighted: Boolean = false,
+) {
+    Box(modifier) {
+        if (isHighlighted) {
+            Box(
+                modifier
+                    .size(16.dp)
+                    .padding(8.dp)
+                    .clip(shape)
+                    .background(WhiteboardColors.highlightedIconButtonColor)
+                    .align(Alignment.Center)
+            )
+        }
         Image(
-            painterResource(icon.path()),
-            null,
-            modifier
+            painter = painterResource(icon.path()),
+            contentDescription = null,
+            modifier = modifier.size(iconSize).align(Alignment.Center).padding(iconPadding),
+            contentScale = ContentScale.Fit
         )
     }
 }
@@ -134,37 +138,29 @@ fun CustomIconButton(
     modifier: Modifier = Modifier.size(48.dp),
     icon: CustomIcon,
     iconSize: Dp = 8.dp,
+    iconPadding: Dp = 16.dp,
     shape: Shape = RectangleShape,
     isHighlighted: Boolean = false,
+    colors: ButtonColors = ButtonDefaults.buttonColors(
+        backgroundColor = WhiteboardColors.background,
+        contentColor = WhiteboardColors.primary
+    ),
     onClick: () -> Unit) {
     Button(
         onClick = onClick,
         modifier = modifier,
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = WhiteboardColors.background,
-            contentColor = WhiteboardColors.primary
-        ),
+        colors = colors,
         shape = shape,
         elevation = null,
         contentPadding = PaddingValues(0.dp)
     ) {
-        Box(modifier) {
-            if (isHighlighted) {
-                Box(
-                    modifier
-                        .size(16.dp)
-                        .padding(8.dp)
-                        .clip(shape)
-                        .background(WhiteboardColors.highlightedIconButtonColor)
-                        .align(Alignment.Center)
-                )
-            }
-            Image(
-                painter = painterResource(icon.path()),
-                contentDescription = null,
-                modifier = modifier.size(iconSize).align(Alignment.Center).padding(16.dp),
-                contentScale = ContentScale.Fit
-            )
-        }
+        CustomIcon(
+            modifier = modifier,
+            icon = icon,
+            iconSize = iconSize,
+            iconPadding = iconPadding,
+            shape = shape,
+            isHighlighted = isHighlighted
+        )
     }
 }

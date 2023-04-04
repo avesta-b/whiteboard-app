@@ -1,18 +1,15 @@
-package cs346.whiteboard.client.websocket
+package cs346.whiteboard.client.whiteboard.interaction
 
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import cs346.whiteboard.shared.jsonmodels.ChatMessage
 import kotlinx.serialization.Serializable
 import java.lang.ref.WeakReference
 import java.text.SimpleDateFormat
-import java.time.LocalDateTime
 import java.util.*
-
-enum class ChatUiState {
-    OPENED,
-    CLOSED
-}
 
 @Serializable
 data class ChatMessageData(
@@ -27,6 +24,7 @@ class ChatController(
     private val handler: WeakReference<WebSocketEventHandler>
 ) {
     var messages = mutableStateListOf<ChatMessageData>()
+    var newMessageReceived by mutableStateOf(false)
 
     fun receiveMessage(message: ChatMessage) {
         // if we sent the message, we will delete the current instance of message from messages
@@ -34,6 +32,7 @@ class ChatController(
         val formatter = SimpleDateFormat("HH:mm")
         val currentTime = formatter.format(Calendar.getInstance().time)
         messages.add(ChatMessageData(message.sender, currentTime, message.content))
+        newMessageReceived = true
     }
 
     fun sendMessage(content: String) {

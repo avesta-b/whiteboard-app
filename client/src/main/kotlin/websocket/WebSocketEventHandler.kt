@@ -6,6 +6,7 @@ import cs346.whiteboard.client.MenuBarState
 import cs346.whiteboard.client.UserManager
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.whiteboard.WhiteboardController
+import cs346.whiteboard.client.whiteboard.interaction.ChatController
 import cs346.whiteboard.client.whiteboard.interaction.PingController
 import cs346.whiteboard.client.whiteboard.overlay.CursorsController
 import cs346.whiteboard.shared.jsonmodels.*

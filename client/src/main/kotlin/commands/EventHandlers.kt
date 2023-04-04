@@ -72,6 +72,11 @@ object WhiteboardEventHandler {
                 CommandFactory.create(CommandTypes.SETTOOL, WhiteboardToolbarOptions.ERASE).execute()
                 true
             }
+            // Theme
+            (event.isMetaPressed && event.key == Key.M && event.type == KeyEventType.KeyUp) -> {
+                CommandFactory.create(CommandTypes.THEME).execute()
+                true
+            }
             // Zooming
             (event.isMetaPressed && event.key == Key.Equals && event.type == KeyEventType.KeyDown) -> {
                 CommandFactory.create(CommandTypes.ZOOMIN).execute()
@@ -89,6 +94,7 @@ object WhiteboardEventHandler {
                 Toolkit.shiftHolder = true
                 true
             }
+            // Toolkit clean up
             else -> {
                 Toolkit.metaHolder = false
                 Toolkit.shiftHolder = false
