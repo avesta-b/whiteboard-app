@@ -128,11 +128,11 @@ class TextBox(
     override fun clone(): Component {
         val newUUID = UUID.randomUUID().toString()
         return TextBox(
-            newUUID,
-            controller,
-            attributeWrapper(Offset(coordinate.getValue().x, coordinate.getValue().y), controller, newUUID),
-            attributeWrapper(size.getValue(), controller, newUUID),
-            attributeWrapper(color.getValue(), controller, newUUID),
+            uuid = newUUID,
+            controller = controller,
+            coordinate = attributeWrapper(Offset(coordinate.getValue().x, coordinate.getValue().y), controller, newUUID),
+            size = attributeWrapper(size.getValue(), controller, newUUID),
+            color = attributeWrapper(color.getValue(), controller, newUUID),
             depth = depth,
             owner = UserManager.getUsername() ?: "default_user",
             accessLevel = attributeWrapper(AccessLevel.UNLOCKED, controller, newUUID),

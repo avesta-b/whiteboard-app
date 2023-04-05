@@ -170,16 +170,16 @@ class Path(
     override fun clone(): Component {
         val newUUID = UUID.randomUUID().toString()
         val component = Path(
-            newUUID,
-            controller,
-            attributeWrapper(coordinate.getValue(), controller, newUUID),
-            attributeWrapper(size.getValue(), controller, newUUID),
-            attributeWrapper(color.getValue(), controller, newUUID),
-            depth,
-            UserManager.getUsername() ?: "default_user",
-            attributeWrapper(AccessLevel.UNLOCKED, controller, newUUID),
-            attributeWrapper(type.getValue(), controller, newUUID),
-            attributeWrapper(thickness.getValue(), controller, newUUID)
+            uuid = newUUID,
+            controller = controller,
+            coordinate = attributeWrapper(coordinate.getValue(), controller, newUUID),
+            size = attributeWrapper(size.getValue(), controller, newUUID),
+            color = attributeWrapper(color.getValue(), controller, newUUID),
+            depth = depth,
+            owner = UserManager.getUsername() ?: "default_user",
+            accessLevel = attributeWrapper(AccessLevel.UNLOCKED, controller, newUUID),
+            type = attributeWrapper(type.getValue(), controller, newUUID),
+            thickness = attributeWrapper(thickness.getValue(), controller, newUUID)
         )
 
 

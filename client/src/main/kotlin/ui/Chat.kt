@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.selection.LocalTextSelectionColors
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
@@ -14,6 +15,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -140,6 +142,7 @@ fun ChatTextFieldWithButton(
                     capitalization = KeyboardCapitalization.None,
                     autoCorrect = false,
                 ),
+                cursorBrush = SolidColor(WhiteboardColors.primary)
             ) { innerTextField ->
                 Box(
                     modifier = Modifier
@@ -158,7 +161,9 @@ fun ChatTextFieldWithButton(
                             color = WhiteboardColors.secondary
                         )
                     }
-                    innerTextField()
+                    SelectionContainer {
+                        innerTextField()
+                    }
                 }
             }
             CustomIconButton(

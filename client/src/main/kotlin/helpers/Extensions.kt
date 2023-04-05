@@ -176,5 +176,18 @@ fun ComponentState.toComponent(eventHandler: WebSocketEventHandler): Component {
                 fill = attributeWrapper(shapeFill ?: ShapeFill.OUTLINE, compController, uuid)
             )
         }
+        ComponentType.AI_IMAGE -> {
+            return AIGeneratedImage(
+                uuid = uuid,
+                controller = compController,
+                coordinate = attributeWrapper(position.toOffset(), compController, uuid),
+                size = attributeWrapper(size.toSize(), compController, uuid),
+                color = attributeWrapper(color, compController, uuid),
+                depth = depth,
+                owner = owner,
+                accessLevel = attributeWrapper(accessLevel, compController, uuid),
+                imageData = attributeWrapper(imageData ?: AIImageData(), compController, uuid)
+            )
+        }
     }
 }

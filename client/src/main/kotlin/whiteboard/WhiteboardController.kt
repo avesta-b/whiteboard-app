@@ -16,10 +16,7 @@ import cs346.whiteboard.client.whiteboard.edit.EditController
 import cs346.whiteboard.client.whiteboard.edit.QueryBoxController
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
-import cs346.whiteboard.shared.jsonmodels.ComponentState
-import cs346.whiteboard.shared.jsonmodels.ComponentUpdate
-import cs346.whiteboard.shared.jsonmodels.DeleteComponent
-import cs346.whiteboard.shared.jsonmodels.WhiteboardState
+import cs346.whiteboard.shared.jsonmodels.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -147,7 +144,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     }
 
     private fun preIncrementCurrentDepth(): Float {
-        currentDepth += Float.MIN_VALUE
+        currentDepth = (components.size + 1) * Float.MIN_VALUE
         return currentDepth
     }
 
@@ -350,6 +347,21 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
                 editController.selectedSingleComponent(textBox)
                 currentTool = WhiteboardToolbarOptions.SELECT
                 webSocketEventHandler.componentEventController.add(textBox)
+            }
+            WhiteboardToolbarOptions.AI_IMAGE -> {
+                val compController = WeakReference(webSocketEventHandler.componentEventController)
+                val componentUUID = UUID.randomUUID().toString()
+                val image = AIGeneratedImage(
+                    uuid = componentUUID,
+                    controller = compController,
+                    coordinate = attributeWrapper(whiteboardPoint, compController, componentUUID),
+                    depth = preIncrementCurrentDepth(),
+                    owner = UserManager.getUsername() ?: "default_user"
+                )
+                components[image.uuid] = image
+                editController.selectedSingleComponent(image)
+                currentTool = WhiteboardToolbarOptions.SELECT
+                webSocketEventHandler.componentEventController.add(image)
             }
             WhiteboardToolbarOptions.ERASE -> {
                 useEraser(getComponentAtPoint(whiteboardPoint)?.uuid)

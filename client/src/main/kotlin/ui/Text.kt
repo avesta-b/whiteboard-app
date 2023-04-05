@@ -151,10 +151,10 @@ fun SmallBodyText(text: String) {
 }
 
 @Composable
-fun ErrorText(text: String) {
+fun ErrorText(text: String, isVisible: Boolean = true) {
     Text(
         text = text,
-        color = WhiteboardColors.error,
+        color = if (isVisible) WhiteboardColors.error else Color.Transparent,
         style = Typography.subtitle2
     )
 }

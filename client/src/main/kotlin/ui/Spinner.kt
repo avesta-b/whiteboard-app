@@ -17,6 +17,15 @@ fun PrimaryButtonSpinner() {
 }
 
 @Composable
+fun SmallSpinner() {
+    CircularProgressIndicator(
+        modifier = Modifier.size(24.dp, 24.dp),
+        color = WhiteboardColors.primary,
+        strokeWidth = 3.dp
+    )
+}
+
+@Composable
 fun LargeSpinner() {
     CircularProgressIndicator(
         modifier = Modifier.size(32.dp, 32.dp),

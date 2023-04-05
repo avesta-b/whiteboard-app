@@ -71,6 +71,10 @@ enum class WhiteboardToolbarOptions {
         override fun icon() = CustomIcon.TEXTFIELD
         override fun cursorType() = CursorType.TEXTFIELD
     },
+    AI_IMAGE {
+        override fun icon() = CustomIcon.OPENAI
+        override fun cursorType() = CursorType.OPENAI
+    },
     ERASE {
         override fun icon() = CustomIcon.ERASER
         override fun cursorType() = CursorType.ERASER
@@ -125,6 +129,7 @@ fun WhiteboardToolbar(whiteboardController: WhiteboardController) {
             WhiteboardToolbarOptions.PEN,
             WhiteboardToolbarOptions.SQUARE,
             WhiteboardToolbarOptions.TEXT,
+            WhiteboardToolbarOptions.AI_IMAGE,
             WhiteboardToolbarOptions.ERASE
         )
     }
@@ -135,7 +140,7 @@ fun WhiteboardToolbar(whiteboardController: WhiteboardController) {
             SmallBodyText("Click to change $toolName tool")
         }
         Row(modifier = Modifier
-            .width(350.dp)
+            .width(375.dp)
             .height(IntrinsicSize.Min)
             .padding(16.dp)
             .border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)
