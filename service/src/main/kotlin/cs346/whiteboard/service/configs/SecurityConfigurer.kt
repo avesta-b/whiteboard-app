@@ -38,8 +38,8 @@ class SecurityConfigurer : WebSecurityConfigurerAdapter() {
             .and()
             .authorizeHttpRequests()
             .antMatchers("/api/auth/**").permitAll()
-            .antMatchers("/api/user/**").hasRole("USER")
-            // TODO:  Note fix this
+            .antMatchers("/api/user/**").permitAll()
+            .antMatchers("/api/image/generate/**").permitAll()
             .antMatchers("/ws/**").permitAll()
             .and()
             .userDetailsService(userLoginDetailsService)
