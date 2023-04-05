@@ -31,7 +31,8 @@ data class Size(val width: Float = 0f, val height: Float = 0f)
 enum class ComponentType(val value: String) {
     TEXT_BOX("TEXT_BOX"),
     PATH("PATH"),
-    SHAPE("SHAPE")
+    SHAPE("SHAPE"),
+    AI_IMAGE("AI_IMAGE")
 }
 
 @Serializable
@@ -75,6 +76,12 @@ enum class AccessLevel {
 }
 
 @Serializable
+data class AIImageData(
+    val prompt: String? = null,
+    val url: String? = null
+)
+
+@Serializable
 data class ComponentState(
     // Shared
     var uuid: String = "",
@@ -95,7 +102,9 @@ data class ComponentState(
     // Textbox component
     var text: String? = null,
     var textFont: TextFont? = null,
-    var textSize: TextSize? = null
+    var textSize: TextSize? = null,
+    // AI Image component
+    var imageData: AIImageData? = null
 )
 
 @Serializable
@@ -117,7 +126,9 @@ data class ComponentUpdate(
     // Textbox component
     val text: String? = null,
     val textFont: TextFont? = null,
-    val textSize: TextSize? = null
+    val textSize: TextSize? = null,
+    // AI Image component
+    val imageData: AIImageData? = null
 )
 
 @Serializable

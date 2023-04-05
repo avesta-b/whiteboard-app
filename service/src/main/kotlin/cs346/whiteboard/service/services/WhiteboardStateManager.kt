@@ -67,6 +67,9 @@ class WhiteboardStateManager {
         update.accessLevel?.let {
             componentState.accessLevel = it
         }
+        update.imageData?.let {
+            componentState.imageData = it
+        }
         whiteboard.components[update.uuid] = componentState
         return true
     }

@@ -25,7 +25,7 @@ import cs346.whiteboard.client.constants.Typography
 
 val textSelectionColors = TextSelectionColors(
     handleColor = WhiteboardColors.primary,
-    backgroundColor = WhiteboardColors.secondaryVariant
+    backgroundColor = WhiteboardColors.textfieldSelectColor
 )
 @Composable
 fun AuthenticationTextField(text: MutableState<TextFieldValue>,

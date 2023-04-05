@@ -27,7 +27,7 @@ object WhiteboardService {
         }
     }
 
-    suspend fun postRequest(path: String, body: String): String {
+    suspend fun postRequest(path: String, body: String, token: String? = null): String {
         val response = client.request {
             method = HttpMethod.Post
             url {
@@ -37,6 +37,9 @@ object WhiteboardService {
             }
             headers {
                 contentType(ContentType("application", "json"))
+                token?.let {
+                    bearerAuth(it)
+                }
             }
             setBody(body)
         }

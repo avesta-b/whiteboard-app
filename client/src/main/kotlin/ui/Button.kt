@@ -141,6 +141,7 @@ fun CustomIconButton(
     iconPadding: Dp = 16.dp,
     shape: Shape = RectangleShape,
     isHighlighted: Boolean = false,
+    enabled: Boolean = true,
     colors: ButtonColors = ButtonDefaults.buttonColors(
         backgroundColor = WhiteboardColors.background,
         contentColor = WhiteboardColors.primary
@@ -152,15 +153,20 @@ fun CustomIconButton(
         colors = colors,
         shape = shape,
         elevation = null,
-        contentPadding = PaddingValues(0.dp)
+        contentPadding = PaddingValues(0.dp),
+        enabled = enabled
     ) {
-        CustomIcon(
-            modifier = modifier,
-            icon = icon,
-            iconSize = iconSize,
-            iconPadding = iconPadding,
-            shape = shape,
-            isHighlighted = isHighlighted
-        )
+        if (enabled) {
+            CustomIcon(
+                modifier = modifier,
+                icon = icon,
+                iconSize = iconSize,
+                iconPadding = iconPadding,
+                shape = shape,
+                isHighlighted = isHighlighted
+            )
+        } else {
+            PrimaryButtonSpinner()
+        }
     }
 }

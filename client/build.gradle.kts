@@ -31,6 +31,7 @@ dependencies {
     implementation("org.hildan.krossbow:krossbow-websocket-okhttp:5.1.0")
     implementation("org.hildan.krossbow:krossbow-stomp-kxserialization-json:5.1.0")
     implementation("org.slf4j:slf4j-simple:1.7.9")
+    implementation("com.alialbaali.kamel:kamel-image:0.4.0")
     implementation(project(":shared"))
     testImplementation("io.mockk:mockk:1.13.4")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0")

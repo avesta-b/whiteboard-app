@@ -53,7 +53,7 @@ fun ChatBar(chatController: ChatController) {
     Box{
         Column(
             modifier = Modifier
-                .width(350.dp)
+                .width(300.dp)
                 .padding(4.dp, 4.dp, 16.dp, 16.dp)
                 .border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)
                 .shadow(16.dp, Shapes.small, true)

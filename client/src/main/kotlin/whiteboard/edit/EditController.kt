@@ -4,15 +4,17 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.WhiteboardService
 import cs346.whiteboard.client.helpers.Quadruple
 import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.helpers.toList
-import cs346.whiteboard.client.whiteboard.components.Component
-import cs346.whiteboard.client.whiteboard.components.Path
-import cs346.whiteboard.client.whiteboard.components.Shape
-import cs346.whiteboard.client.whiteboard.components.TextBox
+import cs346.whiteboard.client.whiteboard.components.*
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.shared.jsonmodels.*
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import kotlin.math.absoluteValue
 
 enum class ResizeNode {
@@ -46,6 +48,7 @@ enum class EditPaneAttribute {
     SHAPE_FILL,
     TEXT_FONT,
     TEXT_SIZE,
+    IMAGE_PROMPT,
     ACCESS_LEVEL
 }
 
@@ -58,6 +61,9 @@ data class SelectionBoxData(
 class EditController {
     var selectionBoxData by mutableStateOf<SelectionBoxData?>(null)
         private set
+
+    private val loadingImages = mutableStateListOf<String>()
+    private val failedPromptImages = mutableStateListOf<String>()
 
     private fun getMinMaxCoordinates(data: SelectionBoxData): Pair<Offset, Offset> {
         return data.selectedComponents.fold(Pair(
@@ -297,6 +303,36 @@ class EditController {
         return null
     }
 
+    fun selectedComponentImageData(): AIImageData? {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return null
+            if (it.selectedComponents.first() !is AIGeneratedImage) return null
+            if (it.selectedComponents.size > 1) return null
+            return (it.selectedComponents.first() as AIGeneratedImage).imageData.getValue()
+        }
+        return null
+    }
+
+    fun shouldShowImageLoading(): Boolean {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return false
+            if (it.selectedComponents.first() !is AIGeneratedImage) return false
+            if (it.selectedComponents.size > 1) return false
+            return loadingImages.contains(it.selectedComponents.first().uuid)
+        }
+        return false
+    }
+
+    fun shouldShowPromptFail(): Boolean {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return false
+            if (it.selectedComponents.first() !is AIGeneratedImage) return false
+            if (it.selectedComponents.size > 1) return false
+            return failedPromptImages.contains(it.selectedComponents.first().uuid)
+        }
+        return false
+    }
+
     fun setColorSelectedComponents(color: ComponentColor) {
         selectionBoxData?.let {
             it.selectedComponents.forEach skip@ { component ->
@@ -365,6 +401,30 @@ class EditController {
         }
     }
 
+    suspend fun fetchAIImage(prompt: String) {
+        selectionBoxData?.let {
+            if (it.selectedComponents.isEmpty()) return
+            if (it.selectedComponents.first() !is AIGeneratedImage) return
+            if (it.selectedComponents.size > 1) return
+            val imageComponent = it.selectedComponents.first() as AIGeneratedImage
+            failedPromptImages.remove(imageComponent.uuid)
+            loadingImages.add(imageComponent.uuid)
+            try {
+                val requestBody = Json.encodeToString(ImageGenerationRequest(prompt))
+                val responseBody = WhiteboardService.postRequest(
+                    path = "api/image/generate",
+                    body = requestBody,
+                    token = UserManager.jwt
+                )
+                val imageGenerationResponse = Json.decodeFromString(ImageGenerationResponse.serializer(), responseBody)
+                imageComponent.imageData.setLocally(AIImageData(imageGenerationResponse.prompt, imageGenerationResponse.imageUrl))
+            } catch (_: Exception) {
+                failedPromptImages.add(imageComponent.uuid)
+            }
+            loadingImages.remove(imageComponent.uuid)
+        }
+    }
+
     fun isPointInSelectionBox(point: Offset): Boolean {
         selectionBoxData?.let {
             val coordinate = getCoordinate(it)
@@ -388,16 +448,17 @@ class EditController {
     }
 
     fun selectedComponents(components: List<Component>) {
-        val allNotResizable = !components.fold(false) { acc, component ->
+        val sortedComponents = components.sortedBy { it.depth }
+        val allNotResizable = !sortedComponents.fold(false) { acc, component ->
             acc || component.isResizeable()
         }
         selectionBoxData = SelectionBoxData(
-            components.toMutableStateList(),
+            sortedComponents.toMutableStateList(),
             null,
             !allNotResizable
         )
-        if (components.size == 1) {
-            components.first().isFocused.value = true
+        if (sortedComponents.size == 1) {
+            sortedComponents.first().isFocused.value = true
         }
     }
 

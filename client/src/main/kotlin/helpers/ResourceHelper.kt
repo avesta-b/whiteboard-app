@@ -4,6 +4,13 @@ import cs346.whiteboard.client.constants.WhiteboardColors
 import java.awt.image.BufferedImage
 import java.io.InputStream
 import javax.imageio.ImageIO
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toComposeImageBitmap
+import org.jetbrains.skia.Image
+import java.io.ByteArrayOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 
 fun getResource(name: String): InputStream = object {}.javaClass.getResourceAsStream(name)
 
@@ -79,6 +86,15 @@ enum class CustomIcon {
     },
     SEND {
         override fun fileName(): String = "send.png"
+    },
+    OPENAI {
+        override fun fileName(): String = "openai.png"
+    },
+    IMAGE {
+        override fun fileName(): String = "image.png"
+    },
+    ARROW {
+        override fun fileName(): String = "arrow.png"
     };
 
     abstract fun fileName(): String
@@ -95,3 +111,5 @@ enum class CustomIcon {
         return ImageIO.read(getResource(path()))
     }
 }
+
+val imageCache = mutableMapOf<String, ImageBitmap>()

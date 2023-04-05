@@ -62,7 +62,6 @@ class Shape(
         }
     }
 
-
     override fun getComponentType(): ComponentType {
         return ComponentType.SHAPE
     }
