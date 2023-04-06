@@ -1,8 +1,9 @@
 package cs346.whiteboard.client.ui
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -129,6 +130,15 @@ fun UnderlinedText(text: String) {
         color = WhiteboardColors.primary,
         style = Typography.subtitle2,
         textDecoration = TextDecoration.Underline
+    )
+}
+
+@Composable
+fun PrimaryBodyText(text: String) {
+    Text(
+        text = text,
+        color = WhiteboardColors.primary,
+        style = Typography.body1
     )
 }
 

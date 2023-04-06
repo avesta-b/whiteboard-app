@@ -2,6 +2,7 @@ package cs346.whiteboard.client
 
 import cs346.whiteboard.shared.jsonmodels.LoginCredentialsRequest
 import cs346.whiteboard.shared.jsonmodels.SerializedJWT
+import cs346.whiteboard.shared.jsonmodels.WhiteboardSharingRequest
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -114,6 +115,23 @@ object UserManager {
         jwt = null
     }
 
-
-
+    suspend fun shareWhiteboards(roomId: Long, userToBeSharedWith: String) {
+        jwt?.let {
+            try {
+                val requestBody = Json.encodeToString(
+                    WhiteboardSharingRequest(
+                        userToBeSharedWith = userToBeSharedWith
+                    )
+                )
+                val responseBody = WhiteboardService.postRequest(
+                    path="api/user/${getUsername() ?: ""}/whiteboards/${roomId}/share",
+                    body = requestBody,
+                    token = it
+                )
+//                setMyWhiteboardState(response)
+                // no-op with response as we cannot share whiteboards from a screen where we view whiteboards
+            } catch (_: Error) {
+            }
+        }
+    }
 }

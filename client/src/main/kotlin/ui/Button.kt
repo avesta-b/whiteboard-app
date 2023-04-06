@@ -3,21 +3,25 @@ package cs346.whiteboard.client.ui
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.helpers.CustomIcon
+import cs346.whiteboard.client.helpers.getUserColor
+import cs346.whiteboard.shared.jsonmodels.WhiteboardItem
 
 @Composable
 fun PrimaryButton(modifier: Modifier,
@@ -169,4 +173,137 @@ fun CustomIconButton(
             PrimaryButtonSpinner()
         }
     }
+}
+
+@Composable
+fun OwnedWhiteboardButton(
+    item: WhiteboardItem,
+    modifier: Modifier,
+    cornerRadius: Dp = 8.dp,
+    onClick: () -> Unit,
+) {
+    val sharedText = if (item.sharedWithOthers != false) { "Shared with others"}  else { "Only you can access" }
+    OutlinedButton(
+        onClick = onClick,
+        shape = RoundedCornerShape(cornerRadius),
+        modifier = modifier,
+        border = BorderStroke(1.dp, WhiteboardColors.secondaryVariant),
+        colors = ButtonDefaults.outlinedButtonColors(
+            backgroundColor = WhiteboardColors.background,
+            contentColor = WhiteboardColors.secondaryVariant,
+            disabledContentColor = WhiteboardColors.secondaryVariant)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            ImageIcon(icon=CustomIcon.FILE, modifier = Modifier
+                .padding(horizontal = 24.dp))
+
+            Column(modifier = Modifier
+                .padding(horizontal = 24.dp)){
+                PrimaryBodyText(item.name)
+                Spacer(modifier = Modifier.height(4.dp))
+                SecondaryBodyText(sharedText)
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            if (item.sharedWithOthers != false) {
+                ImageIcon(icon=CustomIcon.SHARED, modifier = Modifier
+                    .padding(horizontal = 24.dp))
+            }
+        }
+    }
+}
+
+@Composable
+fun SharedWhiteboardButton(
+    item: WhiteboardItem,
+    modifier: Modifier,
+    cornerRadius: Dp = 8.dp,
+    onClick: () -> Unit,
+) {
+    val sharedText = "Shared by ${item.author}"
+    OutlinedButton(
+        onClick = onClick,
+        shape = RoundedCornerShape(cornerRadius),
+        modifier = modifier,
+        border = BorderStroke(1.dp, WhiteboardColors.secondaryVariant),
+        colors = ButtonDefaults.outlinedButtonColors(
+            backgroundColor = WhiteboardColors.background,
+            contentColor = WhiteboardColors.secondaryVariant,
+            disabledContentColor = WhiteboardColors.secondaryVariant)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            ImageIcon(icon=CustomIcon.FILE, modifier = Modifier
+                .padding(horizontal = 24.dp))
+
+            Column(modifier = Modifier
+                .padding(horizontal = 24.dp)){
+                PrimaryBodyText(item.name)
+                Spacer(modifier = Modifier.height(4.dp))
+                SecondaryBodyText(sharedText)
+            }
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            UserIconText(
+                item.author.first().uppercaseChar().toString(),
+                getUserColor(item.author)
+            )
+        }
+    }
+}
+
+
+@Composable
+fun TwoTextButton(
+    text1: String,
+    text2: String,
+    isFirstSelected: Boolean,
+    onClick: () -> Unit
+) {
+    var isText1Selected = isFirstSelected
+    val backgroundColor1 = if (isText1Selected) WhiteboardColors.background else WhiteboardColors.secondaryVariant
+    val backgroundColor2 = if (!isText1Selected) WhiteboardColors.background else WhiteboardColors.secondaryVariant
+
+
+    Box(modifier = Modifier
+        .clip(RoundedCornerShape(8.dp))
+        .background(WhiteboardColors.secondaryVariant)
+        .clickable(onClick = onClick)) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(backgroundColor1)
+                    .padding(12.dp)
+            ) {
+                if (isText1Selected) {
+                    PrimaryBodyText(text1)
+                } else {
+                    SecondaryBodyText(text1)
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(backgroundColor2)
+                    .padding(12.dp)
+            ) {
+                if (isText1Selected) {
+                    SecondaryBodyText(text2)
+                } else {
+                    PrimaryBodyText(text2)
+                }
+            }
+        }
+    }
+
 }

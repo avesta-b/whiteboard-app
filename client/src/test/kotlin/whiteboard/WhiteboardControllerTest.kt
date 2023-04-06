@@ -20,7 +20,8 @@ import org.junit.jupiter.api.Test
 import java.lang.ref.WeakReference
 import kotlin.test.assertEquals
 
-const val ROOM_ID = "54269818"
+const val ROOM_ID: Long = 54269818
+const val ROOM_NAME = "FOOOOOOO"
 class WhiteboardControllerTest {
 
     private var testCoroutineScope = TestCoroutineScope()
@@ -31,7 +32,7 @@ class WhiteboardControllerTest {
 
     @BeforeEach
     fun setup() {
-        whiteboardController = WhiteboardController(ROOM_ID, testCoroutineScope, ::toggleBin)
+        whiteboardController = WhiteboardController(ROOM_NAME, ROOM_ID, testCoroutineScope, ::toggleBin)
     }
 
     @Test
@@ -45,7 +46,7 @@ class WhiteboardControllerTest {
 
     @Test
     fun `getWhiteboardTitle returns correct title`() {
-        assertEquals(ROOM_ID, whiteboardController.getWhiteboardTitle())
+        assertEquals(ROOM_NAME, whiteboardController.getWhiteboardTitle())
     }
 
     @Test
