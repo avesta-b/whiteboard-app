@@ -93,8 +93,15 @@ enum class CustomIcon {
     IMAGE {
         override fun fileName(): String = "image.png"
     },
-    ARROW {
+    ARROW
+    {
         override fun fileName(): String = "arrow.png"
+    },
+    FILE {
+        override fun fileName(): String = "file.png"
+    },
+    SHARED {
+        override fun fileName(): String = "shared.png"
     };
 
     abstract fun fileName(): String

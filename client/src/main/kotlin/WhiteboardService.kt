@@ -45,4 +45,22 @@ object WhiteboardService {
         }
         return response.body()
     }
+
+    suspend fun getRequest(path: String, token: String?): String {
+        val response = client.request {
+            method = HttpMethod.Get
+            url {
+                protocol = if(MenuBarState.isLocal) URLProtocol.HTTP else URLProtocol.HTTPS
+                host = BaseUrlProvider.HOST
+                path(path)
+            }
+            headers {
+                token?.let {
+                    bearerAuth(it)
+                }
+            }
+            setBody(body)
+        }
+        return response.body()
+    }
 }

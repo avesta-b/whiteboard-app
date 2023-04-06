@@ -12,8 +12,8 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.helpers.CustomIcon
 import cs346.whiteboard.client.helpers.bottomBorder
 import cs346.whiteboard.client.helpers.getUserColor
@@ -24,7 +24,8 @@ import java.awt.Cursor
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun WhiteboardTopBar(whiteboardController: WhiteboardController, modifier: Modifier) {
+fun WhiteboardTopBar(whiteboardController: WhiteboardController, modifier: Modifier, onShareClick: () -> Unit) {
+
     Box(modifier = modifier
         .fillMaxWidth()
         .height(50.dp)
@@ -63,6 +64,8 @@ fun WhiteboardTopBar(whiteboardController: WhiteboardController, modifier: Modif
                     }
                 }
             }
+            Spacer(Modifier.width(10.dp))
+            PrimaryButton(modifier = Modifier, text = "Share", enabled = true, onClick = onShareClick)
             Spacer(Modifier.width(10.dp))
         }
 

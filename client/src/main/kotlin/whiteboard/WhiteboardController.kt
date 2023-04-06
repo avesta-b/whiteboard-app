@@ -23,7 +23,12 @@ import kotlinx.coroutines.flow.onEach
 import java.lang.ref.WeakReference
 import java.util.*
 
-class WhiteboardController(private val roomId: String, private val coroutineScope: CoroutineScope, private val onExit: () -> Unit) {
+class WhiteboardController(
+    private val roomName: String,
+    private val roomId: Long,
+    private val coroutineScope: CoroutineScope,
+    private val onExit: () -> Unit
+) {
 
     internal val components = mutableStateMapOf<String, Component>()
     internal var currentTool by mutableStateOf(WhiteboardToolbarOptions.SELECT)
@@ -35,7 +40,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
 
     internal val webSocketEventHandler = WebSocketEventHandler(
         username = UserManager.getUsername() ?: "default_user",
-        roomId = roomId,
+        roomId = "$roomId",
         coroutineScope = coroutineScope,
         whiteboardController = this
     )
@@ -65,7 +70,7 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     }
 
     fun getWhiteboardTitle(): String {
-        if (roomId.isNotEmpty()) return roomId
+        if (roomName.isNotEmpty()) return roomName
         return "Whiteboard"
     }
 
@@ -428,8 +433,11 @@ class WhiteboardController(private val roomId: String, private val coroutineScop
     fun setState(state: WhiteboardState) {
         components.clear()
 
+        state
         state.components.forEach {
             components[it.key] = it.value.toComponent(webSocketEventHandler)
         }
     }
+
+    fun getRoomId() : Long = roomId
 }

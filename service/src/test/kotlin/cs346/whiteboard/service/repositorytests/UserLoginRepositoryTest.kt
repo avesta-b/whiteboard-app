@@ -13,7 +13,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class UserLoginRepositoryTest @Autowired constructor(
     val entityManager: TestEntityManager,
-    val userRepository: UserLoginRepository) {
+    val userRepository: UserLoginRepository
+) {
 
     @Test
     fun `When findByUsername can find then return UserLogin`() {
