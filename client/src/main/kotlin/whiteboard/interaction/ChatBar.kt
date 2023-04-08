@@ -16,7 +16,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.MenuBarState
+import cs346.whiteboard.client.settings.MenuBarState
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes

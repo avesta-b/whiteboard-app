@@ -8,6 +8,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.window.*
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.constants.WhiteboardColors
+import cs346.whiteboard.client.settings.WindowManager
+import cs346.whiteboard.client.settings.createMenuBar
 import cs346.whiteboard.client.views.RootView
 import java.awt.Dimension
 import java.awt.event.*

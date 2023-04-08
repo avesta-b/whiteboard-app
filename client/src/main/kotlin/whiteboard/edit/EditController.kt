@@ -4,15 +4,14 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
-import cs346.whiteboard.client.UserManager
-import cs346.whiteboard.client.WhiteboardService
+import cs346.whiteboard.client.settings.UserManager
+import cs346.whiteboard.client.network.WhiteboardService
 import cs346.whiteboard.client.helpers.Quadruple
 import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.helpers.toList
 import cs346.whiteboard.client.whiteboard.components.*
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.shared.jsonmodels.*
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import kotlin.math.absoluteValue

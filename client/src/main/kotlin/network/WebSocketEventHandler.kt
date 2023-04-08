@@ -1,9 +1,9 @@
 package cs346.whiteboard.client.websocket
 
 import androidx.compose.runtime.snapshotFlow
-import cs346.whiteboard.client.BaseUrlProvider
-import cs346.whiteboard.client.MenuBarState
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.network.BaseUrlProvider
+import cs346.whiteboard.client.settings.MenuBarState
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.interaction.ChatController

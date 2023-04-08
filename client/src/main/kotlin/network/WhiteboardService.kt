@@ -1,5 +1,6 @@
-package cs346.whiteboard.client
+package cs346.whiteboard.client.network
 
+import cs346.whiteboard.client.settings.MenuBarState
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.okhttp.*

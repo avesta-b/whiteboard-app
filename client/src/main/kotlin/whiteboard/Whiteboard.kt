@@ -2,6 +2,7 @@ package cs346.whiteboard.client.whiteboard
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
@@ -17,8 +18,9 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.ui.TextInputDialogWithAcceptAndCancel
 import cs346.whiteboard.client.whiteboard.edit.EditPane
 import cs346.whiteboard.client.whiteboard.edit.QueryBox
@@ -29,6 +31,7 @@ import cs346.whiteboard.client.whiteboard.overlay.Cursors
 import cs346.whiteboard.client.whiteboard.overlay.Pings
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.awt.Cursor
 
 object WhiteboardLayerZIndices {
     const val background: Float = 0f
@@ -45,7 +48,7 @@ object WhiteboardLayerZIndices {
 }
 
 enum class WhiteboardViewState {
-    WHITEBOARD, SHARING_DIALOG
+    WHITEBOARD, SHARE
 }
 
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalAnimationApi::class)
@@ -67,151 +70,169 @@ fun Whiteboard(
 
     val shareInputState = remember { mutableStateOf(TextFieldValue("")) }
 
-    when(whiteboardState) {
-        WhiteboardViewState.SHARING_DIALOG -> {
-            AnimatedVisibility(
-                visible = whiteboardState == WhiteboardViewState.SHARING_DIALOG,
-                enter = fadeIn() + scaleIn(),
-                exit = fadeOut() + scaleOut()
-            ) {
+    val shareErrorState = remember { mutableStateOf(false) }
 
-                Box(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    TextInputDialogWithAcceptAndCancel(
-                        modifier = Modifier.width(400.dp).align(Alignment.Center),
-                        onAccept = {
-                            coroutineScope.launch {
-                                UserManager.shareWhiteboards(
-                                    roomId=whiteboardController.getRoomId(),
-                                    userToBeSharedWith = shareInputState.value.text
-                                )
-                                shareInputState.value = TextFieldValue("")
-                                whiteboardState = WhiteboardViewState.WHITEBOARD
-                            }
-                        },
-                        onCancel = { whiteboardState = WhiteboardViewState.WHITEBOARD },
-                        text = shareInputState,
-                        placeholder = "Username",
-                        smallTitle = "Share With User",
-                        acceptText = "Share"
-                    )
-                }
+    Box(modifier = modifier.onPointerEvent(PointerEventType.Scroll) { WhiteboardEventHandler.onScrollEventHandler(it) }) {
+        Box(modifier = modifier
+            // handle drag gestures
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragStart = {
+                        whiteboardController.handleOnDragGestureStart(it)
+                    },
+                    onDrag = { change, dragAmount ->
+                        whiteboardController.handleOnDragGesture(change, dragAmount)
+                    },
+                    onDragEnd = {
+                        whiteboardController.handleOnDragGestureEnd()
+                    }
+                )
             }
-        }
-        WhiteboardViewState.WHITEBOARD -> {
-            Box(modifier = modifier.onPointerEvent(PointerEventType.Scroll) { WhiteboardEventHandler.onScrollEventHandler(it) }) {
-                Box(modifier = modifier
-                    // handle drag gestures
-                    .pointerInput(Unit) {
-                        detectDragGestures(
-                            onDragStart = {
-                                whiteboardController.handleOnDragGestureStart(it)
-                            },
-                            onDrag = { change, dragAmount ->
-                                whiteboardController.handleOnDragGesture(change, dragAmount)
-                            },
-                            onDragEnd = {
-                                whiteboardController.handleOnDragGestureEnd()
-                            }
-                        )
+            // handle tap gestures
+            .pointerInput(Unit) {
+                detectTapGestures(
+                    onTap = {
+                        whiteboardController.handleOnTapGesture(it)
                     }
-                    // handle tap gestures
-                    .pointerInput(Unit) {
-                        detectTapGestures(
-                            onTap = {
-                                whiteboardController.handleOnTapGesture(it)
-                            }
-                        )
-                    }
-                    .onGloballyPositioned {
-                        whiteboardController.whiteboardSize = it.size.toSize()
-                    }
-                    .pointerInput(Unit) {
-                        coroutineScope {
-                            while (true) {
-                                val position = awaitPointerEventScope {
-                                    awaitPointerEvent(PointerEventPass.Initial).changes.first().position
-                                }
-                                launch {
-                                    whiteboardController.cursorsController.updateCursor(whiteboardController.viewToWhiteboardCoordinate(position))
-                                    whiteboardController.handlePointerPosition(position)
-                                }
-                            }
+                )
+            }
+            .onGloballyPositioned {
+                whiteboardController.whiteboardSize = it.size.toSize()
+            }
+            .pointerInput(Unit) {
+                coroutineScope {
+                    while (true) {
+                        val position = awaitPointerEventScope {
+                            awaitPointerEvent(PointerEventPass.Initial).changes.first().position
+                        }
+                        launch {
+                            whiteboardController.cursorsController.updateCursor(
+                                whiteboardController.viewToWhiteboardCoordinate(
+                                    position
+                                )
+                            )
+                            whiteboardController.handlePointerPosition(position)
                         }
                     }
-                    .pointerHoverIcon(PointerIcon(whiteboardController.cursorsController.getCurrentCursor()))
-                ) {
-                    // Background
-                    Background(whiteboardController)
-
-                    // Cursors
-                    Cursors(whiteboardController)
-
-                    // Pings
-                    Pings(whiteboardController)
-
-                    // Components
-                    whiteboardController.components.forEach { (_, component) ->
-                        component.drawComposableComponent(whiteboardController)
-                    }
-
-                    // Selection box
-                    whiteboardController.editController.selectionBoxData?.let {
-                        SelectionBox(whiteboardController, it)
-                    }
-
-                    // Query box
-                    whiteboardController.queryBoxController.queryBoxData?.let {
-                        QueryBox(whiteboardController, it)
-                    }
                 }
+            }
+            .pointerHoverIcon(PointerIcon(whiteboardController.cursorsController.getCurrentCursor()))
+        ) {
+            // Background
+            Background(whiteboardController)
 
-                // Edit pane
-                whiteboardController.editController.selectionBoxData?.let {
-                    EditPane(whiteboardController, it, Modifier.align(Alignment.TopStart).padding(top = 50.dp))
-                }
+            // Cursors
+            Cursors(whiteboardController)
 
-                AnimatedVisibility(
-                    visibleState = initialTransitionState,
-                    enter = slideInVertically(initialOffsetY = { 2 * it }) + fadeIn(),
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
-                    // Toolbar
-                    WhiteboardToolbar(whiteboardController)
-                }
+            // Pings
+            Pings(whiteboardController)
 
-                AnimatedVisibility(
-                    visibleState = initialTransitionState,
-                    enter = slideInVertically(initialOffsetY = { 2 * it }) + fadeIn(),
-                    modifier = Modifier.align(Alignment.BottomStart)
-                ) {
-                    // Zoom control
-                    WhiteboardZoomControl(whiteboardController)
-                }
+            // Components
+            whiteboardController.components.forEach { (_, component) ->
+                component.drawComposableComponent(whiteboardController)
+            }
 
-                // Top bar
-                WhiteboardTopBar(whiteboardController, Modifier.align(Alignment.TopCenter), onShareClick = {
-                    whiteboardState = WhiteboardViewState.SHARING_DIALOG
-                })
+            // Selection box
+            whiteboardController.editController.selectionBoxData?.let {
+                SelectionBox(whiteboardController, it)
+            }
 
-                // Ping Wheel
-                whiteboardController.pingController.pingWheelData?.let {
-                    PingMenu(whiteboardController, it)
-                }
+            // Query box
+            whiteboardController.queryBoxController.queryBoxData?.let {
+                QueryBox(whiteboardController, it)
+            }
+        }
 
-                if (!whiteboardController.webSocketEventHandler.isDrawingAlone()) {
-                    AnimatedVisibility(
-                        visibleState = initialTransitionState,
-                        enter = slideInVertically(initialOffsetY = { 2 * it }) + fadeIn(),
-                        modifier = Modifier.align(Alignment.BottomEnd)
-                    ) {
-                        // ChatBar
-                        ChatBar(whiteboardController.webSocketEventHandler.chatController)
-                    }
-                }
+        // Edit pane
+        whiteboardController.editController.selectionBoxData?.let {
+            EditPane(whiteboardController, it, Modifier.align(Alignment.TopStart).padding(top = 50.dp))
+        }
+
+        AnimatedVisibility(
+            visibleState = initialTransitionState,
+            enter = slideInVertically(initialOffsetY = { 2 * it }) + fadeIn(),
+            modifier = Modifier.align(Alignment.BottomCenter)
+        ) {
+            // Toolbar
+            WhiteboardToolbar(whiteboardController)
+        }
+
+        AnimatedVisibility(
+            visibleState = initialTransitionState,
+            enter = slideInVertically(initialOffsetY = { 2 * it }) + fadeIn(),
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            // Zoom control
+            WhiteboardZoomControl(whiteboardController)
+        }
+
+        // Top bar
+        WhiteboardTopBar(whiteboardController, Modifier.align(Alignment.TopCenter), onShareClick = {
+            whiteboardState = WhiteboardViewState.SHARE
+            WhiteboardEventHandler.isEditingText = true
+        })
+
+        // Ping Wheel
+        whiteboardController.pingController.pingWheelData?.let {
+            PingMenu(whiteboardController, it)
+        }
+
+        if (!whiteboardController.webSocketEventHandler.isDrawingAlone()) {
+            AnimatedVisibility(
+                visibleState = initialTransitionState,
+                enter = slideInVertically(initialOffsetY = { 2 * it }) + fadeIn(),
+                modifier = Modifier.align(Alignment.BottomEnd)
+            ) {
+                // ChatBar
+                ChatBar(whiteboardController.webSocketEventHandler.chatController)
             }
         }
     }
 
+    AnimatedVisibility(
+        visible = whiteboardState == WhiteboardViewState.SHARE,
+        enter = fadeIn() + scaleIn(),
+        exit = fadeOut() + scaleOut()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(WhiteboardColors.background)
+                .pointerHoverIcon(PointerIcon(Cursor.getDefaultCursor()))
+        ) {
+            TextInputDialogWithAcceptAndCancel(
+                modifier = Modifier.width(400.dp).align(Alignment.Center),
+                onAccept = {
+                    shareErrorState.value = false
+                    coroutineScope.launch {
+                        if (
+                            UserManager.shareWhiteboards(
+                                roomId = whiteboardController.getRoomId(),
+                                userToBeSharedWith = shareInputState.value.text
+                            )
+                        ) {
+                            UserManager.error = null
+                            shareInputState.value = TextFieldValue("")
+                            whiteboardState = WhiteboardViewState.WHITEBOARD
+                            WhiteboardEventHandler.isEditingText = false
+                        } else {
+                            shareErrorState.value = true
+                        }
+                    }
+                },
+                onCancel = {
+                    shareInputState.value = TextFieldValue("")
+                    whiteboardState = WhiteboardViewState.WHITEBOARD
+                    WhiteboardEventHandler.isEditingText = false
+                    shareErrorState.value = false
+                },
+                text = shareInputState,
+                placeholder = "Username",
+                smallTitle = "Share With User",
+                acceptText = "Share",
+                showError = shareErrorState.value,
+            )
+        }
+    }
 }
+

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.Typography
 import cs346.whiteboard.client.constants.WhiteboardColors
+import cs346.whiteboard.client.settings.UserManager
 
 @Composable
 fun Dialog(
@@ -56,14 +57,14 @@ fun TextInputDialogWithAcceptAndCancel(
     text: MutableState<TextFieldValue>,
     placeholder: String,
     smallTitle: String,
-    acceptText: String
+    acceptText: String,
+    showError: Boolean = false
 ) {
-
     Box(
         modifier = modifier.border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(24.dp).align(Alignment.Center)
         ) {
@@ -72,7 +73,7 @@ fun TextInputDialogWithAcceptAndCancel(
                 OutlinedTextField(
                     value = text.value,
                     onValueChange = { text.value = it },
-                    modifier = Modifier.padding(bottom = 20.dp, top = 20.dp).height(56.dp).fillMaxWidth(),
+                    modifier = Modifier.padding(bottom = 20.dp, top = 10.dp).height(56.dp).fillMaxWidth(),
                     textStyle = Typography.body2,
                     label = { TextFieldPlaceholderText(placeholder) },
                     keyboardOptions = KeyboardOptions(
@@ -96,6 +97,11 @@ fun TextInputDialogWithAcceptAndCancel(
             }
 
             Row(verticalAlignment = Alignment.CenterVertically) {
+                if (showError) {
+                    UserManager.error?.let {
+                        ErrorText(it)
+                    }
+                }
                 Spacer(Modifier.weight(1.0f))
                 OutlinedButton(
                     modifier = Modifier.height(40.dp),
@@ -108,13 +114,8 @@ fun TextInputDialogWithAcceptAndCancel(
                     modifier = Modifier.height(40.dp),
                     text = acceptText,
                     enabled = true,
-                    onClick = if (text.value.text.isNotEmpty()) {
-                        onAccept
-                    } else {
-                        {}
-                    }
+                    onClick = if (text.value.text.isNotEmpty()) onAccept else ({})
                 )
-
             }
         }
     }

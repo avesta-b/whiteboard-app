@@ -199,7 +199,8 @@ fun OwnedWhiteboardButton(
             modifier = Modifier.fillMaxSize()
         ) {
             ImageIcon(icon=CustomIcon.FILE, modifier = Modifier
-                .padding(horizontal = 24.dp))
+                .padding(horizontal = 12.dp)
+                .size(24.dp))
 
             Column(modifier = Modifier
                 .padding(horizontal = 24.dp)){
@@ -212,7 +213,8 @@ fun OwnedWhiteboardButton(
 
             if (item.sharedWithOthers != false) {
                 ImageIcon(icon=CustomIcon.SHARED, modifier = Modifier
-                    .padding(horizontal = 24.dp))
+                    .padding(horizontal = 12.dp)
+                    .size(24.dp))
             }
         }
     }
@@ -242,7 +244,8 @@ fun SharedWhiteboardButton(
             modifier = Modifier.fillMaxSize()
         ) {
             ImageIcon(icon=CustomIcon.FILE, modifier = Modifier
-                .padding(horizontal = 24.dp))
+                .padding(horizontal = 12.dp)
+                .size(24.dp))
 
             Column(modifier = Modifier
                 .padding(horizontal = 24.dp)){
@@ -270,40 +273,42 @@ fun TwoTextButton(
     onClick: () -> Unit
 ) {
     var isText1Selected = isFirstSelected
-    val backgroundColor1 = if (isText1Selected) WhiteboardColors.background else WhiteboardColors.secondaryVariant
-    val backgroundColor2 = if (!isText1Selected) WhiteboardColors.background else WhiteboardColors.secondaryVariant
+    val backgroundColor1 = if (isText1Selected) WhiteboardColors.background else WhiteboardColors.lightBackground
+    val backgroundColor2 = if (!isText1Selected) WhiteboardColors.background else WhiteboardColors.lightBackground
 
-
-    Box(modifier = Modifier
-        .clip(RoundedCornerShape(8.dp))
-        .background(WhiteboardColors.secondaryVariant)
-        .clickable(onClick = onClick)) {
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(12.dp)) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(backgroundColor1)
-                    .padding(12.dp)
-            ) {
-                if (isText1Selected) {
-                    PrimaryBodyText(text1)
-                } else {
-                    SecondaryBodyText(text1)
-                }
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .clip(Shapes.small)
+            .background(WhiteboardColors.lightBackground)
+            .clickable(onClick = onClick)
+            .height(52.dp)
+            .padding(6.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .clip(Shapes.small)
+                .background(backgroundColor1)
+                .padding(12.dp)
+        ) {
+            if (isText1Selected) {
+                PrimaryBodyText(text1)
+            } else {
+                SecondaryBodyText(text1)
             }
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(backgroundColor2)
-                    .padding(12.dp)
-            ) {
-                if (isText1Selected) {
-                    SecondaryBodyText(text2)
-                } else {
-                    PrimaryBodyText(text2)
-                }
+        }
+        Box(
+            modifier = Modifier
+                .clip(Shapes.small)
+                .background(backgroundColor2)
+                .padding(12.dp)
+        ) {
+            if (isText1Selected) {
+                SecondaryBodyText(text2)
+            } else {
+                PrimaryBodyText(text2)
             }
         }
     }
-
 }

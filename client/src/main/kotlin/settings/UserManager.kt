@@ -1,5 +1,6 @@
-package cs346.whiteboard.client
+package cs346.whiteboard.client.settings
 
+import cs346.whiteboard.client.network.WhiteboardService
 import cs346.whiteboard.shared.jsonmodels.LoginCredentialsRequest
 import cs346.whiteboard.shared.jsonmodels.SerializedJWT
 import cs346.whiteboard.shared.jsonmodels.WhiteboardSharingRequest
@@ -62,7 +63,7 @@ object UserManager {
             WhiteboardService.postRequest(path = "api/auth/register", body = requestBody)
             true
         } catch (e: Exception) {
-            determineError(e.toString())
+            determineAuthError(e.toString())
             false
         }
     }
@@ -80,13 +81,13 @@ object UserManager {
             jwt = credentialsResponse.jwtToken
             true
         } catch (e: Exception) {
-            determineError(e.toString())
+            determineAuthError(e.toString())
             false
         }
     }
 
-    private fun determineError(errorText: String){
-        if (errorText.contains("invalid: 409")) error = "Username Taken"
+    private fun determineAuthError(errorText: String) {
+        if (errorText.contains("invalid: 409")) error = "Username Unavailable"
         else if (errorText.contains("invalid: 400")) error = "Invalid Credentials"
         else if (errorText.contains("invalid: 401")) error = "Invalid Credentials"
         else if (errorText.contains("Failed to connect")) error = "Connection Error"
@@ -115,7 +116,7 @@ object UserManager {
         jwt = null
     }
 
-    suspend fun shareWhiteboards(roomId: Long, userToBeSharedWith: String) {
+    suspend fun shareWhiteboards(roomId: Long, userToBeSharedWith: String): Boolean {
         jwt?.let {
             try {
                 val requestBody = Json.encodeToString(
@@ -123,15 +124,24 @@ object UserManager {
                         userToBeSharedWith = userToBeSharedWith
                     )
                 )
-                val responseBody = WhiteboardService.postRequest(
+                WhiteboardService.postRequest(
                     path="api/user/${getUsername() ?: ""}/whiteboards/${roomId}/share",
                     body = requestBody,
                     token = it
                 )
-//                setMyWhiteboardState(response)
-                // no-op with response as we cannot share whiteboards from a screen where we view whiteboards
-            } catch (_: Error) {
+                return true
+            } catch (e: Exception) {
+                determineShareError(e.toString())
+                return false
             }
         }
+        return false
+    }
+
+    private fun determineShareError(errorText: String) {
+        if (errorText.contains("invalid: 400")) error = "Cannot share with user"
+        else if (errorText.contains("invalid: 401")) error = "Invalid authorization"
+        else if (errorText.contains("invalid: 409")) error = "Already shared"
+        else if (errorText.contains("Failed to connect")) error = "Connection Error"
     }
 }

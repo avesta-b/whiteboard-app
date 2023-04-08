@@ -1,11 +1,9 @@
 package cs346.whiteboard.client
 
-import cs346.whiteboard.shared.jsonmodels.LoginCredentialsRequest
+import cs346.whiteboard.client.network.BaseUrlProvider
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.encodeToString
-import kotlinx.serialization.json.Json
+
 class BaseUrlProviderTest {
 
     @Test

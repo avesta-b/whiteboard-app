@@ -1,4 +1,4 @@
-package cs346.whiteboard.client
+package cs346.whiteboard.client.settings
 
 import  java.util.prefs.*
 object PreferencesManager {

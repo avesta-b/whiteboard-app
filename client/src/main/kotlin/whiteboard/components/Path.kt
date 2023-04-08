@@ -8,7 +8,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.helpers.toColor
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.websocket.ComponentEventController
