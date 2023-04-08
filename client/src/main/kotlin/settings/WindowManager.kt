@@ -1,4 +1,4 @@
-package cs346.whiteboard.client
+package cs346.whiteboard.client.settings
 
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp

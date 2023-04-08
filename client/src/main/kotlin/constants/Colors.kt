@@ -4,7 +4,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
-import cs346.whiteboard.client.MenuBarState
+import cs346.whiteboard.client.settings.MenuBarState
 
 object WhiteboardColors {
     var isDarkMode by mutableStateOf(MenuBarState.menuBarPreferences.isDarkMode)
@@ -14,6 +14,8 @@ object WhiteboardColors {
         get() = if (isDarkMode) Color(0xFF64748b) else Color(0xFF94A3B8)
     val secondaryVariant
         get() = if (isDarkMode) Color(0xFF475569) else Color(0xFFCBD5E1)
+    val lightBackground
+        get() = if (isDarkMode) Color(0xFF334155) else Color(0xFFF1F5F9)
     val textfieldSelectColor = secondaryVariant.copy(alpha = 0.6f)
     val background
         get() = if (isDarkMode) Color(0xFF1e293b) else Color.White

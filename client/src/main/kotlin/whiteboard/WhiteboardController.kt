@@ -4,7 +4,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerInputChange
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.helpers.Toolkit
 import cs346.whiteboard.client.helpers.overlap
@@ -433,7 +433,6 @@ class WhiteboardController(
     fun setState(state: WhiteboardState) {
         components.clear()
 
-        state
         state.components.forEach {
             components[it.key] = it.value.toComponent(webSocketEventHandler)
         }

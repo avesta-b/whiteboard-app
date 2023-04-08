@@ -1,6 +1,6 @@
 package cs346.whiteboard.client.commands
 
-import cs346.whiteboard.client.MenuBarState
+import cs346.whiteboard.client.settings.MenuBarState
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 

@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.MenuBarState
+import cs346.whiteboard.client.settings.MenuBarState
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.constants.Inter
 import cs346.whiteboard.client.constants.WhiteboardColors

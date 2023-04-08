@@ -1,7 +1,7 @@
 package cs346.whiteboard.client.websocket
 
 import androidx.compose.runtime.mutableStateListOf
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.shared.jsonmodels.SerializedJWT
 import java.lang.ref.WeakReference
 

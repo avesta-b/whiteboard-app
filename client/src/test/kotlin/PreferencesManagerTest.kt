@@ -1,5 +1,6 @@
 package cs346.whiteboard.client
 
+import cs346.whiteboard.client.settings.PreferencesManager
 import org.junit.jupiter.api.Test
 import java.util.prefs.Preferences
 import kotlin.test.assertEquals

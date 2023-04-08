@@ -11,7 +11,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.constants.triangle
 import cs346.whiteboard.client.helpers.toColor

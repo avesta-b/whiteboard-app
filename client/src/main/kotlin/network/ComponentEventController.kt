@@ -5,6 +5,7 @@ import cs346.whiteboard.shared.jsonmodels.ComponentState
 import cs346.whiteboard.shared.jsonmodels.ComponentUpdate
 import cs346.whiteboard.shared.jsonmodels.DeleteComponent
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newSingleThreadContext
@@ -18,7 +19,7 @@ data class UpdateComponent(val componentUpdate: ComponentUpdate) : ComponentEven
 data class DeleteComponentEvent(val componentId: String) : ComponentEvent()
 object RequestFullState : ComponentEvent()
 
-class ComponentEventController(
+class ComponentEventController @OptIn(DelicateCoroutinesApi::class) constructor(
     roomId: String,
     private val handler: WeakReference<WebSocketEventHandler>,
     val username: String,

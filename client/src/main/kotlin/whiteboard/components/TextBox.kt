@@ -12,8 +12,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.TextFieldValue
-import cs346.whiteboard.client.MenuBarState
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.settings.MenuBarState
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.commands.WhiteboardEventHandler
 import cs346.whiteboard.client.helpers.toColor
 import cs346.whiteboard.client.helpers.toFloat

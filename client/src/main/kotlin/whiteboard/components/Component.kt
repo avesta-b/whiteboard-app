@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.helpers.toDp
 import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.helpers.toSize

@@ -1,4 +1,4 @@
-package cs346.whiteboard.client
+package cs346.whiteboard.client.settings
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
@@ -10,6 +10,8 @@ import androidx.compose.ui.window.*
 import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.commands.CommandTypes
 import cs346.whiteboard.client.constants.WhiteboardColors
+import cs346.whiteboard.client.isMacOS
+import cs346.whiteboard.client.network.BaseUrlProvider
 import cs346.whiteboard.client.ui.*
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import kotlinx.serialization.json.Json

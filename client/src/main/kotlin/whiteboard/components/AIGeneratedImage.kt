@@ -12,7 +12,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.UserManager
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.constants.Typography
 import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.subtitle2

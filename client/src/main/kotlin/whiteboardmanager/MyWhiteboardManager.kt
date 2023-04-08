@@ -1,5 +1,6 @@
 package cs346.whiteboard.client.whiteboardmanager
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,10 +9,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import cs346.whiteboard.client.BaseUrlProvider
-import cs346.whiteboard.client.MenuBarState
-import cs346.whiteboard.client.UserManager
-import cs346.whiteboard.client.WhiteboardService
+import cs346.whiteboard.client.network.BaseUrlProvider
+import cs346.whiteboard.client.settings.MenuBarState
+import cs346.whiteboard.client.settings.UserManager
+import cs346.whiteboard.client.network.WhiteboardService
 import cs346.whiteboard.client.ui.OwnedWhiteboardButton
 import cs346.whiteboard.client.ui.SecondaryBodyText
 import cs346.whiteboard.client.ui.SharedWhiteboardButton
@@ -99,9 +100,10 @@ class MyWhiteboardManager(private val coroutineScope: CoroutineScope) {
                     val a: FetchWhiteboardsResponse = Json.decodeFromString(responseBody)
                     setMyWhiteboardState(a)
                 } catch (_: Exception) {
+                    return
                 }
             } catch (_: Exception) {
-
+                return
             }
         }
 
@@ -207,15 +209,25 @@ class MyWhiteboardManager(private val coroutineScope: CoroutineScope) {
 
     // MARK: - UI
 
+    @OptIn(ExperimentalAnimationApi::class)
     @Composable
     fun OwnWhiteboardList(onClick: () -> Unit) {
-        if (myWhiteboards.isEmpty()) {
+        AnimatedVisibility(
+            visible = myWhiteboards.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             Column(modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center) {
                 SecondaryBodyText("No Whiteboards Yet")
             }
-        } else {
+        }
+        AnimatedVisibility(
+            visible = !myWhiteboards.isEmpty(),
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut()
+        ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -238,7 +250,11 @@ class MyWhiteboardManager(private val coroutineScope: CoroutineScope) {
 
     @Composable
     fun SharedWhiteboardList(onClick: () -> Unit) {
-        if (sharedWhiteboards.isEmpty()) {
+        AnimatedVisibility(
+            visible = sharedWhiteboards.isEmpty(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
             Column(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -246,7 +262,12 @@ class MyWhiteboardManager(private val coroutineScope: CoroutineScope) {
             ) {
                 SecondaryBodyText("No Whiteboards Shared")
             }
-        } else {
+        }
+        AnimatedVisibility(
+            visible = !sharedWhiteboards.isEmpty(),
+            enter = fadeIn() + expandVertically(),
+            exit = fadeOut()
+        ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -262,10 +283,7 @@ class MyWhiteboardManager(private val coroutineScope: CoroutineScope) {
                         onClick.invoke()
                     }
                 }
-
             }
         }
     }
-
-
 }

@@ -1,4 +1,4 @@
-package websocket
+package network
 
 import cs346.whiteboard.client.websocket.UserLobbyController
 import org.junit.jupiter.api.Assertions.assertEquals
