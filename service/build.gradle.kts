@@ -33,6 +33,7 @@ dependencies {
     implementation("com.github.gwenn:sqlite-dialect:0.1.0")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.auth0:java-jwt:4.2.2")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("com.h2database:h2")
     implementation(project(":shared"))
