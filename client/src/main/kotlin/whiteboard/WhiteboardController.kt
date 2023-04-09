@@ -4,11 +4,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.input.pointer.PointerInputChange
-import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.commands.CommandFactory
 import cs346.whiteboard.client.helpers.Toolkit
 import cs346.whiteboard.client.helpers.overlap
 import cs346.whiteboard.client.helpers.toComponent
+import cs346.whiteboard.client.settings.UserManager
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
 import cs346.whiteboard.client.whiteboard.components.*
 import cs346.whiteboard.client.whiteboard.edit.Clipboard
@@ -16,7 +16,10 @@ import cs346.whiteboard.client.whiteboard.edit.EditController
 import cs346.whiteboard.client.whiteboard.edit.QueryBoxController
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
-import cs346.whiteboard.shared.jsonmodels.*
+import cs346.whiteboard.shared.jsonmodels.ComponentState
+import cs346.whiteboard.shared.jsonmodels.ComponentUpdate
+import cs346.whiteboard.shared.jsonmodels.DeleteComponent
+import cs346.whiteboard.shared.jsonmodels.WhiteboardState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -66,6 +69,7 @@ class WhiteboardController(
     }
 
     fun exitWhiteboard() {
+        webSocketEventHandler.disconnect()
         onExit()
     }
 

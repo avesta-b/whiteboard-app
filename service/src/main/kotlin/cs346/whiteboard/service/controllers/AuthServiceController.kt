@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -36,6 +37,7 @@ class AuthServiceController {
 
     // https://stackoverflow.com/questions/26587082/http-status-code-for-username-already-exists-when-registering-new-account
     // We return ERROR CODE 409 (CONFLICT) in the case a user already exists
+    @Transactional
     @PostMapping("/register")
     fun registerHandler(@RequestBody registrationRequestBody: LoginCredentialsRequest): SerializedJWT {
         if (registrationRequestBody.username.isEmpty() || registrationRequestBody.password.isEmpty()) {

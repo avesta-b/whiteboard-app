@@ -1,7 +1,6 @@
 package cs346.whiteboard.service.models
 
 import cs346.whiteboard.shared.jsonmodels.WhiteboardState
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import javax.persistence.*
 
@@ -18,15 +17,21 @@ data class WhiteboardTable(
     @OneToMany(mappedBy = "whiteboard")
     val userAccesses: List<UserAccess> = emptyList(),
 
+    // Note(avesta): Needed a weird dependency for a JSON type so we decided to just use a LONGTEXT
+    // performance differences are negligible especially because we do not query based on JSON fields.
     @Column(columnDefinition="LONGTEXT")
     var state: String = "{}",
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     val roomId: Long = -1
 )
-{
 
-    fun toWhiteboardState(): WhiteboardState = Json.decodeFromString<WhiteboardState>(WhiteboardState.serializer(), state ?: "")
+fun String.toWhiteboardState(): WhiteboardState? {
+    return try {
+        Json.decodeFromString<WhiteboardState>(WhiteboardState.serializer(), this)
+    } catch (_: Exception) {
+        null
+    }
 }
 
 fun WhiteboardState.toJsonString() : String {
@@ -34,13 +39,5 @@ fun WhiteboardState.toJsonString() : String {
         Json.encodeToString(WhiteboardState.serializer(), this)
     } catch (err: Error) {
         "{}"
-    }
-}
-
-fun getWhiteboardStateFromString(str: String) : WhiteboardState {
-    return try {
-        return Json.decodeFromString(str)
-    } catch (err: Error) {
-        return WhiteboardState()
     }
 }
