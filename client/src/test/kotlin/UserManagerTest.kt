@@ -1,5 +1,7 @@
 package cs346.whiteboard.client
 
+import cs346.whiteboard.client.network.WhiteboardService
+import cs346.whiteboard.client.settings.UserManager
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Test
 import kotlin.test.assertFalse

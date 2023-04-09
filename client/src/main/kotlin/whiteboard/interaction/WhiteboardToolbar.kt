@@ -16,7 +16,7 @@ import androidx.compose.ui.input.pointer.pointerHoverIcon
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.constants.Shapes
 import cs346.whiteboard.client.helpers.CustomIcon
 import cs346.whiteboard.client.ui.CustomIconButton
@@ -70,6 +70,10 @@ enum class WhiteboardToolbarOptions {
     TEXT {
         override fun icon() = CustomIcon.TEXTFIELD
         override fun cursorType() = CursorType.TEXTFIELD
+    },
+    AI_IMAGE {
+        override fun icon() = CustomIcon.OPENAI
+        override fun cursorType() = CursorType.OPENAI
     },
     ERASE {
         override fun icon() = CustomIcon.ERASER
@@ -125,6 +129,7 @@ fun WhiteboardToolbar(whiteboardController: WhiteboardController) {
             WhiteboardToolbarOptions.PEN,
             WhiteboardToolbarOptions.SQUARE,
             WhiteboardToolbarOptions.TEXT,
+            WhiteboardToolbarOptions.AI_IMAGE,
             WhiteboardToolbarOptions.ERASE
         )
     }
@@ -135,12 +140,12 @@ fun WhiteboardToolbar(whiteboardController: WhiteboardController) {
             SmallBodyText("Click to change $toolName tool")
         }
         Row(modifier = Modifier
-            .width(350.dp)
+            .width(375.dp)
             .height(IntrinsicSize.Min)
             .padding(16.dp)
-            .border(1.dp, Colors.secondaryVariant, Shapes.small)
+            .border(1.dp, WhiteboardColors.secondaryVariant, Shapes.small)
             .shadow(16.dp, Shapes.small, true)
-            .background(Colors.background)
+            .background(WhiteboardColors.background)
             .clip(Shapes.small)
             .zIndex(WhiteboardLayerZIndices.toolbar)
             .pointerHoverIcon(PointerIcon(Cursor.getDefaultCursor())),

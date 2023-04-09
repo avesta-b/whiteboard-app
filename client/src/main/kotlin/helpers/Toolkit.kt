@@ -7,4 +7,5 @@ object Toolkit {
     var isToolHeld = false
 
     var metaHolder = false
+    var shiftHolder = false
 }

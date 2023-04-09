@@ -2,6 +2,9 @@ package cs346.whiteboard.client
 
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import cs346.whiteboard.client.settings.PreferencesManager
+import cs346.whiteboard.client.settings.WINDOW_KEY
+import cs346.whiteboard.client.settings.WindowManager
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test

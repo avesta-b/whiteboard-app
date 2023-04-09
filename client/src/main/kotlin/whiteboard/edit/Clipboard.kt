@@ -21,7 +21,7 @@ object Clipboard {
         val components = mutableListOf<Component>()
         selectionData.forEach {
             val component = it.clone()
-            component.move(offset)
+            component.move(offset, true)
             components.add(component)
         }
         offset = offset.plus(Offset(10f, 10f))

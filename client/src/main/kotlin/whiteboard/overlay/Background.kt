@@ -9,8 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.Colors
-import cs346.whiteboard.client.constants.backgroundDotColor
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
 import java.lang.Float.min
@@ -20,7 +19,7 @@ fun Background(controller: WhiteboardController) {
     val center = remember { controller.viewToWhiteboardCoordinate(Offset(controller.whiteboardSize.width / 2, controller.whiteboardSize.height / 2)).plus(controller.whiteboardOffset) }
     Canvas(Modifier
         .fillMaxSize()
-        .background(Colors.background)
+        .background(WhiteboardColors.background)
         .zIndex(WhiteboardLayerZIndices.background)
     ) {
         val minPoint = controller.viewToWhiteboardCoordinate(Offset(0f, 0f))
@@ -30,7 +29,7 @@ fun Background(controller: WhiteboardController) {
         val drawDot: (Int, Int) -> Unit = { x, y ->
             if (x in minPoint.x.toInt()..maxPoint.x.toInt() && y in minPoint.y.toInt()..maxPoint.y.toInt()) {
                 drawCircle(
-                    brush = SolidColor(Colors.backgroundDotColor),
+                    brush = SolidColor(WhiteboardColors.backgroundDotColor),
                     radius = radius,
                     center = controller.whiteboardToViewCoordinate(Offset(x.toFloat(), y.toFloat()))
                 )

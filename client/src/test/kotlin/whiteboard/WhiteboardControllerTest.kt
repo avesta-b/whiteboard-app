@@ -6,6 +6,7 @@ import cs346.whiteboard.client.whiteboard.components.Shape
 import cs346.whiteboard.client.whiteboard.components.attributeWrapper
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 import cs346.whiteboard.client.whiteboard.overlay.CursorType
+import cs346.whiteboard.shared.jsonmodels.AccessLevel
 import cs346.whiteboard.shared.jsonmodels.ComponentColor
 import cs346.whiteboard.shared.jsonmodels.ShapeFill
 import cs346.whiteboard.shared.jsonmodels.ShapeType
@@ -19,7 +20,8 @@ import org.junit.jupiter.api.Test
 import java.lang.ref.WeakReference
 import kotlin.test.assertEquals
 
-const val ROOM_ID = "54269818"
+const val ROOM_ID: Long = 54269818
+const val ROOM_NAME = "FOOOOOOO"
 class WhiteboardControllerTest {
 
     private var testCoroutineScope = TestCoroutineScope()
@@ -30,7 +32,7 @@ class WhiteboardControllerTest {
 
     @BeforeEach
     fun setup() {
-        whiteboardController = WhiteboardController(ROOM_ID, testCoroutineScope, ::toggleBin)
+        whiteboardController = WhiteboardController(ROOM_NAME, ROOM_ID, testCoroutineScope, ::toggleBin)
     }
 
     @Test
@@ -44,7 +46,7 @@ class WhiteboardControllerTest {
 
     @Test
     fun `getWhiteboardTitle returns correct title`() {
-        assertEquals(ROOM_ID, whiteboardController.getWhiteboardTitle())
+        assertEquals(ROOM_NAME, whiteboardController.getWhiteboardTitle())
     }
 
     @Test
@@ -111,6 +113,8 @@ class WhiteboardControllerTest {
             attributeWrapper(Size(250f, 250f)),
             attributeWrapper(ComponentColor.BLACK),
             0f,
+            "",
+            attributeWrapper(AccessLevel.UNLOCKED),
             attributeWrapper(ShapeType.SQUARE),
             attributeWrapper(ShapeFill.OUTLINE)
         )
@@ -131,6 +135,8 @@ class WhiteboardControllerTest {
             attributeWrapper(Size(250f, 250f)),
             attributeWrapper(ComponentColor.BLACK),
             0f,
+            "",
+            attributeWrapper(AccessLevel.UNLOCKED),
             attributeWrapper(ShapeType.SQUARE),
             attributeWrapper(ShapeFill.OUTLINE)
         )

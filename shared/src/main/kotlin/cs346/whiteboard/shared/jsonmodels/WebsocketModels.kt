@@ -15,6 +15,7 @@ enum class WebSocketEventType(val value: String) {
     DELETE_COMPONENT("DELETE_COMPONENT"),
     GET_FULL_STATE("GET_FULL_STATE"),
     SEND_MESSAGE("SEND_MESSAGE"),
+    SEND_PING("SEND_PING")
 }
 
 @Serializable
@@ -30,7 +31,8 @@ data class Size(val width: Float = 0f, val height: Float = 0f)
 enum class ComponentType(val value: String) {
     TEXT_BOX("TEXT_BOX"),
     PATH("PATH"),
-    SHAPE("SHAPE")
+    SHAPE("SHAPE"),
+    AI_IMAGE("AI_IMAGE")
 }
 
 @Serializable
@@ -43,6 +45,7 @@ enum class PathType {
     BRUSH, HIGHLIGHTER, PAINT
 }
 
+@Serializable
 enum class PathThickness {
     THIN, THICK, EXTRA_THICK
 }
@@ -62,9 +65,21 @@ enum class TextFont {
     DEFAULT, COMIC, MONO
 }
 
+@Serializable
 enum class TextSize {
     SMALL, MEDIUM, LARGE
 }
+
+@Serializable
+enum class AccessLevel {
+    LOCKED, UNLOCKED
+}
+
+@Serializable
+data class AIImageData(
+    val prompt: String? = null,
+    val url: String? = null
+)
 
 @Serializable
 data class ComponentState(
@@ -75,6 +90,8 @@ data class ComponentState(
     var position: Position = Position(),
     var depth: Float = 0f,
     var color: ComponentColor = ComponentColor.BLACK,
+    var owner: String = "",
+    var accessLevel: AccessLevel = AccessLevel.UNLOCKED,
     // Path component
     var path: List<Position>? = null,
     var pathType: PathType? = null,
@@ -85,7 +102,9 @@ data class ComponentState(
     // Textbox component
     var text: String? = null,
     var textFont: TextFont? = null,
-    var textSize: TextSize? = null
+    var textSize: TextSize? = null,
+    // AI Image component
+    var imageData: AIImageData? = null
 )
 
 @Serializable
@@ -96,6 +115,7 @@ data class ComponentUpdate(
     val size: Size? = null,
     val position: Position? = null,
     val color: ComponentColor? = null,
+    var accessLevel: AccessLevel? = null,
     // Path component
     val path: List<Position>? = null,
     val pathType: PathType? = null,
@@ -106,7 +126,9 @@ data class ComponentUpdate(
     // Textbox component
     val text: String? = null,
     val textFont: TextFont? = null,
-    val textSize: TextSize? = null
+    val textSize: TextSize? = null,
+    // AI Image component
+    val imageData: AIImageData? = null
 )
 
 @Serializable
@@ -124,11 +146,15 @@ data class WebSocketEvent(
     val updateComponent: ComponentUpdate? = null,
     val deleteComponent: DeleteComponent? = null,
     val getFullState: WhiteboardState? = null,
-    val chatMessage: ChatMessage? = null
+    val chatMessage: ChatMessage? = null,
+    val ping: Ping? = null
 )
 
 @Serializable
-data class DeleteComponent(val uuid: String = "")
+data class DeleteComponent(
+    val uuid: String = "",
+    val username: String? = null
+)
 
 @Serializable
 data class ChatMessage(
@@ -139,6 +165,25 @@ data class ChatMessage(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is ChatMessage) return false
+        return uuid == other.uuid
+    }
+}
+
+@Serializable
+enum class EmojiPing {
+    THUMBS, SMILE, SKULL, THINK
+}
+
+@Serializable
+data class Ping(
+    val sender: String = "",
+    val emojiPing: EmojiPing = EmojiPing.THUMBS,
+    val position: Position = Position(0f, 0f),
+    val uuid: String = UUID.randomUUID().toString()
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Ping) return false
         return uuid == other.uuid
     }
 }

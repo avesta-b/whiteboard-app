@@ -4,12 +4,12 @@ import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 
 enum class CommandTypes {
-    CUT, COPY, PASTE, DELETE, ZOOMIN, ZOOMOUT, SETTOOL,
+    CUT, COPY, PASTE, DELETE, ZOOMIN, ZOOMOUT, SETTOOL, THEME
 }
 
 object CommandFactory {
     var whiteboardController: WhiteboardController? = null
-    fun create(command: CommandTypes): Command {
+    fun create(command: CommandTypes, tool: WhiteboardToolbarOptions = WhiteboardToolbarOptions.SELECT): Command {
         return when (command) {
             CommandTypes.CUT -> CutCommand(whiteboardController)
             CommandTypes.COPY -> CopyCommand(whiteboardController)
@@ -17,14 +17,8 @@ object CommandFactory {
             CommandTypes.DELETE -> DeleteCommand(whiteboardController)
             CommandTypes.ZOOMIN -> ZoomInCommand(whiteboardController)
             CommandTypes.ZOOMOUT -> ZoomOutCommand(whiteboardController)
-            else -> NothingCommand(whiteboardController)
-        }
-    }
-
-    fun create(command: CommandTypes, tool: WhiteboardToolbarOptions = WhiteboardToolbarOptions.SELECT): Command {
-        return when (command) {
+            CommandTypes.THEME -> ThemeCommand(whiteboardController)
             CommandTypes.SETTOOL -> SetToolCommand(whiteboardController, tool)
-            else -> NothingCommand(whiteboardController)
         }
     }
 }

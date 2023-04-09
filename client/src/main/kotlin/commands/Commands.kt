@@ -1,5 +1,6 @@
 package cs346.whiteboard.client.commands
 
+import cs346.whiteboard.client.settings.MenuBarState
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.interaction.WhiteboardToolbarOptions
 
@@ -45,8 +46,8 @@ class SetToolCommand(override var whiteboardController: WhiteboardController?, p
     }
 }
 
-class NothingCommand(override var whiteboardController: WhiteboardController?): Command() {
+class ThemeCommand(override var whiteboardController: WhiteboardController?): Command() {
     override fun execute() {
-        // Literally does nothing
+        MenuBarState.toggleDarkMode()
     }
 }

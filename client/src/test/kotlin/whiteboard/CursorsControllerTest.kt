@@ -2,16 +2,13 @@ package cs346.whiteboard.client.whiteboard
 
 import androidx.compose.ui.geometry.Offset
 import cs346.whiteboard.client.websocket.WebSocketEventHandler
-import cs346.whiteboard.client.whiteboard.overlay.CursorType
 import cs346.whiteboard.client.whiteboard.overlay.CursorsController
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestCoroutineScope
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.mockito.Mockito.mock
 import java.lang.ref.WeakReference
 
 class CursorsControllerTest {
@@ -25,7 +22,7 @@ class CursorsControllerTest {
 
     @BeforeEach
     fun setUp() {
-        whiteboardController = WhiteboardController(ROOM_ID, testCoroutineScope) { }
+        whiteboardController = WhiteboardController(ROOM_NAME, ROOM_ID, testCoroutineScope) {}
         webSocketEventHandler = whiteboardController.webSocketEventHandler
         weakEventHandler = WeakReference(webSocketEventHandler)
         cursorsController = CursorsController("testUsername", weakEventHandler)

@@ -20,7 +20,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.updateCursor/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun updateCursor(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         newUserPosition: Position,
         headerAccessor: SimpMessageHeaderAccessor
     ): WebSocketEvent {
@@ -42,7 +42,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.addUser/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun addUser(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         userJwt: SerializedJWT,
         headerAccessor: SimpMessageHeaderAccessor
     ): WebSocketEvent {
@@ -61,7 +61,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.getFullState/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun getFullState(
-        @DestinationVariable roomId: String
+        @DestinationVariable roomId: Long
     ): WebSocketEvent {
         return WebSocketEvent(
             WebSocketEventType.GET_FULL_STATE,
@@ -72,7 +72,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.addComponent/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun addComponent(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         componentState: ComponentState
     ) : WebSocketEvent {
         stateManager.addComponent(roomId, componentState)
@@ -85,33 +85,33 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.updateComponent/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun updateComponent(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         componentUpdate: ComponentUpdate
     ) : WebSocketEvent {
-        stateManager.updateComponent(roomId, componentUpdate)
+        val success = stateManager.updateComponent(roomId, componentUpdate)
         return WebSocketEvent(
             WebSocketEventType.UPDATE_COMPONENT,
-            updateComponent = componentUpdate
+            updateComponent = if (success) componentUpdate else null
         )
     }
 
     @MessageMapping("/whiteboard.deleteComponent/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun deleteComponent(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         deleteComponent: DeleteComponent
     ) : WebSocketEvent {
-        stateManager.deleteComponent(roomId, deleteComponent)
+        val success = stateManager.deleteComponent(roomId, deleteComponent)
         return WebSocketEvent(
             WebSocketEventType.DELETE_COMPONENT,
-            deleteComponent = deleteComponent
+            deleteComponent = if (success) deleteComponent else null
         )
     }
 
     @MessageMapping("/whiteboard.sendMessage/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun sendMessage(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         chatMessage: ChatMessage,
         headerAccessor: SimpMessageHeaderAccessor
     ) : WebSocketEvent {
@@ -123,6 +123,24 @@ class WhiteboardEventController(
         return WebSocketEvent(
             eventType = WebSocketEventType.SEND_MESSAGE,
             chatMessage = if (username == chatMessage.sender || chatMessage.content.isNotEmpty()) { chatMessage } else { null }
+        )
+    }
+
+    @MessageMapping("/whiteboard.sendPing/{roomId}")
+    @SendTo("/topic/whiteboard/{roomId}")
+    fun sendPing(
+        @DestinationVariable roomId: Long,
+        ping: Ping,
+        headerAccessor: SimpMessageHeaderAccessor
+    ) : WebSocketEvent {
+        val userJwt = headerAccessor.sessionAttributes?.get("userJwt").toString()
+
+        val decodedJwt = JWT.decode(userJwt)
+        val username = decodedJwt.claims["username"]?.asString()
+
+        return WebSocketEvent(
+            eventType = WebSocketEventType.SEND_PING,
+            ping = if (username == ping.sender) { ping } else { null }
         )
     }
 }

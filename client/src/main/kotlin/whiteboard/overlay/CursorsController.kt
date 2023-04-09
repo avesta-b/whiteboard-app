@@ -59,6 +59,9 @@ enum class CursorType {
     TEXTFIELD {
         override fun icon(): CustomIcon = CustomIcon.TEXTFIELD
     },
+    OPENAI {
+        override fun icon(): CustomIcon = CustomIcon.OPENAI
+    },
     ERASER {
         override fun icon(): CustomIcon = CustomIcon.ERASER
         override fun point(): Point = Point(0, 18)

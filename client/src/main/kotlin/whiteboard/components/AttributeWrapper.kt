@@ -1,7 +1,6 @@
 package cs346.whiteboard.client.whiteboard.components
 
 import androidx.compose.animation.core.*
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -13,8 +12,9 @@ import cs346.whiteboard.shared.jsonmodels.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newSingleThreadContext
 import java.lang.ref.WeakReference
+import java.time.Duration
+import java.time.Instant
 
 fun <T> makeComponentUpdate(t: T, componentUUID: String, username: String): ComponentUpdate? {
     return when (t) {
@@ -28,6 +28,8 @@ fun <T> makeComponentUpdate(t: T, componentUUID: String, username: String): Comp
         is TextFieldValue -> ComponentUpdate(uuid = componentUUID, text = t.text, username= username)
         is TextFont -> ComponentUpdate(uuid = componentUUID, textFont = t, username= username)
         is TextSize -> ComponentUpdate(uuid = componentUUID, textSize = t, username= username)
+        is AIImageData -> ComponentUpdate(uuid = componentUUID, imageData = t, username = username)
+        is AccessLevel -> ComponentUpdate(uuid = componentUUID, accessLevel = t, username = username)
         else -> null
     }
 }
@@ -61,6 +63,7 @@ class AttributeWrapper<T>(
     private var value = mutableStateOf(t)
     private var isAnimatable = isTypeAnimatable(t)
     private var animatableValue: Animatable<T, AnimationVector>? = null
+    private var lastUpdateTime: Instant = Instant.now()
 
     init {
         if (isAnimatable) {
@@ -105,17 +108,21 @@ class AttributeWrapper<T>(
         mostRecentUpdateId = null
     }
 
-    fun setLocally(newValue: T) {
+    fun setLocally(newValue: T, forceUpdate: Boolean = true) {
         value.value  = newValue
         CoroutineScope(Dispatchers.Default).launch {
             animatableValue?.snapTo(newValue)
         }
 
-        val update = makeComponentUpdate(newValue, componentUUID, controller?.get()?.username ?: "")
-        update?.let {
-            confirmed = false
-            mostRecentUpdateId = update.updateUUID
-            controller?.get()?.update(it)
+        val now = Instant.now()
+        if (forceUpdate || Duration.between(lastUpdateTime, now).toMillis() > 100) {
+            lastUpdateTime = now
+            val update = makeComponentUpdate(newValue, componentUUID, controller?.get()?.username ?: "")
+            update?.let {
+                confirmed = false
+                mostRecentUpdateId = update.updateUUID
+                controller?.get()?.update(it)
+            }
         }
     }
 

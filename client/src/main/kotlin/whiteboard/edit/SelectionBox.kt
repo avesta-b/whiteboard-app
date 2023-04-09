@@ -9,7 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import cs346.whiteboard.client.constants.Colors
+import cs346.whiteboard.client.constants.WhiteboardColors
 import cs346.whiteboard.client.helpers.toDp
 import cs346.whiteboard.client.helpers.toList
 import cs346.whiteboard.client.whiteboard.WhiteboardController
@@ -17,8 +17,8 @@ import cs346.whiteboard.client.whiteboard.WhiteboardLayerZIndices
 
 @Composable
 fun SelectionBox(controller: WhiteboardController, data: SelectionBoxData) {
-    val coordinate = controller.whiteboardToViewCoordinate(data.coordinate)
-    val size = controller.whiteboardToViewSize(data.size)
+    val coordinate = controller.whiteboardToViewCoordinate(controller.editController.getCoordinate(data))
+    val size = controller.whiteboardToViewSize(controller.editController.getSize(data))
     val resizeNodeSize = controller.whiteboardToViewSize(data.resizeNodeSize)
     val borderWidth = 2.dp * controller.whiteboardZoom
     Box(Modifier
@@ -29,7 +29,7 @@ fun SelectionBox(controller: WhiteboardController, data: SelectionBoxData) {
     ) {
         Box(Modifier
             .fillMaxSize()
-            .border(2.dp * controller.whiteboardZoom, Colors.secondaryVariant)
+            .border(2.dp * controller.whiteboardZoom, WhiteboardColors.secondaryVariant)
         )
         if (data.isResizable) {
             controller.editController.getSelectionBoxResizeNodeCoordinates(data).toList().forEach { offset ->
@@ -37,8 +37,8 @@ fun SelectionBox(controller: WhiteboardController, data: SelectionBoxData) {
                 Box(Modifier
                     .offset((resizeNodeCoordinate.x - coordinate.x).toDp(), (resizeNodeCoordinate.y - coordinate.y).toDp())
                     .requiredSize(resizeNodeSize.width.toDp(), resizeNodeSize.height.toDp())
-                    .border(borderWidth, Colors.secondaryVariant, CircleShape)
-                    .background(Colors.background, CircleShape)
+                    .border(borderWidth, WhiteboardColors.secondaryVariant, CircleShape)
+                    .background(WhiteboardColors.selectionNodeColor, CircleShape)
                 )
             }
         }

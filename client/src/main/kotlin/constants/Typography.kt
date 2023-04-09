@@ -86,6 +86,14 @@ fun Typography.subtitle2(scale: Float): TextStyle {
     )
 }
 
+fun Typography.h2(scale: Float): TextStyle {
+    return TextStyle(
+        fontFamily = Inter,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = (18 * scale).sp
+    )
+}
+
 fun Typography.textBoxDefault(size: Float): TextStyle {
     return TextStyle(
         fontFamily = Inter,
