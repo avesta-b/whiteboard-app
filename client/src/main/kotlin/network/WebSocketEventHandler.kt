@@ -1,10 +1,10 @@
 package cs346.whiteboard.client.websocket
 
 import androidx.compose.runtime.snapshotFlow
+import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.network.BaseUrlProvider
 import cs346.whiteboard.client.settings.MenuBarState
 import cs346.whiteboard.client.settings.UserManager
-import cs346.whiteboard.client.helpers.toOffset
 import cs346.whiteboard.client.whiteboard.WhiteboardController
 import cs346.whiteboard.client.whiteboard.interaction.ChatController
 import cs346.whiteboard.client.whiteboard.interaction.PingController
@@ -19,6 +19,8 @@ import kotlinx.serialization.SerializationStrategy
 import okhttp3.OkHttpClient
 import org.hildan.krossbow.stomp.StompClient
 import org.hildan.krossbow.stomp.StompSession
+import org.hildan.krossbow.stomp.config.HeartBeat
+import org.hildan.krossbow.stomp.config.HeartBeatTolerance
 import org.hildan.krossbow.stomp.conversions.kxserialization.json.withJsonConversions
 import org.hildan.krossbow.stomp.headers.StompSendHeaders
 import org.hildan.krossbow.stomp.headers.StompSubscribeHeaders
@@ -74,7 +76,11 @@ class WebSocketEventHandler(private val username: String,
     private suspend fun connect() {
         if (isDrawingAlone()) return
 
-        val headers = mapOf<String, String>("username" to username)
+        val headers = mapOf(
+            "jwt" to (UserManager?.jwt ?: "no-name"),
+            "roomId" to roomId.toString()
+        )
+
         val subscribeHeaders = StompSubscribeHeaders(
             destination = subscribePath,
             customHeaders = headers
@@ -93,15 +99,15 @@ class WebSocketEventHandler(private val username: String,
 
             stompClient = StompClient(wsClient) {
                 connectionTimeout = 10.seconds
-                gracefulDisconnect = true
-                // TODO: Configure heartbeats
+                gracefulDisconnect = false
+                heartBeat = HeartBeat(10.seconds, 30.seconds)
+                heartBeatTolerance = HeartBeatTolerance(5.seconds, 5.seconds)
             }
         }
 
         try {
-            session = stompClient?.connect(baseUrl)
+            session = stompClient?.connect(baseUrl, customStompConnectHeaders = headers)
         } catch (err: Exception) {
-            /// TODO: CATCH ERROR
         }
 
         session?.withJsonConversions()?.let {
@@ -121,9 +127,16 @@ class WebSocketEventHandler(private val username: String,
                     }
                 } catch(err: Exception) {
                     /// TODO: CATCH ERROR (MIGHT BE INCORRECT PLACEMENT)
+//                    println("GET THIS ERROR: $err")
                 }
 
             }
+        }
+    }
+
+    fun disconnect() {
+        coroutineScope.launch {
+            session?.disconnect()
         }
     }
 

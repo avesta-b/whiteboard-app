@@ -20,7 +20,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.updateCursor/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun updateCursor(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         newUserPosition: Position,
         headerAccessor: SimpMessageHeaderAccessor
     ): WebSocketEvent {
@@ -42,7 +42,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.addUser/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun addUser(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         userJwt: SerializedJWT,
         headerAccessor: SimpMessageHeaderAccessor
     ): WebSocketEvent {
@@ -61,7 +61,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.getFullState/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun getFullState(
-        @DestinationVariable roomId: String
+        @DestinationVariable roomId: Long
     ): WebSocketEvent {
         return WebSocketEvent(
             WebSocketEventType.GET_FULL_STATE,
@@ -72,7 +72,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.addComponent/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun addComponent(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         componentState: ComponentState
     ) : WebSocketEvent {
         stateManager.addComponent(roomId, componentState)
@@ -85,7 +85,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.updateComponent/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun updateComponent(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         componentUpdate: ComponentUpdate
     ) : WebSocketEvent {
         val success = stateManager.updateComponent(roomId, componentUpdate)
@@ -98,7 +98,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.deleteComponent/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun deleteComponent(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         deleteComponent: DeleteComponent
     ) : WebSocketEvent {
         val success = stateManager.deleteComponent(roomId, deleteComponent)
@@ -111,7 +111,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.sendMessage/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun sendMessage(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         chatMessage: ChatMessage,
         headerAccessor: SimpMessageHeaderAccessor
     ) : WebSocketEvent {
@@ -129,7 +129,7 @@ class WhiteboardEventController(
     @MessageMapping("/whiteboard.sendPing/{roomId}")
     @SendTo("/topic/whiteboard/{roomId}")
     fun sendPing(
-        @DestinationVariable roomId: String,
+        @DestinationVariable roomId: Long,
         ping: Ping,
         headerAccessor: SimpMessageHeaderAccessor
     ) : WebSocketEvent {
