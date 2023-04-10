@@ -47,17 +47,17 @@ compose.desktop {
         mainClass = "cs346.whiteboard.client.MainKt"
         val iconsRoot = project.file("src/main/resources")
         nativeDistributions {
-            packageVersion = "1.2.0"
+            packageVersion = "1.3.0"
             packageName = "Whiteboard"
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             macOS {
-                iconFile.set(iconsRoot.resolve("launcher_icons/macos.icns"))
+                iconFile.set(iconsRoot.resolve("icon.icns"))
             }
             windows {
-                iconFile.set(iconsRoot.resolve("launcher_icons/windows.ico"))
+                iconFile.set(iconsRoot.resolve("icon.ico"))
             }
             linux {
-                iconFile.set(iconsRoot.resolve("launcher_icons/linux.png"))
+                iconFile.set(iconsRoot.resolve("icon.png"))
             }
         }
     }

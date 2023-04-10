@@ -1,0 +1,13 @@
+Version 1.3.0 Release Notes
+Compatibility: macOS, Linux, Windows 11, Windows 10
+
+- Created menu for whiteboards and new flow for creating/sharing
+- Added DB persistence for whiteboards
+- Added component locking
+- Added reaction pings
+- Added AI image generation
+- Dark mode
+- Refined menu bar and chat
+
+Contact: a3barzeg@uwaterloo.ca, y269wei@uwaterloo.ca, am5rahma@uwaterloo.ca, e97wang@uwaterloo.ca
+Copyright © 2023 Avesta Barzegar, York Wei, Mikail Rahman, Edward Wang. All rights reserved.
