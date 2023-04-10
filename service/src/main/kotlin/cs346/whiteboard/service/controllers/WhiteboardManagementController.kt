@@ -137,7 +137,7 @@ class WhiteboardManagementController(
         val whiteboards = accessEntries.mapNotNull { access ->
             WhiteboardItem(
                 name = access.whiteboard?.name ?: "",
-                author = owner,
+                author = access?.owner?.username ?: "none",
                 id = access.whiteboard?.roomId ?: -1,
                 sharedWithOthers = true)
         }

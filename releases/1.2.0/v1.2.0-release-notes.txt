@@ -1,0 +1,13 @@
+Version 1.2.0 Release Notes
+Compatibility: macOS, Linux, Windows 11, Windows 10
+
+- Added ability to edit component attributes and synced it to multiplayer
+- Redefined schema for socket events
+- Made multiplayer more reliable by adding processing logic on client
+- Added animations other user's edits to reduce lag
+- Added a chat feature!!!
+- Made it easy to switch between localhost and server
+- Better error messages for our auth page
+
+Contact: a3barzeg@uwaterloo.ca, y269wei@uwaterloo.ca, am5rahma@uwaterloo.ca, e97wang@uwaterloo.ca
+Copyright © 2023 Avesta Barzegar, York Wei, Mikail Rahman, Edward Wang. All rights reserved.

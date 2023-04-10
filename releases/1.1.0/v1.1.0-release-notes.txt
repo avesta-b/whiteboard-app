@@ -1,0 +1,20 @@
+Version 1.1.0 Release Notes
+Compatibility: macOS, Linux, Windows 11, Windows 10
+
+- Added panning and zooming
+- Made whiteboard infinitely big
+- Added editing tools:
+    - Selection
+    - Resizing
+    - Moving
+    - Copy
+    - Paste
+    - Cut
+    - Deletion
+- Added keyboard shortcuts
+- Integrated cursors with whiteboard
+- Dockerized our backend
+- Multiplayer editing!!!
+
+Contact: a3barzeg@uwaterloo.ca, y269wei@uwaterloo.ca, am5rahma@uwaterloo.ca, e97wang@uwaterloo.ca
+Copyright © 2023 Avesta Barzegar, York Wei, Mikail Rahman, Edward Wang. All rights reserved.
