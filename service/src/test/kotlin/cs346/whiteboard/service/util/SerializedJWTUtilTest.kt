@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023 Avesta Barzegar, York Wei, Mikail Rahman, Edward Wang
+ */
+
 package cs346.whiteboard.service.util
 
 import com.auth0.jwt.JWT

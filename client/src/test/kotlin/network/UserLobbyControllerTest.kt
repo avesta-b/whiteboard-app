@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023 Avesta Barzegar, York Wei, Mikail Rahman, Edward Wang
+ */
+
 package network
 
 import cs346.whiteboard.client.websocket.UserLobbyController

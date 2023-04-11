@@ -1,4 +1,4 @@
-Version 1.0.0 Release Notes
+Version 1.0.0 (Sprint 1) Release Notes
 Compatibility: macOS, Linux, Windows 11, Windows 10
 
 - Added ability to create a new account and sign in

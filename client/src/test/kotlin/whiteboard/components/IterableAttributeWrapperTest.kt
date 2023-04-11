@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023 Avesta Barzegar, York Wei, Mikail Rahman, Edward Wang
+ */
+
 package whiteboard.components
 
 import androidx.compose.ui.geometry.Offset

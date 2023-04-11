@@ -1,3 +1,7 @@
+/*
+ * Copyright (c) 2023 Avesta Barzegar, York Wei, Mikail Rahman, Edward Wang
+ */
+
 package cs346.whiteboard.service.services
 
 // TODO: REVISIT THIS TEST CLASS WHEN WhiteBoardStateManager syncs up with DB
