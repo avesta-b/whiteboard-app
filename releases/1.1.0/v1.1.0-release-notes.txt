@@ -1,4 +1,4 @@
-Version 1.1.0 Release Notes
+Version 1.1.0 (Sprint 2) Release Notes
 Compatibility: macOS, Linux, Windows 11, Windows 10
 
 - Added panning and zooming

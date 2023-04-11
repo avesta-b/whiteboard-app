@@ -1,3 +1,7 @@
+#
+# Copyright (c) 2023 Avesta Barzegar, York Wei, Mikail Rahman, Edward Wang
+#
+
 FROM gradle:7.3-jdk17 as builder
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src

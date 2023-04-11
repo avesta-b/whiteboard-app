@@ -1,4 +1,4 @@
-Version 1.2.0 Release Notes
+Version 1.2.0 (Sprint 3) Release Notes
 Compatibility: macOS, Linux, Windows 11, Windows 10
 
 - Added ability to edit component attributes and synced it to multiplayer
